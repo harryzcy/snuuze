@@ -1,0 +1,11 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  go-test:
+    name: Go Tests
+    uses: harryzcy/github-actions/.github/workflows/go.yml@main
