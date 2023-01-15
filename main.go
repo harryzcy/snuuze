@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	err := config.LoadConfig()
+	err := config.Load()
 	if err != nil {
 		fmt.Println(err)
 		return
