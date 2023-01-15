@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/harryzcy/sailor/config"
+	"github.com/harryzcy/sailor/manager"
 )
 
 func main() {
@@ -12,4 +13,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+
+	files, err := manager.Scan()
+	fmt.Println(files)
 }
