@@ -1,4 +1,4 @@
-package manager
+package matcher
 
 import (
 	"path/filepath"
