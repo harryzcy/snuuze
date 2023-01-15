@@ -23,8 +23,8 @@ func Scan() ([]Match, error) {
 
 		if packageManager, ok := matchFile(path); ok {
 			matches = append(matches, Match{
-				file:           path,
-				packageManager: packageManager,
+				File:           path,
+				PackageManager: packageManager,
 			})
 		}
 		return nil
