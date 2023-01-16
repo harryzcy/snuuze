@@ -6,8 +6,8 @@ import (
 )
 
 type Match struct {
-	file           string
-	packageManager PackageManager
+	File           string
+	PackageManager PackageManager
 }
 
 type PackageManager string
