@@ -13,7 +13,6 @@ import (
 )
 
 func isUpgradable_GitHubActions(dep types.Dependency) (UpgradeInfo, error) {
-	fmt.Println(dep.Name, dep.Version)
 	owner, repo, err := getRepo(dep.Name)
 	if err != nil {
 		return UpgradeInfo{}, err
