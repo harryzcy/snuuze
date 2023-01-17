@@ -1,7 +1,7 @@
 package checker
 
 import (
-	"bytes"
+	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
@@ -28,6 +28,10 @@ func init() {
 	}
 }
 
+type GoModResponse struct {
+	Version string `json:"Version"`
+}
+
 func isUpgradable_GoMod(dep types.Dependency) (UpgradeInfo, error) {
 	url := GOPROXY + "/" + dep.Name + "/@latest"
 	client := http.Client{
@@ -43,18 +47,23 @@ func isUpgradable_GoMod(dep types.Dependency) (UpgradeInfo, error) {
 	if req.StatusCode != 200 {
 		return UpgradeInfo{}, ErrRequestFailed
 	}
-	versionBytes, err := io.ReadAll(req.Body)
+	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		return UpgradeInfo{}, err
 	}
 
-	version := string(bytes.TrimSpace(versionBytes))
+	response := GoModResponse{}
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return UpgradeInfo{}, err
+	}
+
 	info := UpgradeInfo{
 		Dependency: dep,
 	}
-	if version != dep.Version {
+	if response.Version != dep.Version {
 		info.Upgradable = true
-		info.ToVersion = version
+		info.ToVersion = response.Version
 		return info, nil
 	}
 	return info, nil
