@@ -21,5 +21,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	checker.ListUpgrades(matches)
+	infos, err := checker.ListUpgrades(matches)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, info := range infos {
+		fmt.Println(info)
+	}
 }
