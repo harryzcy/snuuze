@@ -56,6 +56,13 @@ func sortTags(tags []string) []string {
 	return tags
 }
 
+func getLatestTag(sortedTags []string, currentTag string) string {
+	latest := sortedTags[0]
+	parts := strings.Split(latest, ".")
+	dotCount := strings.Count(currentTag, ".")
+	return strings.Join(parts[:dotCount+1], ".")
+}
+
 func parseTag(tag string) ([]int, error) {
 	tag = strings.TrimPrefix(tag, "v")
 	parts := strings.Split(tag, ".")
