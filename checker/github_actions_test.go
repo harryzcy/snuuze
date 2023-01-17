@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetRepo(t *testing.T) {
+func TestParseRepo(t *testing.T) {
 	tests := []struct {
 		uses  string
 		owner string
@@ -28,7 +28,7 @@ func TestGetRepo(t *testing.T) {
 
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			owner, repo, err := getRepo(test.uses)
+			owner, repo, err := parseRepo(test.uses)
 			assert.Equal(t, test.owner, owner)
 			assert.Equal(t, test.repo, repo)
 			assert.Equal(t, test.err, err)
@@ -86,25 +86,6 @@ func TestGetLatestTag(t *testing.T) {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			got := getLatestTag(test.sortedTags, test.currentTag)
 			assert.Equal(t, test.want, got)
-		})
-	}
-}
-
-func TestParseTag(t *testing.T) {
-	tests := []struct {
-		tag  string
-		want []int
-		err  error
-	}{
-		{tag: "v1.2.3", want: []int{1, 2, 3}},
-		{tag: "v1.20.3", want: []int{1, 20, 3}},
-	}
-
-	for i, test := range tests {
-		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			got, err := parseTag(test.tag)
-			assert.Equal(t, test.want, got)
-			assert.Equal(t, test.err, err)
 		})
 	}
 }
