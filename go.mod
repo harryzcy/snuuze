@@ -1,4 +1,4 @@
-module github.com/harryzcy/sailor
+module github.com/harryzcy/latte
 
 go 1.19
 

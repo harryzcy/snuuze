@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/harryzcy/sailor/checker"
-	"github.com/harryzcy/sailor/config"
-	"github.com/harryzcy/sailor/matcher"
+	"github.com/harryzcy/latte/checker"
+	"github.com/harryzcy/latte/config"
+	"github.com/harryzcy/latte/matcher"
 )
 
 func main() {

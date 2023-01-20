@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/harryzcy/sailor/types"
+	"github.com/harryzcy/latte/types"
 	"github.com/stretchr/testify/assert"
 )
 
