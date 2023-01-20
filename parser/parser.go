@@ -3,8 +3,8 @@ package parser
 import (
 	"os"
 
-	"github.com/harryzcy/sailor/matcher"
-	"github.com/harryzcy/sailor/types"
+	"github.com/harryzcy/latte/matcher"
+	"github.com/harryzcy/latte/types"
 )
 
 func Parse(match matcher.Match) ([]types.Dependency, error) {

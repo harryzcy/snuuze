@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/harryzcy/sailor/types"
+	"github.com/harryzcy/latte/types"
 )
 
 var (

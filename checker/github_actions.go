@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/harryzcy/sailor/types"
+	"github.com/harryzcy/latte/types"
 )
 
 func isUpgradable_GitHubActions(dep types.Dependency) (UpgradeInfo, error) {

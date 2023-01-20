@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/harryzcy/sailor/matcher"
-	"github.com/harryzcy/sailor/types"
+	"github.com/harryzcy/latte/matcher"
+	"github.com/harryzcy/latte/types"
 	"github.com/stretchr/testify/assert"
 )
 

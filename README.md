@@ -1,2 +1,2 @@
-# sailor
+# latte
 Lightweight dependency update automations
