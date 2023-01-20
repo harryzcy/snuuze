@@ -30,8 +30,9 @@ func init() {
 }
 
 func isUpgradable_GoMod(dep types.Dependency) (UpgradeInfo, error) {
-	if dep.Indirect || strings.HasPrefix(dep.Version, "v0.0.0-") {
+	if dep.Indirect || strings.HasPrefix(dep.Version, "v0.0.0-") || strings.HasSuffix(dep.Version, "-incompatible") {
 		// don't check major version for indirect dependencies and pseudo versions
+		// and incompatible versions
 		return isUpgradable_GoMod_Minor(dep)
 	}
 
