@@ -21,11 +21,9 @@ jobs:
         go-version: ${{ matrix.go-version }}
 
     - name: Build
-      working-directory: ${{ inputs.working-directory }}
       run: go build -v ./...
 
     - name: Test with coverage
-      working-directory: ${{ inputs.working-directory }}
       run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -33,6 +31,5 @@ jobs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
-        working-directory: ${{ inputs.working-directory }}
         file: ./coverage.txt
 
