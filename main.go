@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/harryzcy/sailor/checker"
 	"github.com/harryzcy/sailor/config"
 	"github.com/harryzcy/sailor/matcher"
-	"github.com/harryzcy/sailor/parser"
 )
 
 func main() {
@@ -21,10 +21,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for _, match := range matches {
-		dependencies, _ := parser.Parse(match)
-		for _, dependency := range dependencies {
-			fmt.Println(dependency)
-		}
+	infos, err := checker.ListUpgrades(matches)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, info := range infos {
+		fmt.Println(info)
 	}
 }

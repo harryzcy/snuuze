@@ -14,6 +14,7 @@ func TestParseGoMod(t *testing.T) {
 	go 1.19
 	
 	require (
+		github.com/docker/docker v20.10.11+incompatible
 		github.com/spf13/viper v1.14.0
 		github.com/stretchr/testify v1.8.1
 	)
@@ -22,6 +23,12 @@ func TestParseGoMod(t *testing.T) {
 		github.com/davecgh/go-spew v1.1.1 // indirect
 	)`)
 	want := []types.Dependency{
+		{
+			Name:           "github.com/docker/docker",
+			Version:        "v20.10.11+incompatible",
+			Indirect:       false,
+			PackageManager: "gomod",
+		},
 		{
 			Name:           "github.com/spf13/viper",
 			Version:        "v1.14.0",
