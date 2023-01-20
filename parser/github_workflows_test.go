@@ -20,10 +20,6 @@ jobs:
   super-linter:
     name: Super Linter
     uses: harryzcy/github-actions/.github/workflows/linter.yml@main
-
-  go-lint:
-    name: Go Lint
-    uses: harryzcy/github-actions/.github/workflows/golangci-lint.yml@main
 `),
 			want: []types.Dependency{
 				{
