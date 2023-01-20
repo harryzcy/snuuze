@@ -27,11 +27,6 @@ jobs:
 					Version:        "main",
 					PackageManager: "github-actions",
 				},
-				{
-					Name:           "harryzcy/github-actions/.github/workflows/golangci-lint.yml",
-					Version:        "main",
-					PackageManager: "github-actions",
-				},
 			},
 		},
 		{
