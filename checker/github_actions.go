@@ -26,7 +26,10 @@ func isUpgradable_GitHubActions(dep types.Dependency) (UpgradeInfo, error) {
 	}
 
 	var source VSCSource = &GitHubSource{}
-	tags, err := source.ListTags(owner, repo)
+	tags, err := source.ListTags(&ListTagsParameters{
+		Owner: owner,
+		Repo:  repo,
+	})
 	if err != nil {
 		return UpgradeInfo{}, err
 	}
