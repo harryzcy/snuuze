@@ -1,6 +1,8 @@
 package checker
 
 import (
+	"fmt"
+
 	"github.com/harryzcy/sailor/matcher"
 	"github.com/harryzcy/sailor/parser"
 	"github.com/harryzcy/sailor/types"
@@ -20,7 +22,9 @@ func ListUpgrades(matches []matcher.Match) ([]UpgradeInfo, error) {
 		for _, dependency := range dependencies {
 			info, err := isUpgradable(dependency)
 			if err != nil {
-				return nil, err
+				// log error and continue
+				fmt.Println(err)
+				continue
 			}
 			if info.Upgradable {
 				result = append(result, info)
