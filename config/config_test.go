@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 		os.Chdir("../")
 	}
 
-	os.Chdir("./testdata")
+	_ = os.Chdir("./testdata")
 	os.Exit(m.Run())
 }
 
