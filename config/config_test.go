@@ -17,7 +17,7 @@ var (
 
 func TestMain(m *testing.M) {
 	if strings.HasSuffix(basepath, "snuuze/config") {
-		os.Chdir("../")
+		_ = os.Chdir("../")
 	}
 
 	_ = os.Chdir("./testdata")
