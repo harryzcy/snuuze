@@ -1,0 +1,6 @@
+version: 1
+
+presets: [base]
+
+rules:
+  - package-manager: go-mod
