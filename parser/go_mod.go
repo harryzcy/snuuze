@@ -3,8 +3,8 @@ package parser
 import (
 	"golang.org/x/mod/modfile"
 
-	"github.com/harryzcy/latte/matcher"
-	"github.com/harryzcy/latte/types"
+	"github.com/harryzcy/snuuze/matcher"
+	"github.com/harryzcy/snuuze/types"
 )
 
 func parseGoMod(path string, data []byte) ([]types.Dependency, error) {

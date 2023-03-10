@@ -1,2 +1,2 @@
-# latte
+# snuuze
 Lightweight dependency update automations

@@ -3,7 +3,7 @@ package parser
 import (
 	"testing"
 
-	"github.com/harryzcy/latte/types"
+	"github.com/harryzcy/snuuze/types"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -5,8 +5,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/harryzcy/latte/matcher"
-	"github.com/harryzcy/latte/types"
+	"github.com/harryzcy/snuuze/matcher"
+	"github.com/harryzcy/snuuze/types"
 )
 
 type minimalGitHubActions struct {
