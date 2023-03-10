@@ -3,9 +3,9 @@ package checker
 import (
 	"fmt"
 
-	"github.com/harryzcy/latte/matcher"
-	"github.com/harryzcy/latte/parser"
-	"github.com/harryzcy/latte/types"
+	"github.com/harryzcy/snuuze/matcher"
+	"github.com/harryzcy/snuuze/parser"
+	"github.com/harryzcy/snuuze/types"
 )
 
 type UpgradeInfo struct {

@@ -7,7 +7,7 @@ import (
 )
 
 func Load() error {
-	viper.SetConfigName("latte")
+	viper.SetConfigName("snuuze")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath(".github")

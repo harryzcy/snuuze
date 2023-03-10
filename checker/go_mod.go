@@ -9,7 +9,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/harryzcy/latte/types"
+	"github.com/harryzcy/snuuze/types"
 )
 
 var (

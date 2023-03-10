@@ -1,4 +1,4 @@
-module github.com/harryzcy/latte
+module github.com/harryzcy/snuuze
 
 go 1.19
 

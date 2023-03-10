@@ -1,6 +1,6 @@
 package types
 
-import "github.com/harryzcy/latte/matcher"
+import "github.com/harryzcy/snuuze/matcher"
 
 type Dependency struct {
 	Name           string
