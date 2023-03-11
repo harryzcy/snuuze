@@ -31,9 +31,9 @@ func ListUpgrades(matches []matcher.Match) ([]types.UpgradeInfo, error) {
 
 func isUpgradable(dep types.Dependency) (types.UpgradeInfo, error) {
 	switch dep.PackageManager {
-	case types.GoMod:
+	case types.PackageManagerGoMod:
 		return isUpgradable_GoMod(dep)
-	case types.GitHubActions:
+	case types.PackageManagerGitHubActions:
 		return isUpgradable_GitHubActions(dep)
 	default:
 		return types.UpgradeInfo{}, nil

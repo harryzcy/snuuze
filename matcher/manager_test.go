@@ -15,19 +15,19 @@ func TestMatchFile(t *testing.T) {
 	}{
 		{
 			path: "go.mod",
-			want: types.GoMod,
+			want: types.PackageManagerGoMod,
 		},
 		{
 			path: "server/go.mod",
-			want: types.GoMod,
+			want: types.PackageManagerGoMod,
 		},
 		{
 			path: ".github/workflows/go.yml",
-			want: types.GitHubActions,
+			want: types.PackageManagerGitHubActions,
 		},
 		{
 			path: ".github/workflows/go.yaml",
-			want: types.GitHubActions,
+			want: types.PackageManagerGitHubActions,
 		},
 		{
 			path: "unknown",
