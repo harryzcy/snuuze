@@ -7,6 +7,7 @@ import (
 	"github.com/harryzcy/snuuze/checker"
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/matcher"
+	"github.com/harryzcy/snuuze/updater"
 )
 
 func main() {
@@ -25,7 +26,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, info := range infos {
-		fmt.Println(info)
-	}
+
+	updater.Update(infos)
 }

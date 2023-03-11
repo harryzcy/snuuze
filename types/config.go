@@ -7,6 +7,7 @@ type Config struct {
 }
 
 type Rule struct {
+	Name            string           `mapstructure:"name"`
 	PackageManagers []PackageManager `mapstructure:"package-managers"`
 	PackageNames    []string         `mapstructure:"package-names"`
 	PackageTypes    []PackageType    `mapstructure:"package-types"` // direct, indirect, all
