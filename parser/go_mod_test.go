@@ -27,25 +27,25 @@ func TestParseGoMod(t *testing.T) {
 			Name:           "github.com/docker/docker",
 			Version:        "v20.10.11+incompatible",
 			Indirect:       false,
-			PackageManager: "gomod",
+			PackageManager: "go-mod",
 		},
 		{
 			Name:           "github.com/spf13/viper",
 			Version:        "v1.14.0",
 			Indirect:       false,
-			PackageManager: "gomod",
+			PackageManager: "go-mod",
 		},
 		{
 			Name:           "github.com/stretchr/testify",
 			Version:        "v1.8.1",
 			Indirect:       false,
-			PackageManager: "gomod",
+			PackageManager: "go-mod",
 		},
 		{
 			Name:           "github.com/davecgh/go-spew",
 			Version:        "v1.1.1",
 			Indirect:       true,
-			PackageManager: "gomod",
+			PackageManager: "go-mod",
 		},
 	}
 
