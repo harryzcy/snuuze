@@ -5,7 +5,6 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/harryzcy/snuuze/matcher"
 	"github.com/harryzcy/snuuze/types"
 )
 
@@ -72,6 +71,6 @@ func parseWorkflow(uses string) (types.Dependency, bool) {
 	return types.Dependency{
 		Name:           name,
 		Version:        version,
-		PackageManager: matcher.GitHubActions,
+		PackageManager: types.PackageManagerGitHubActions,
 	}, true
 }

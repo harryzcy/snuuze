@@ -4,29 +4,30 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/harryzcy/snuuze/types"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMatchFile(t *testing.T) {
 	tests := []struct {
 		path string
-		want PackageManager
+		want types.PackageManager
 	}{
 		{
 			path: "go.mod",
-			want: GoMod,
+			want: types.GoMod,
 		},
 		{
 			path: "server/go.mod",
-			want: GoMod,
+			want: types.GoMod,
 		},
 		{
 			path: ".github/workflows/go.yml",
-			want: GitHubActions,
+			want: types.GitHubActions,
 		},
 		{
 			path: ".github/workflows/go.yaml",
-			want: GitHubActions,
+			want: types.GitHubActions,
 		},
 		{
 			path: "unknown",

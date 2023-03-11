@@ -4,23 +4,12 @@ import (
 	"fmt"
 
 	"github.com/spf13/viper"
+
+	"github.com/harryzcy/snuuze/types"
 )
 
-type Config struct {
-	Version string
-	Presets []string
-	Rules   []Rule
-}
-
-type Rule struct {
-	PackageManager string
-	PackageName    string
-	PackageType    string // direct, indirect, production, development, all
-	Labels         []string
-}
-
 var (
-	config Config
+	config types.Config
 )
 
 func Load() error {
@@ -40,10 +29,10 @@ func Load() error {
 	return nil
 }
 
-func GetConfig() Config {
+func GetConfig() types.Config {
 	return config
 }
 
-func GetRules() []Rule {
+func GetRules() []types.Rule {
 	return config.Rules
 }

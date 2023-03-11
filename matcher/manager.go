@@ -3,28 +3,23 @@ package matcher
 import (
 	"path/filepath"
 	"strings"
+
+	"github.com/harryzcy/snuuze/types"
 )
 
 type Match struct {
 	File           string
-	PackageManager PackageManager
+	PackageManager types.PackageManager
 }
 
-type PackageManager string
-
-const (
-	GoMod         PackageManager = "gomod"
-	GitHubActions PackageManager = "github-actions"
-)
-
-func matchFile(path string) (PackageManager, bool) {
+func matchFile(path string) (types.PackageManager, bool) {
 	filename := filepath.Base(path)
 	if filename == "go.mod" {
-		return GoMod, true
+		return types.PackageManagerGoMod, true
 	}
 
 	if strings.HasPrefix(path, ".github/workflows") && (strings.HasSuffix(path, ".yml") || strings.HasSuffix(path, ".yaml")) {
-		return GitHubActions, true
+		return types.PackageManagerGitHubActions, true
 	}
 
 	return "", false

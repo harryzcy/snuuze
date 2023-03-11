@@ -3,7 +3,6 @@ package parser
 import (
 	"golang.org/x/mod/modfile"
 
-	"github.com/harryzcy/snuuze/matcher"
 	"github.com/harryzcy/snuuze/types"
 )
 
@@ -19,7 +18,7 @@ func parseGoMod(path string, data []byte) ([]types.Dependency, error) {
 			Name:           require.Mod.Path,
 			Version:        require.Mod.Version,
 			Indirect:       require.Indirect,
-			PackageManager: matcher.GoMod,
+			PackageManager: types.PackageManagerGoMod,
 		})
 	}
 

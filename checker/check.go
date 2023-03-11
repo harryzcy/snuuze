@@ -8,14 +8,8 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
-type UpgradeInfo struct {
-	Dependency types.Dependency
-	Upgradable bool
-	ToVersion  string
-}
-
-func ListUpgrades(matches []matcher.Match) ([]UpgradeInfo, error) {
-	result := []UpgradeInfo{}
+func ListUpgrades(matches []matcher.Match) ([]types.UpgradeInfo, error) {
+	result := []types.UpgradeInfo{}
 
 	for _, match := range matches {
 		dependencies, _ := parser.Parse(match)
@@ -35,13 +29,13 @@ func ListUpgrades(matches []matcher.Match) ([]UpgradeInfo, error) {
 	return result, nil
 }
 
-func isUpgradable(dep types.Dependency) (UpgradeInfo, error) {
+func isUpgradable(dep types.Dependency) (types.UpgradeInfo, error) {
 	switch dep.PackageManager {
-	case matcher.GoMod:
+	case types.GoMod:
 		return isUpgradable_GoMod(dep)
-	case matcher.GitHubActions:
+	case types.GitHubActions:
 		return isUpgradable_GitHubActions(dep)
 	default:
-		return UpgradeInfo{}, nil
+		return types.UpgradeInfo{}, nil
 	}
 }

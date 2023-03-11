@@ -32,7 +32,7 @@ type GoListOutput struct {
 	GoMod string
 }
 
-func isUpgradable_GoMod(dep types.Dependency) (UpgradeInfo, error) {
+func isUpgradable_GoMod(dep types.Dependency) (types.UpgradeInfo, error) {
 	// run `go list -u -m -json <module>` to get the latest version]
 	cmd := exec.Command("go", "list", "-u", "-m", "-json", dep.Name)
 	cmd.Env = []string{
@@ -55,13 +55,13 @@ func isUpgradable_GoMod(dep types.Dependency) (UpgradeInfo, error) {
 	select {
 	case <-time.After(DEFAULT_TIMEOUT):
 		if err := cmd.Process.Kill(); err != nil {
-			return UpgradeInfo{}, err
+			return types.UpgradeInfo{}, err
 		}
-		return UpgradeInfo{}, ErrRequestFailed
+		return types.UpgradeInfo{}, ErrRequestFailed
 	case err := <-done:
 		if err != nil {
 			fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
-			return UpgradeInfo{}, err
+			return types.UpgradeInfo{}, err
 		}
 	}
 
@@ -73,18 +73,18 @@ func isUpgradable_GoMod(dep types.Dependency) (UpgradeInfo, error) {
 	info := GoListOutput{}
 	err := json.Unmarshal([]byte(output), &info)
 	if err != nil {
-		return UpgradeInfo{}, err
+		return types.UpgradeInfo{}, err
 	}
 
 	if info.Update == nil {
 		// no update
-		return UpgradeInfo{
+		return types.UpgradeInfo{
 			Dependency: dep,
 			Upgradable: false,
 		}, nil
 	}
 
-	return UpgradeInfo{
+	return types.UpgradeInfo{
 		Dependency: dep,
 		Upgradable: true,
 		ToVersion:  info.Update.Version,

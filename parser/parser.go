@@ -14,9 +14,9 @@ func Parse(match matcher.Match) ([]types.Dependency, error) {
 	}
 
 	switch match.PackageManager {
-	case matcher.GoMod:
+	case types.PackageManagerGoMod:
 		return parseGoMod(match.File, data)
-	case matcher.GitHubActions:
+	case types.PackageManagerGitHubActions:
 		return parseGitHubActions(data)
 	}
 
