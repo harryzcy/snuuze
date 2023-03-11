@@ -1,16 +1,16 @@
 package types
 
 type Config struct {
-	Version string
-	Presets []string
-	Rules   []Rule
+	Version string   `mapstructure:"version"`
+	Presets []string `mapstructure:"presets"`
+	Rules   []Rule   `mapstructure:"rules"`
 }
 
 type Rule struct {
-	PackageManagers []PackageManager
-	PackageNames    []string
-	PackageTypes    []PackageType // direct, indirect, all
-	Labels          []string
+	PackageManagers []PackageManager `mapstructure:"package-managers"`
+	PackageNames    []string         `mapstructure:"package-names"`
+	PackageTypes    []PackageType    `mapstructure:"package-types"` // direct, indirect, all
+	Labels          []string         `mapstructure:"labels"`        // github labels
 }
 
 type PackageType string
