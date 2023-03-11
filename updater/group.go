@@ -5,13 +5,15 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
+var getRules = config.GetRules
+
 type RuleGroup struct {
 	Rule  types.Rule
 	Infos []types.UpgradeInfo
 }
 
 func groupUpdates(infos []types.UpgradeInfo) []RuleGroup {
-	rules := config.GetRules()
+	rules := getRules()
 	groups := make([]RuleGroup, 0)
 	for _, rule := range rules {
 		group := RuleGroup{
