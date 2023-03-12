@@ -34,8 +34,9 @@ func Update(infos []types.UpgradeInfo) {
 }
 
 func updateDependencies(infos []types.UpgradeInfo, branchName string) error {
+	base := getDefaultBranch()
 	_, err := cmdutil.RunCommand(cmdutil.CommandInputs{
-		Command: []string{"git", "checkout", "-b", branchName},
+		Command: []string{"git", "checkout", "-b", branchName, base},
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create branch %s: %s", branchName, err)
