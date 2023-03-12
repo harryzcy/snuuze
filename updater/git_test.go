@@ -7,6 +7,6 @@ import (
 )
 
 func TestGetDefaultBranch(t *testing.T) {
-	branch := getDefaultBranch()
+	branch := getDefaultBranch(".")
 	assert.Equal(t, "main", branch)
 }

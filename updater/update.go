@@ -8,12 +8,12 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
-func Update(infos []types.UpgradeInfo) {
+func Update(repoDir string, infos []types.UpgradeInfo) {
 	groups := groupUpdates(infos)
 	for _, group := range groups {
 		branchName, ok := generateBranchName(group)
 		if ok {
-			err := updateDependencies(group.Infos, branchName)
+			err := updateDependencies(repoDir, group.Infos, branchName)
 			if err != nil {
 				fmt.Println(err)
 				continue
@@ -23,7 +23,7 @@ func Update(infos []types.UpgradeInfo) {
 			for _, info := range group.Infos {
 				branchName := formateBranchName(info.Dependency.Name)
 				infos := []types.UpgradeInfo{info}
-				err := updateDependencies(infos, branchName)
+				err := updateDependencies(repoDir, infos, branchName)
 				if err != nil {
 					fmt.Println(err)
 					continue
@@ -33,13 +33,15 @@ func Update(infos []types.UpgradeInfo) {
 	}
 }
 
-func updateDependencies(infos []types.UpgradeInfo, branchName string) error {
-	base := getDefaultBranch()
-	_, err := cmdutil.RunCommand(cmdutil.CommandInputs{
-		Command: []string{"git", "checkout", "-b", branchName, base},
+func updateDependencies(repoDir string, infos []types.UpgradeInfo, branchName string) error {
+	base := getDefaultBranch(repoDir)
+	fmt.Println("Creating branch", branchName, "from", base)
+
+	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+		Command: []string{"git", "-C", repoDir, "checkout", "-b", branchName, base},
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create branch %s: %s", branchName, err)
+		return fmt.Errorf("failed to create branch %s: %s\n%s", branchName, err, output.Stderr.String())
 	}
 
 	err = delegateUpdate(infos)

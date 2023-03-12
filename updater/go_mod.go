@@ -38,7 +38,6 @@ func postGoMod(cache *Cache) error {
 
 	for _, file := range goModFiles {
 		dir := filepath.Dir(file)
-		fmt.Println("go mod tidy", dir)
 		output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
 			Command: []string{"go", "mod", "tidy"},
 			Dir:     dir,
@@ -46,9 +45,9 @@ func postGoMod(cache *Cache) error {
 				"GOPATH": os.Getenv("GOPATH"),
 			},
 		})
-		fmt.Println(output.Stdout.String())
-		fmt.Println(output.Stderr.String())
 		if err != nil {
+			fmt.Println("failed to run go mod tidy in", dir)
+			fmt.Println(output.Stderr.String())
 			return fmt.Errorf("failed to run go mod tidy in %s: %s", dir, err)
 		}
 	}
