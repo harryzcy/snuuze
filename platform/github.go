@@ -13,19 +13,26 @@ import (
 
 var GITHUB_TOKEN = os.Getenv("GITHUB_TOKEN")
 
-type GitHubClient struct{}
-
-func NewGitHubClient() *GitHubClient {
-	return &GitHubClient{}
+type GitHubClient struct {
+	client *githubv4.Client
 }
 
-func (c *GitHubClient) ListTags(params *ListTagsInput) ([]string, error) {
+func NewGitHubClient() *GitHubClient {
+	return NewGitHubClientWithToken(GITHUB_TOKEN)
+}
+
+func NewGitHubClientWithToken(token string) *GitHubClient {
 	src := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: GITHUB_TOKEN},
 	)
 	httpClient := oauth2.NewClient(context.Background(), src)
 	client := githubv4.NewClient(httpClient)
+	return &GitHubClient{
+		client: client,
+	}
+}
 
+func (c *GitHubClient) ListTags(params *ListTagsInput) ([]string, error) {
 	var query struct {
 		Repository struct {
 			Refs struct {
@@ -50,7 +57,7 @@ func (c *GitHubClient) ListTags(params *ListTagsInput) ([]string, error) {
 		"refPrefix": githubv4.String(refPrefix),
 	}
 
-	err := client.Query(context.Background(), &query, variables)
+	err := c.client.Query(context.Background(), &query, variables)
 	if err != nil {
 		return nil, err
 	}
