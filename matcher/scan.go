@@ -13,7 +13,12 @@ const (
 func Scan() ([]Match, error) {
 	matches := make([]Match, 0)
 
-	err := filepath.WalkDir(rootDirectory, func(path string, d fs.DirEntry, err error) error {
+	dir, err := filepath.Abs(rootDirectory)
+	if err != nil {
+		return nil, err
+	}
+
+	err = filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
 			if shouldIgnore(path) {
 				return filepath.SkipDir

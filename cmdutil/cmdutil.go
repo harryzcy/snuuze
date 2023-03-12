@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	DEFAULT_TIMEOUT = 10 * time.Second
+	DEFAULT_TIMEOUT = 100 * time.Second
 )
 
 var (
@@ -17,6 +17,7 @@ var (
 
 type CommandInputs struct {
 	Command []string
+	Dir     string
 	Env     map[string]string
 	Timeout time.Duration
 }
@@ -35,6 +36,7 @@ type CommandOutput struct {
 
 func RunCommand(inputs CommandInputs) (*CommandOutput, error) {
 	cmd := exec.Command(inputs.Command[0], inputs.Command[1:]...)
+	cmd.Dir = inputs.Dir
 	cmd.Env = []string{}
 	for key, value := range inputs.Env {
 		cmd.Env = append(cmd.Env, key+"="+value)
@@ -57,12 +59,9 @@ func RunCommand(inputs CommandInputs) (*CommandOutput, error) {
 		}
 		return nil, ErrorTimeout
 	case err := <-done:
-		if err != nil {
-			return nil, err
-		}
 		return &CommandOutput{
 			Stdout: out,
 			Stderr: stderr,
-		}, nil
+		}, err
 	}
 }
