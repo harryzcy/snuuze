@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/harryzcy/snuuze/platform"
 	"github.com/harryzcy/snuuze/types"
 )
 
@@ -25,8 +26,8 @@ func isUpgradable_GitHubActions(dep types.Dependency) (types.UpgradeInfo, error)
 		return info, nil
 	}
 
-	var source VSCSource = &GitHubSource{}
-	tags, err := source.ListTags(&ListTagsParameters{
+	var client platform.Client = &platform.GitHubClient{}
+	tags, err := client.ListTags(&platform.ListTagsInput{
 		Owner: owner,
 		Repo:  repo,
 	})
