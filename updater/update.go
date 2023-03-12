@@ -11,9 +11,9 @@ import (
 func Update(repoDir string, infos []types.UpgradeInfo) {
 	groups := groupUpdates(infos)
 	for _, group := range groups {
-		branchName, ok := generateBranchName(group)
+		commitInfo, ok := prepareCommit(group)
 		if ok {
-			err := updateDependencies(repoDir, group.Infos, branchName)
+			err := updateDependencies(repoDir, group.Infos, commitInfo)
 			if err != nil {
 				fmt.Println(err)
 				continue
@@ -21,9 +21,8 @@ func Update(repoDir string, infos []types.UpgradeInfo) {
 		} else {
 			// create branch for each info
 			for _, info := range group.Infos {
-				branchName := formateBranchName(info.Dependency.Name)
-				infos := []types.UpgradeInfo{info}
-				err := updateDependencies(repoDir, infos, branchName)
+				commitInfo := prepareCommitByUpgradeInfo(info)
+				err := updateDependencies(repoDir, []types.UpgradeInfo{info}, commitInfo)
 				if err != nil {
 					fmt.Println(err)
 					continue
@@ -33,15 +32,15 @@ func Update(repoDir string, infos []types.UpgradeInfo) {
 	}
 }
 
-func updateDependencies(repoDir string, infos []types.UpgradeInfo, branchName string) error {
+func updateDependencies(repoDir string, infos []types.UpgradeInfo, info *commitInfo) error {
 	base := getDefaultBranch(repoDir)
-	fmt.Println("Creating branch", branchName, "from", base)
+	fmt.Println("Creating branch", info.branchName, "from", base)
 
 	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
-		Command: []string{"git", "-C", repoDir, "checkout", "-b", branchName, base},
+		Command: []string{"git", "-C", repoDir, "checkout", "-b", info.branchName, base},
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create branch %s: %s\n%s", branchName, err, output.Stderr.String())
+		return fmt.Errorf("failed to create branch %s: %s\n%s", info.branchName, err, output.Stderr.String())
 	}
 
 	err = delegateUpdate(infos)
@@ -49,19 +48,44 @@ func updateDependencies(repoDir string, infos []types.UpgradeInfo, branchName st
 		return fmt.Errorf("failed to update dependencies: %s", err)
 	}
 
+	err = commitChanges(repoDir, info.branchName, info.message)
+	if err != nil {
+		return fmt.Errorf("failed to commit changes: %s", err)
+	}
+
+	err = pushBranch(repoDir, info.branchName)
+	if err != nil {
+		return fmt.Errorf("failed to push branch: %s", err)
+	}
+
 	return nil
 }
 
-func generateBranchName(group RuleGroup) (string, bool) {
+type commitInfo struct {
+	branchName string
+	message    string
+}
+
+func prepareCommit(group RuleGroup) (*commitInfo, bool) {
 	if group.Rule.Name != "" {
-		return formateBranchName(group.Rule.Name), true
+		return &commitInfo{
+			branchName: formateBranchName(group.Rule.Name),
+			message:    "Update " + group.Rule.Name,
+		}, true
 	}
 
 	if len(group.Infos) == 1 {
-		return formateBranchName(group.Infos[0].Dependency.Name), true
+		return prepareCommitByUpgradeInfo(group.Infos[0]), true
 	}
 
-	return "", false
+	return nil, false
+}
+
+func prepareCommitByUpgradeInfo(info types.UpgradeInfo) *commitInfo {
+	return &commitInfo{
+		branchName: formateBranchName(info.Dependency.Name),
+		message:    "Update " + info.Dependency.Name + " to " + info.ToVersion,
+	}
 }
 
 func formateBranchName(name string) string {

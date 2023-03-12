@@ -1,6 +1,7 @@
 package updater
 
 import (
+	"os"
 	"strings"
 
 	"github.com/harryzcy/snuuze/cmdutil"
@@ -28,9 +29,30 @@ func getDefaultBranch(repoDir string) string {
 	return branch
 }
 
+func commitChanges(repoDir, branchName, message string) error {
+	_, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+		Command: []string{"git", "-C", repoDir, "add", "."},
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = cmdutil.RunCommand(cmdutil.CommandInputs{
+		Command: []string{"git", "-C", repoDir, "commit", "-m", message},
+		Env: map[string]string{
+			"HOME": os.Getenv("HOME"), // required for git to find the user's config
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func pushBranch(repoDir, branchName string) error {
 	_, err := cmdutil.RunCommand(cmdutil.CommandInputs{
-		Command: []string{"git", "-C", repoDir, "push", "origin", branchName},
+		Command: []string{"git", "-C", repoDir, "push", "origin", branchName, "--force"},
 	})
 	if err != nil {
 		return err

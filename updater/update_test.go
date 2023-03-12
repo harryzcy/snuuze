@@ -1,15 +1,17 @@
 package updater
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/harryzcy/snuuze/types"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestGenerateBranchName(t *testing.T) {
+func TestPrepareCommit(t *testing.T) {
 	tests := []struct {
 		group RuleGroup
-		want  string
+		want  *commitInfo
 		ok    bool
 	}{
 		{
@@ -19,8 +21,11 @@ func TestGenerateBranchName(t *testing.T) {
 				},
 				Infos: []types.UpgradeInfo{},
 			},
-			want: "snuuze/test",
-			ok:   true,
+			want: &commitInfo{
+				branchName: "snuuze/test",
+				message:    "Update test",
+			},
+			ok: true,
 		},
 		{
 			group: RuleGroup{
@@ -32,11 +37,15 @@ func TestGenerateBranchName(t *testing.T) {
 						Dependency: types.Dependency{
 							Name: "github.com/aws/aws-sdk-go-v2",
 						},
+						ToVersion: "v1.0.0",
 					},
 				},
 			},
-			want: "snuuze/github.com-aws-aws-sdk-go-v2",
-			ok:   true,
+			want: &commitInfo{
+				branchName: "snuuze/github.com-aws-aws-sdk-go-v2",
+				message:    "Update github.com/aws/aws-sdk-go-v2 to v1.0.0",
+			},
+			ok: true,
 		},
 		{
 			group: RuleGroup{
@@ -56,15 +65,16 @@ func TestGenerateBranchName(t *testing.T) {
 					},
 				},
 			},
-			want: "",
+			want: nil,
 			ok:   false,
 		},
 	}
 
 	for i, test := range tests {
-		got, ok := generateBranchName(test.group)
-		if got != test.want || ok != test.ok {
-			t.Errorf("test %d: got %s, %t, want %s, %t", i, got, ok, test.want, test.ok)
-		}
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			got, ok := prepareCommit(test.group)
+			assert.Equal(t, test.ok, ok)
+			assert.Equal(t, test.want, got)
+		})
 	}
 }
