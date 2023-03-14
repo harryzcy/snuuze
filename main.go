@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -32,6 +33,11 @@ func main() {
 	infos, err := checker.ListUpgrades(matches)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if len(infos) == 0 {
+		fmt.Println("No updates found")
+		return
 	}
 
 	updater.Update(gitURL, repoPath, infos)
