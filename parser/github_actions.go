@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -21,7 +22,7 @@ type step struct {
 	Uses string
 }
 
-func parseGitHubActions(data []byte) ([]types.Dependency, error) {
+func parseGitHubActions(path string, data []byte) ([]types.Dependency, error) {
 	var content minimalGitHubActions
 	err := yaml.Unmarshal(data, &content)
 	if err != nil {
@@ -32,7 +33,7 @@ func parseGitHubActions(data []byte) ([]types.Dependency, error) {
 	for _, job := range content.Jobs {
 		if job.Uses != "" {
 			// reusable workflow
-			if dependency, ok := parseWorkflow(job.Uses); ok {
+			if dependency, ok := parseWorkflow(path, job.Uses); ok {
 				dependencies = append(dependencies, dependency)
 				continue
 			}
@@ -40,7 +41,8 @@ func parseGitHubActions(data []byte) ([]types.Dependency, error) {
 
 		for _, step := range job.Steps {
 			if step.Uses != "" {
-				dependency, ok := parseWorkflow(step.Uses)
+				dependency, ok := parseWorkflow(path, step.Uses)
+				fmt.Println(dependency)
 				if ok {
 					dependencies = append(dependencies, dependency)
 				}
@@ -51,7 +53,7 @@ func parseGitHubActions(data []byte) ([]types.Dependency, error) {
 	return dependencies, nil
 }
 
-func parseWorkflow(uses string) (types.Dependency, bool) {
+func parseWorkflow(path, uses string) (types.Dependency, bool) {
 	if uses == "" {
 		return types.Dependency{}, false
 	}
@@ -69,6 +71,7 @@ func parseWorkflow(uses string) (types.Dependency, bool) {
 	}
 
 	return types.Dependency{
+		File:           path,
 		Name:           name,
 		Version:        version,
 		PackageManager: types.PackageManagerGitHubActions,

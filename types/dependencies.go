@@ -6,7 +6,7 @@ type Dependency struct {
 	Version        string
 	Indirect       bool
 	PackageManager PackageManager
-	Position       Position
+	Position       Position // position is only used for some package managers
 	Extra          map[string]interface{}
 }
 

@@ -17,7 +17,7 @@ func Parse(match matcher.Match) ([]types.Dependency, error) {
 	case types.PackageManagerGoMod:
 		return parseGoMod(match.File, data)
 	case types.PackageManagerGitHubActions:
-		return parseGitHubActions(data)
+		return parseGitHubActions(match.File, data)
 	}
 
 	return nil, nil

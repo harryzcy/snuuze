@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
+	"strings"
 )
 
 // Scan scans all the files and returns those containing dependencies
@@ -19,7 +20,7 @@ func Scan(dir string) ([]Match, error) {
 			return nil
 		}
 
-		if packageManager, ok := matchFile(path); ok {
+		if packageManager, ok := matchFile(dir, path); ok {
 			matches = append(matches, Match{
 				File:           path,
 				PackageManager: packageManager,
@@ -32,5 +33,5 @@ func Scan(dir string) ([]Match, error) {
 }
 
 func shouldIgnore(path string) bool {
-	return path == ".git"
+	return strings.HasSuffix(path, ".git")
 }

@@ -37,7 +37,7 @@ func TestMatchFile(t *testing.T) {
 
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			got, ok := matchFile(test.path)
+			got, ok := matchFile("", test.path)
 			assert.Equal(t, test.want, got)
 			assert.Equal(t, test.want != "", ok)
 		})

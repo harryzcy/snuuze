@@ -26,7 +26,7 @@ func isUpgradable_GitHubActions(dep types.Dependency) (types.UpgradeInfo, error)
 		return info, nil
 	}
 
-	var client platform.Client = &platform.GitHubClient{}
+	client := platform.NewGitHubClient()
 	tags, err := client.ListTags(&platform.ListTagsInput{
 		Owner: owner,
 		Repo:  repo,

@@ -12,13 +12,17 @@ type Match struct {
 	PackageManager types.PackageManager
 }
 
-func matchFile(path string) (types.PackageManager, bool) {
+func matchFile(dir, path string) (types.PackageManager, bool) {
 	filename := filepath.Base(path)
+
+	relativePath := strings.TrimPrefix(path, dir)
+	relativePath = strings.TrimPrefix(relativePath, "/")
+
 	if filename == "go.mod" {
 		return types.PackageManagerGoMod, true
 	}
 
-	if strings.HasPrefix(path, ".github/workflows") && (strings.HasSuffix(path, ".yml") || strings.HasSuffix(path, ".yaml")) {
+	if strings.HasPrefix(relativePath, ".github/workflows") && (strings.HasSuffix(relativePath, ".yml") || strings.HasSuffix(relativePath, ".yaml")) {
 		return types.PackageManagerGitHubActions, true
 	}
 
