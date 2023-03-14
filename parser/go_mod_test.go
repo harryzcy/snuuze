@@ -24,28 +24,52 @@ func TestParseGoMod(t *testing.T) {
 	)`)
 	want := []types.Dependency{
 		{
+			File:           "go.mod",
 			Name:           "github.com/docker/docker",
 			Version:        "v20.10.11+incompatible",
 			Indirect:       false,
-			PackageManager: "gomod",
+			PackageManager: "go-mod",
+			Position: types.Position{
+				Line:      6,
+				StartByte: 64,
+				EndByte:   111,
+			},
 		},
 		{
+			File:           "go.mod",
 			Name:           "github.com/spf13/viper",
 			Version:        "v1.14.0",
 			Indirect:       false,
-			PackageManager: "gomod",
+			PackageManager: "go-mod",
+			Position: types.Position{
+				Line:      7,
+				StartByte: 114,
+				EndByte:   144,
+			},
 		},
 		{
+			File:           "go.mod",
 			Name:           "github.com/stretchr/testify",
 			Version:        "v1.8.1",
 			Indirect:       false,
-			PackageManager: "gomod",
+			PackageManager: "go-mod",
+			Position: types.Position{
+				Line:      8,
+				StartByte: 147,
+				EndByte:   181,
+			},
 		},
 		{
+			File:           "go.mod",
 			Name:           "github.com/davecgh/go-spew",
 			Version:        "v1.1.1",
 			Indirect:       true,
-			PackageManager: "gomod",
+			PackageManager: "go-mod",
+			Position: types.Position{
+				Line:      12,
+				StartByte: 200,
+				EndByte:   233,
+			},
 		},
 	}
 

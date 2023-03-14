@@ -1,14 +1,13 @@
 package checker
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
-	"os/exec"
+	"path/filepath"
 	"time"
 
+	"github.com/harryzcy/snuuze/cmdutil"
 	"github.com/harryzcy/snuuze/types"
 )
 
@@ -32,59 +31,43 @@ type GoListOutput struct {
 	GoMod string
 }
 
-func isUpgradable_GoMod(dep types.Dependency) (UpgradeInfo, error) {
-	// run `go list -u -m -json <module>` to get the latest version]
-	cmd := exec.Command("go", "list", "-u", "-m", "-json", dep.Name)
-	cmd.Env = []string{
-		"GOPATH=" + os.Getenv("GOPATH"),
+func isUpgradable_GoMod(dep types.Dependency) (types.UpgradeInfo, error) {
+	// run `go list -u -m -json <dep>` to get the latest version
+	envs := map[string]string{
+		"GOPATH": os.Getenv("GOPATH"),
 	}
 	if GOPROXY != "" {
-		cmd.Env = append(cmd.Env, "GOPROXY="+GOPROXY)
+		envs["GOPROXY"] = GOPROXY
 	}
 
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-
-	// set timeout
-	done := make(chan error, 1)
-	go func() {
-		done <- cmd.Run()
-	}()
-	select {
-	case <-time.After(DEFAULT_TIMEOUT):
-		if err := cmd.Process.Kill(); err != nil {
-			return UpgradeInfo{}, err
-		}
-		return UpgradeInfo{}, ErrRequestFailed
-	case err := <-done:
-		if err != nil {
-			fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
-			return UpgradeInfo{}, err
-		}
+	dir := filepath.Dir(dep.File)
+	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+		Command: []string{"go", "list", "-u", "-m", "-json", dep.Name},
+		Env:     envs,
+		Dir:     dir,
+	})
+	if err != nil {
+		return types.UpgradeInfo{}, err
 	}
 
 	// parse the output
 	// e.g. github.com/shurcooL/githubv4 v0.0.0-20221229060216-a8d4a561cc93 [v0.0.0-20230305132112-efb623903184]
 	// e.g. github.com/shurcooL/githubv4 v0.0.0-20221229060216-a8d4a561cc93
-	output := out.String()
-
 	info := GoListOutput{}
-	err := json.Unmarshal([]byte(output), &info)
+	err = json.Unmarshal(output.Stdout.Bytes(), &info)
 	if err != nil {
-		return UpgradeInfo{}, err
+		return types.UpgradeInfo{}, err
 	}
 
 	if info.Update == nil {
 		// no update
-		return UpgradeInfo{
+		return types.UpgradeInfo{
 			Dependency: dep,
 			Upgradable: false,
 		}, nil
 	}
 
-	return UpgradeInfo{
+	return types.UpgradeInfo{
 		Dependency: dep,
 		Upgradable: true,
 		ToVersion:  info.Update.Version,

@@ -4,29 +4,30 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/harryzcy/snuuze/types"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMatchFile(t *testing.T) {
 	tests := []struct {
 		path string
-		want PackageManager
+		want types.PackageManager
 	}{
 		{
 			path: "go.mod",
-			want: GoMod,
+			want: types.PackageManagerGoMod,
 		},
 		{
 			path: "server/go.mod",
-			want: GoMod,
+			want: types.PackageManagerGoMod,
 		},
 		{
 			path: ".github/workflows/go.yml",
-			want: GitHubActions,
+			want: types.PackageManagerGitHubActions,
 		},
 		{
 			path: ".github/workflows/go.yaml",
-			want: GitHubActions,
+			want: types.PackageManagerGitHubActions,
 		},
 		{
 			path: "unknown",
@@ -36,7 +37,7 @@ func TestMatchFile(t *testing.T) {
 
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			got, ok := matchFile(test.path)
+			got, ok := matchFile("", test.path)
 			assert.Equal(t, test.want, got)
 			assert.Equal(t, test.want != "", ok)
 		})

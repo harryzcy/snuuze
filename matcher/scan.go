@@ -1,19 +1,18 @@
 package matcher
 
 import (
+	"fmt"
 	"io/fs"
 	"path/filepath"
-)
-
-const (
-	rootDirectory = "."
+	"strings"
 )
 
 // Scan scans all the files and returns those containing dependencies
-func Scan() ([]Match, error) {
+func Scan(dir string) ([]Match, error) {
+	fmt.Println("Scanning files in", dir)
 	matches := make([]Match, 0)
 
-	err := filepath.WalkDir(rootDirectory, func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
 			if shouldIgnore(path) {
 				return filepath.SkipDir
@@ -21,7 +20,7 @@ func Scan() ([]Match, error) {
 			return nil
 		}
 
-		if packageManager, ok := matchFile(path); ok {
+		if packageManager, ok := matchFile(dir, path); ok {
 			matches = append(matches, Match{
 				File:           path,
 				PackageManager: packageManager,
@@ -34,5 +33,5 @@ func Scan() ([]Match, error) {
 }
 
 func shouldIgnore(path string) bool {
-	return path == ".git"
+	return strings.HasSuffix(path, ".git")
 }

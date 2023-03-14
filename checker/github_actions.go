@@ -4,16 +4,17 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/harryzcy/snuuze/platform"
 	"github.com/harryzcy/snuuze/types"
 )
 
-func isUpgradable_GitHubActions(dep types.Dependency) (UpgradeInfo, error) {
+func isUpgradable_GitHubActions(dep types.Dependency) (types.UpgradeInfo, error) {
 	owner, repo, err := parseRepo(dep.Name)
 	if err != nil {
-		return UpgradeInfo{}, err
+		return types.UpgradeInfo{}, err
 	}
 
-	info := UpgradeInfo{
+	info := types.UpgradeInfo{
 		Dependency: dep,
 	}
 	if isSha(dep.Version) {
@@ -25,13 +26,13 @@ func isUpgradable_GitHubActions(dep types.Dependency) (UpgradeInfo, error) {
 		return info, nil
 	}
 
-	var source VSCSource = &GitHubSource{}
-	tags, err := source.ListTags(&ListTagsParameters{
+	client := platform.NewGitHubClient()
+	tags, err := client.ListTags(&platform.ListTagsInput{
 		Owner: owner,
 		Repo:  repo,
 	})
 	if err != nil {
-		return UpgradeInfo{}, err
+		return types.UpgradeInfo{}, err
 	}
 	latest := getLatestTag(tags, dep.Version)
 	if latest != dep.Version {

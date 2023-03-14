@@ -10,11 +10,13 @@ import (
 
 func TestParseGitHubActions(t *testing.T) {
 	tests := []struct {
+		path string
 		data []byte
 		want []types.Dependency
 		err  error
 	}{
 		{
+			path: ".github/workflows/lint.yml",
 			data: []byte(`
 jobs:
   super-linter:
@@ -23,6 +25,7 @@ jobs:
 `),
 			want: []types.Dependency{
 				{
+					File:           ".github/workflows/lint.yml",
 					Name:           "harryzcy/github-actions/.github/workflows/linter.yml",
 					Version:        "main",
 					PackageManager: "github-actions",
@@ -30,6 +33,7 @@ jobs:
 			},
 		},
 		{
+			path: ".github/workflows/release-drafter.yml",
 			data: []byte(`
 jobs:
   update_release_draft:
@@ -43,6 +47,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}`),
 			want: []types.Dependency{
 				{
+					File:           ".github/workflows/release-drafter.yml",
 					Name:           "release-drafter/release-drafter",
 					Version:        "v5",
 					PackageManager: "github-actions",
@@ -57,7 +62,7 @@ jobs:
 
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			got, err := parseGitHubActions(test.data)
+			got, err := parseGitHubActions(test.path, test.data)
 			assert.Equal(t, test.err, err)
 			assert.Equal(t, test.want, got)
 		})
