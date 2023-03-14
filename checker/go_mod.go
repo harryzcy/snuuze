@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/harryzcy/snuuze/cmdutil"
@@ -38,9 +39,12 @@ func isUpgradable_GoMod(dep types.Dependency) (types.UpgradeInfo, error) {
 	if GOPROXY != "" {
 		envs["GOPROXY"] = GOPROXY
 	}
+
+	dir := filepath.Dir(dep.File)
 	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
 		Command: []string{"go", "list", "-u", "-m", "-json", dep.Name},
 		Env:     envs,
+		Dir:     dir,
 	})
 	if err != nil {
 		return types.UpgradeInfo{}, err

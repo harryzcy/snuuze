@@ -1,13 +1,16 @@
 package parser
 
 import (
+	"path/filepath"
+
 	"golang.org/x/mod/modfile"
 
 	"github.com/harryzcy/snuuze/types"
 )
 
 func parseGoMod(path string, data []byte) ([]types.Dependency, error) {
-	file, err := modfile.Parse(path, data, nil)
+	filename := filepath.Base(path)
+	file, err := modfile.Parse(filename, data, nil)
 	if err != nil {
 		return nil, err
 	}
