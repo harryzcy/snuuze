@@ -18,13 +18,13 @@ func main() {
 		return
 	}
 
-	root, err := prepareRepo()
+	gitURL, repoPath, err := prepareRepo()
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
-	matches, err := matcher.Scan(root)
+	matches, err := matcher.Scan(repoPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,24 +34,23 @@ func main() {
 		log.Fatal(err)
 	}
 
-	updater.Update(root, infos)
+	updater.Update(gitURL, repoPath, infos)
 }
 
-func prepareRepo() (string, error) {
-	var gitUrl string
+func prepareRepo() (gitURL, path string, err error) {
 	if len(os.Args) == 2 {
-		gitUrl = os.Args[1]
+		gitURL = os.Args[1]
 	} else {
 		var err error
-		gitUrl, err = gitutil.GetOriginURL()
+		gitURL, err = gitutil.GetOriginURL()
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
 	}
 
-	path, err := gitutil.CloneRepo(gitUrl)
+	path, err = gitutil.CloneRepo(gitURL)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	return path, nil
+	return gitURL, path, nil
 }
