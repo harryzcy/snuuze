@@ -19,12 +19,12 @@ type GitHubClient struct {
 }
 
 // NewGitHubClient creates a new GitHubClient with the GITHUB_TOKEN environment variable
-func NewGitHubClient() *GitHubClient {
+func NewGitHubClient() Client {
 	return NewGitHubClientWithToken(GITHUB_TOKEN)
 }
 
 // NewGitHubClientWithToken creates a new GitHubClient with the given token
-func NewGitHubClientWithToken(token string) *GitHubClient {
+func NewGitHubClientWithToken(token string) Client {
 	src := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: GITHUB_TOKEN},
 	)
