@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -42,7 +41,6 @@ func parseGitHubActions(path string, data []byte) ([]types.Dependency, error) {
 		for _, step := range job.Steps {
 			if step.Uses != "" {
 				dependency, ok := parseWorkflow(path, step.Uses)
-				fmt.Println(dependency)
 				if ok {
 					dependencies = append(dependencies, dependency)
 				}

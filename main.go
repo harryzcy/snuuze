@@ -39,6 +39,7 @@ func main() {
 		fmt.Println("No updates found")
 		return
 	}
+	fmt.Println("Found", len(infos), "updates")
 
 	updater.Update(gitURL, repoPath, infos)
 }

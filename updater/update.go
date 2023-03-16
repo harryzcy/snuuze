@@ -10,9 +10,10 @@ import (
 
 func Update(gitURL, repoDir string, infos []types.UpgradeInfo) {
 	groups := groupUpdates(infos)
+	fmt.Println("Found", len(groups), "groups of updates")
 	for _, group := range groups {
-		commitInfo, ok := prepareCommit(group)
-		if ok {
+		commitInfo, hasGroupName := prepareCommit(group)
+		if hasGroupName {
 			err := updateDependencies(gitURL, repoDir, group.Infos, commitInfo)
 			if err != nil {
 				fmt.Println(err)
@@ -71,6 +72,7 @@ type commitInfo struct {
 	message    string
 }
 
+// prepareCommit returns commit info and a bool value indicating whether the commit is a group commit
 func prepareCommit(group RuleGroup) (*commitInfo, bool) {
 	if group.Rule.Name != "" {
 		return &commitInfo{
