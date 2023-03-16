@@ -14,6 +14,9 @@ type RuleGroup struct {
 
 func groupUpdates(infos []types.UpgradeInfo) []RuleGroup {
 	rules := getRules()
+
+	infoStatus := make([]bool, len(infos))
+
 	groups := make([]RuleGroup, 0)
 	for _, rule := range rules {
 		group := RuleGroup{
@@ -21,13 +24,27 @@ func groupUpdates(infos []types.UpgradeInfo) []RuleGroup {
 			Infos: make([]types.UpgradeInfo, 0),
 		}
 
-		for _, info := range infos {
+		for i, info := range infos {
 			if matchRule(rule, info) {
 				group.Infos = append(group.Infos, info)
+				infoStatus[i] = true
 			}
 		}
 		if len(group.Infos) > 0 {
 			groups = append(groups, group)
+		}
+	}
+
+	// add remaining infos separately
+	for i, info := range infos {
+		if !infoStatus[i] {
+			groups = append(groups, RuleGroup{
+				Rule: types.Rule{
+					PackageManagers: []types.PackageManager{info.Dependency.PackageManager},
+					PackageNames:    []string{info.Dependency.Name},
+				},
+				Infos: []types.UpgradeInfo{info},
+			})
 		}
 	}
 
