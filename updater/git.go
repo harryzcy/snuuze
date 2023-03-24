@@ -69,7 +69,7 @@ func createPullRequest(gitURL string, info *commitInfo, base string) error {
 		return err
 	}
 
-	client := platform.NewGitHubClient()
+	client := platform.NewClient(gitURL)
 	err = client.CreatePullRequest(&platform.CreatePullRequestInput{
 		Title: info.message,
 		Body:  "",
