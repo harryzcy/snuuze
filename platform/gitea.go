@@ -23,7 +23,7 @@ type GiteaClient struct {
 	client http.Client
 }
 
-func NewGiteaClient(url, token string) Client {
+func NewGiteaClient() Client {
 	return &GiteaClient{
 		client: http.Client{
 			Timeout: defaultTimeout,
