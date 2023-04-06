@@ -1,2 +1,3 @@
 # snuuze
-Lightweight dependency update automations
+
+Lightweight dependency update automation
