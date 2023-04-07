@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestConfig(t *testing.T) {
-	err := Load()
+	err := LoadConfig()
 	if err != nil {
 		t.Error(err)
 	}

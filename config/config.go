@@ -12,17 +12,19 @@ var (
 	config types.Config
 )
 
-func Load() error {
-	viper.SetConfigName("snuuze")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-	viper.AddConfigPath(".github")
-	err := viper.ReadInConfig()
+// LoadWorkflows loads the workflows configurations
+func LoadConfig() error {
+	c := viper.New()
+	c.SetConfigName("snuuze")
+	c.SetConfigType("yaml")
+	c.AddConfigPath(".")
+	c.AddConfigPath(".github")
+	err := c.ReadInConfig()
 	if err != nil {
 		return fmt.Errorf("fatal error config file: %w", err)
 	}
 
-	err = viper.Unmarshal(&config)
+	err = c.Unmarshal(&config)
 	if err != nil {
 		return fmt.Errorf("unable to decode into struct, %w", err)
 	}

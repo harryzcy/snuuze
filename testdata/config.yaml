@@ -1,0 +1,8 @@
+data:
+  tempDir: /tmp
+
+github:
+  authType: github-app
+  appID: 12345
+  pemFile: snuuze.0000-00-00.private-key.pem
+  clientID: Iv1.some-client-id
