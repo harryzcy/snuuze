@@ -12,7 +12,8 @@ var (
 	config types.Config
 )
 
-func Load() error {
+// LoadWorkflows loads the workflows configurations
+func LoadConfig() error {
 	viper.SetConfigName("snuuze")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")

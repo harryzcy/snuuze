@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	err := config.Load()
+	err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
 		return
