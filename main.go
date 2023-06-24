@@ -64,5 +64,8 @@ func prepareRepo() (gitURL, path string, err error) {
 }
 
 func cleanupRepo(path string) {
-	gitutil.RemoveRepo(path)
+	err := gitutil.RemoveRepo(path)
+	if err != nil {
+		fmt.Println("Failed to remove repo:", err)
+	}
 }
