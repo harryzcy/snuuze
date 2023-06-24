@@ -25,8 +25,10 @@ func parseGoMod(path string, data []byte) ([]types.Dependency, error) {
 			PackageManager: types.PackageManagerGoMod,
 			Position: types.Position{
 				Line:      require.Syntax.Start.Line,
-				StartByte: require.Syntax.Start.Byte,
-				EndByte:   require.Syntax.End.Byte,
+				ColStart:  require.Syntax.Start.LineRune,
+				ColEnd:    require.Syntax.End.LineRune,
+				ByteStart: require.Syntax.Start.Byte,
+				ByteEnd:   require.Syntax.End.Byte,
 			},
 		})
 	}

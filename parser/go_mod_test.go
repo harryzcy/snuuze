@@ -31,8 +31,10 @@ func TestParseGoMod(t *testing.T) {
 			PackageManager: "go-mod",
 			Position: types.Position{
 				Line:      6,
-				StartByte: 64,
-				EndByte:   111,
+				ColStart:  3,
+				ColEnd:    50,
+				ByteStart: 64,
+				ByteEnd:   111,
 			},
 		},
 		{
@@ -43,8 +45,10 @@ func TestParseGoMod(t *testing.T) {
 			PackageManager: "go-mod",
 			Position: types.Position{
 				Line:      7,
-				StartByte: 114,
-				EndByte:   144,
+				ColStart:  3,
+				ColEnd:    33,
+				ByteStart: 114,
+				ByteEnd:   144,
 			},
 		},
 		{
@@ -55,8 +59,10 @@ func TestParseGoMod(t *testing.T) {
 			PackageManager: "go-mod",
 			Position: types.Position{
 				Line:      8,
-				StartByte: 147,
-				EndByte:   181,
+				ColStart:  3,
+				ColEnd:    37,
+				ByteStart: 147,
+				ByteEnd:   181,
 			},
 		},
 		{
@@ -67,8 +73,10 @@ func TestParseGoMod(t *testing.T) {
 			PackageManager: "go-mod",
 			Position: types.Position{
 				Line:      12,
-				StartByte: 200,
-				EndByte:   233,
+				ColStart:  3,
+				ColEnd:    36,
+				ByteStart: 200,
+				ByteEnd:   233,
 			},
 		},
 	}
