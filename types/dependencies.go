@@ -12,8 +12,10 @@ type Dependency struct {
 
 type Position struct {
 	Line      int
-	StartByte int
-	EndByte   int
+	ColStart  int
+	ColEnd    int
+	ByteStart int
+	ByteEnd   int
 }
 
 type UpgradeInfo struct {
