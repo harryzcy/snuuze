@@ -24,6 +24,7 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+	defer cleanupRepo(repoPath)
 
 	matches, err := matcher.Scan(repoPath)
 	if err != nil {
@@ -60,4 +61,11 @@ func prepareRepo() (gitURL, path string, err error) {
 		return "", "", err
 	}
 	return gitURL, path, nil
+}
+
+func cleanupRepo(path string) {
+	err := gitutil.RemoveRepo(path)
+	if err != nil {
+		fmt.Println("Failed to remove repo:", err)
+	}
 }

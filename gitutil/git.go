@@ -47,3 +47,7 @@ func CloneRepo(gitURL string) (string, error) {
 
 	return dirPath, nil
 }
+
+func RemoveRepo(path string) error {
+	return os.RemoveAll(path)
+}
