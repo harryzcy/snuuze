@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/harryzcy/snuuze/checker"
 	"github.com/harryzcy/snuuze/config"
@@ -13,6 +12,7 @@ import (
 )
 
 func main() {
+	config.ParseArgs()
 	err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
@@ -42,12 +42,18 @@ func main() {
 	}
 	fmt.Println("Found", len(infos), "updates")
 
+	if config.GetFlags().DryRun {
+		checker.PrintUpgradeInfos(infos)
+		return
+	}
+
 	updater.Update(gitURL, repoPath, infos)
 }
 
 func prepareRepo() (gitURL, path string, err error) {
-	if len(os.Args) == 2 {
-		gitURL = os.Args[1]
+	args := config.GetArgs()
+	if len(args) != 0 {
+		gitURL = args[0]
 	} else {
 		var err error
 		gitURL, err = gitutil.GetOriginURL()
