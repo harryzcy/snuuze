@@ -39,3 +39,9 @@ func isUpgradable(dep types.Dependency) (types.UpgradeInfo, error) {
 		return types.UpgradeInfo{}, nil
 	}
 }
+
+func PrintUpgradeInfos(infos []types.UpgradeInfo) {
+	for _, info := range infos {
+		fmt.Println(info.Dependency.PackageManager, info.Dependency.Name, info.Dependency.Version, info.ToVersion)
+	}
+}
