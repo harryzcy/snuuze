@@ -16,15 +16,24 @@ func upgradeGoMod(cache *Cache, info types.UpgradeInfo) error {
 		return fmt.Errorf("failed to get file %s from cache: %s", info.Dependency.File, err)
 	}
 
-	start := info.Dependency.Position.StartByte
-	end := info.Dependency.Position.EndByte
+	lines := bytes.Split(file, []byte("\n"))
+	lineIdx := info.Dependency.Position.Line - 1 // line number starts from 1
 
 	buffer := bytes.Buffer{}
-	buffer.Write(file[:start])
-	buffer.WriteString(info.Dependency.Name)
-	buffer.WriteString(" ")
-	buffer.WriteString(info.ToVersion)
-	buffer.Write(file[end:])
+	for idx, line := range lines {
+		if idx == lineIdx {
+			buffer.WriteString("\t")
+			buffer.WriteString(info.Dependency.Name)
+			buffer.WriteString(" ")
+			buffer.WriteString(info.ToVersion)
+			if info.Dependency.Indirect {
+				buffer.WriteString(" // indirect")
+			}
+		} else {
+			buffer.Write(line)
+		}
+		buffer.WriteByte('\n')
+	}
 	cache.Set(info.Dependency.File, buffer.Bytes())
 
 	return nil
