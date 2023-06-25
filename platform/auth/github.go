@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -22,7 +22,7 @@ func GitHubPATClient(token string) *githubv4.Client {
 
 func GithubAppInstallationClient() (*githubv4.Client, error) {
 	privateKeyFile := config.GetHostingConfig().GitHub.PEMFile
-	privateKey, err := ioutil.ReadFile(privateKeyFile)
+	privateKey, err := os.ReadFile(privateKeyFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read private key file: %v", err)
 	}
