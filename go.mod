@@ -3,6 +3,7 @@ module github.com/harryzcy/snuuze
 go 1.19
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/shurcooL/githubv4 v0.0.0-20230424031643-6cea62ecd5a9
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4

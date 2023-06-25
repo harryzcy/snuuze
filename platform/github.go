@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/harryzcy/snuuze/platform/auth"
 	"github.com/shurcooL/githubv4"
-	"golang.org/x/oauth2"
 )
 
 var GITHUB_TOKEN = os.Getenv("GITHUB_TOKEN")
@@ -20,18 +20,8 @@ type GitHubClient struct {
 
 // NewGitHubClient creates a new GitHubClient with the GITHUB_TOKEN environment variable
 func NewGitHubClient() Client {
-	return NewGitHubClientWithToken(GITHUB_TOKEN)
-}
-
-// NewGitHubClientWithToken creates a new GitHubClient with the given token
-func NewGitHubClientWithToken(token string) Client {
-	src := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: GITHUB_TOKEN},
-	)
-	httpClient := oauth2.NewClient(context.Background(), src)
-	client := githubv4.NewClient(httpClient)
 	return &GitHubClient{
-		client: client,
+		client: auth.GitHubPATClient(GITHUB_TOKEN),
 	}
 }
 

@@ -15,7 +15,7 @@ type GitHubConfig struct {
 	Token string `yaml:"token"`
 
 	// if auth-type is github-app
-	AppID    int    `yaml:"appID"`
+	AppID    string `yaml:"appID"`
 	PEMFile  string `yaml:"pemFile"`
 	ClientID string `yaml:"clientID"`
 }
