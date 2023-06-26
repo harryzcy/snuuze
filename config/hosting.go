@@ -29,6 +29,8 @@ func LoadHostingConfig() error {
 	c := viper.New()
 	c.SetConfigFile(CONFIG_FILE)
 	c.SetEnvPrefix("SNUUZE")
+	c.AddConfigPath(".")
+	c.AddConfigPath(".github")
 	err := c.ReadInConfig()
 	if err != nil {
 		return fmt.Errorf("fatal error config file: %w", err)

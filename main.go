@@ -18,6 +18,11 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+	err = config.LoadHostingConfig()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
 	gitURL, repoPath, err := prepareRepo()
 	if err != nil {
