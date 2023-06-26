@@ -10,7 +10,7 @@ type Client interface {
 }
 
 // NewClient returns a new Client based on Git URL
-func NewClient(url string) Client {
+func NewClient(url string) (Client, error) {
 	url = strings.TrimPrefix(url, "git@")
 	url = strings.TrimPrefix(url, "https://")
 	url = strings.TrimPrefix(url, "http://")
@@ -20,7 +20,7 @@ func NewClient(url string) Client {
 	}
 
 	// TODO: check from config after configurations are implemented
-	return NewGiteaClient()
+	return NewGiteaClient(), nil
 }
 
 type ListTagsInput struct {

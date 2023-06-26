@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/platform/auth"
 	"github.com/shurcooL/githubv4"
 )
@@ -19,10 +20,22 @@ type GitHubClient struct {
 }
 
 // NewGitHubClient creates a new GitHubClient with the GITHUB_TOKEN environment variable
-func NewGitHubClient() Client {
-	return &GitHubClient{
-		client: auth.GitHubPATClient(GITHUB_TOKEN),
+func NewGitHubClient() (Client, error) {
+	authType := config.GetHostingConfig().GitHub.AuthType
+	var client *githubv4.Client
+	if authType == "github-app" {
+		var err error
+		client, err = auth.GithubAppInstallationClient()
+		if err != nil {
+			return nil, fmt.Errorf("failed to create GitHub client: %v", err)
+		}
+	} else if authType == "pat" {
+		client = auth.GitHubPATClient(GITHUB_TOKEN)
 	}
+
+	return &GitHubClient{
+		client: client,
+	}, nil
 }
 
 func (c *GitHubClient) ListTags(params *ListTagsInput) ([]string, error) {
