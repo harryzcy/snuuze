@@ -21,7 +21,6 @@ func GitHubPATClient(token string) *githubv4.Client {
 }
 
 func GithubAppInstallationClient() (*githubv4.Client, error) {
-	fmt.Println(24)
 	privateKeyFile := config.GetHostingConfig().GitHub.PEMFile
 	privateKey, err := os.ReadFile(privateKeyFile)
 	if err != nil {
