@@ -12,6 +12,8 @@ categories:
       - 'bug'
   - title: '🧰 Maintenance'
     label: 'chore'
+  - title: '🏗 Documentation'
+    label: 'documentation'
   - title: '⬆️ Dependencies'
     collapse-after: 3
     labels:
