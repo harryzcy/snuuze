@@ -1,12 +1,15 @@
 package gitutil
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 
 	"github.com/harryzcy/snuuze/cmdutil"
+	"github.com/harryzcy/snuuze/config"
+	"github.com/harryzcy/snuuze/platform"
 )
 
 var (
@@ -46,6 +49,52 @@ func CloneRepo(gitURL string) (string, error) {
 	}
 
 	return dirPath, nil
+}
+
+func UpdateCommitter(gitURL, dirPath string) error {
+	// TODO: support other git platforms
+	if platform.GitPlatform(gitURL) != platform.GitPlatformGitHub {
+		return nil
+	}
+
+	appName := config.GetHostingConfig().GitHub.AppName
+	if appName == "" {
+		appName = "snuuze"
+	}
+	if !strings.HasSuffix(appName, "[bot]") {
+		appName = appName + "[bot]"
+	}
+
+	appUserID := config.GetHostingConfig().GitHub.AppUserID
+	if appUserID == 0 {
+		return errors.New("app user ID is not set")
+	}
+
+	_, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+		Dir:     dirPath,
+		Command: []string{"git", "config", "user.name", appName},
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = cmdutil.RunCommand(cmdutil.CommandInputs{
+		Dir:     dirPath,
+		Command: []string{"git", "config", "user.email", fmt.Sprintf("%d+%s@users.noreply.github.com", appUserID, appName)},
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = cmdutil.RunCommand(cmdutil.CommandInputs{
+		Dir:     dirPath,
+		Command: []string{"git", "config", "commit.gpgsign", "false"},
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func RemoveRepo(path string) error {

@@ -71,6 +71,12 @@ func prepareRepo() (gitURL, path string, err error) {
 	if err != nil {
 		return "", "", err
 	}
+
+	err = gitutil.UpdateCommitter(path)
+	if err != nil {
+		return "", "", err
+	}
+
 	return gitURL, path, nil
 }
 

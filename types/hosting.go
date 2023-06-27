@@ -19,4 +19,6 @@ type GitHubConfig struct {
 	PEMFile        string `yaml:"pemFile"`
 	ClientID       string `yaml:"clientID"`
 	InstallationID int64  `yaml:"installationID"`
+	AppName        string `yaml:"appName"`
+	AppUserID      int64  `yaml:"appUserID"`
 }
