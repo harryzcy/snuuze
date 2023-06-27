@@ -137,7 +137,7 @@ func (c *GitHubClient) CreatePullRequest(input *CreatePullRequestInput) error {
 		Body:         githubv4.NewString(githubv4.String(input.Body)),
 	}
 
-	err = c.client.Mutate(context.Background(), &mutation, &githubInput, nil)
+	err = c.client.Mutate(context.Background(), &mutation, githubInput, nil)
 	if err != nil {
 		if strings.Contains(err.Error(), "A pull request already exists") {
 			fmt.Println("Pull request already exists")
