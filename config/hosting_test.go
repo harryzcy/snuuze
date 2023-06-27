@@ -20,7 +20,7 @@ func TestHostingConfig(t *testing.T) {
 	assert.NoError(t, err)
 
 	config := GetHostingConfig()
-	assert.Equal(t, "12345", config.GitHub.AppID)
+	assert.Equal(t, int64(12345), config.GitHub.AppID)
 
 	// test Env override
 	os.Setenv("SNUUZE_GITHUB_APP_ID", "54321")
@@ -28,7 +28,7 @@ func TestHostingConfig(t *testing.T) {
 	err = LoadHostingConfig()
 	assert.NoError(t, err)
 	config = GetHostingConfig()
-	assert.Equal(t, "54321", config.GitHub.AppID)
+	assert.Equal(t, int64(54321), config.GitHub.AppID)
 }
 
 func TestToEnvName(t *testing.T) {
