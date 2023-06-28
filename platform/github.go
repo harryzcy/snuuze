@@ -6,8 +6,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/harryzcy/snuuze/config"
+	"github.com/harryzcy/snuuze/platform/auth"
 	"github.com/shurcooL/githubv4"
-	"golang.org/x/oauth2"
 )
 
 var GITHUB_TOKEN = os.Getenv("GITHUB_TOKEN")
@@ -17,20 +18,22 @@ type GitHubClient struct {
 }
 
 // NewGitHubClient creates a new GitHubClient with the GITHUB_TOKEN environment variable
-func NewGitHubClient() Client {
-	return NewGitHubClientWithToken(GITHUB_TOKEN)
-}
+func NewGitHubClient() (Client, error) {
+	authType := config.GetHostingConfig().GitHub.AuthType
+	var client *githubv4.Client
+	if authType == "github-app" {
+		var err error
+		client, err = auth.GithubAppInstallationClient()
+		if err != nil {
+			return nil, fmt.Errorf("failed to create GitHub client: %v", err)
+		}
+	} else if authType == "pat" {
+		client = auth.GitHubPATClient(GITHUB_TOKEN)
+	}
 
-// NewGitHubClientWithToken creates a new GitHubClient with the given token
-func NewGitHubClientWithToken(token string) Client {
-	src := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: GITHUB_TOKEN},
-	)
-	httpClient := oauth2.NewClient(context.Background(), src)
-	client := githubv4.NewClient(httpClient)
 	return &GitHubClient{
 		client: client,
-	}
+	}, nil
 }
 
 func (c *GitHubClient) ListTags(params *ListTagsInput) ([]string, error) {
@@ -92,7 +95,7 @@ func (c *GitHubClient) CreatePullRequest(input *CreatePullRequestInput) error {
 		Body:         githubv4.NewString(githubv4.String(input.Body)),
 	}
 
-	err = c.client.Mutate(context.Background(), &mutation, &githubInput, nil)
+	err = c.client.Mutate(context.Background(), &mutation, githubInput, nil)
 	if err != nil {
 		if strings.Contains(err.Error(), "A pull request already exists") {
 			fmt.Println("Pull request already exists")

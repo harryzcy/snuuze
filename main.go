@@ -18,6 +18,11 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+	err = config.LoadHostingConfig()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
 	gitURL, repoPath, err := prepareRepo()
 	if err != nil {
@@ -50,7 +55,7 @@ func main() {
 	updater.Update(gitURL, repoPath, infos)
 }
 
-func prepareRepo() (gitURL, path string, err error) {
+func prepareRepo() (gitURL, gitPath string, err error) {
 	args := config.GetArgs()
 	if len(args) != 0 {
 		gitURL = args[0]
@@ -62,11 +67,17 @@ func prepareRepo() (gitURL, path string, err error) {
 		}
 	}
 
-	path, err = gitutil.CloneRepo(gitURL)
+	gitPath, err = gitutil.CloneRepo(gitURL)
 	if err != nil {
 		return "", "", err
 	}
-	return gitURL, path, nil
+
+	err = gitutil.UpdateCommitter(gitURL, gitPath)
+	if err != nil {
+		return "", "", err
+	}
+
+	return gitURL, gitPath, nil
 }
 
 func cleanupRepo(path string) {

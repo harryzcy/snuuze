@@ -9,18 +9,34 @@ type Client interface {
 	CreatePullRequest(input *CreatePullRequestInput) error
 }
 
-// NewClient returns a new Client based on Git URL
-func NewClient(url string) Client {
-	url = strings.TrimPrefix(url, "git@")
-	url = strings.TrimPrefix(url, "https://")
-	url = strings.TrimPrefix(url, "http://")
+const (
+	GitPlatformGitHub = "github.com"
+	GitPlatformGitea  = "gitea.com"
+)
 
-	if strings.HasPrefix(url, "github.com/") {
+// NewClient returns a new Client based on Git URL
+func NewClient(url string) (Client, error) {
+	switch GitPlatform(url) {
+	case GitPlatformGitHub:
 		return NewGitHubClient()
+	case GitPlatformGitea:
+		return NewGiteaClient(), nil
 	}
 
 	// TODO: check from config after configurations are implemented
-	return NewGiteaClient()
+	return NewGiteaClient(), nil
+}
+
+func GitPlatform(gitURL string) string {
+	gitURL = strings.TrimPrefix(gitURL, "git@")
+	gitURL = strings.TrimPrefix(gitURL, "https://")
+	gitURL = strings.TrimPrefix(gitURL, "http://")
+
+	if strings.HasPrefix(gitURL, "github.com/") {
+		return GitPlatformGitHub
+	}
+
+	return GitPlatformGitea
 }
 
 type ListTagsInput struct {
