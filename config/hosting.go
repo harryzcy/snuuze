@@ -13,16 +13,10 @@ import (
 )
 
 var (
-	CONFIG_FILE = os.Getenv("SNUUZE_CONFIG_FILE")
+	CONFIG_FILE = defaultValue(os.Getenv("SNUUZE_CONFIG_FILE"), "config.yaml")
 
 	hostingConfig types.HostingConfig
 )
-
-func init() {
-	if CONFIG_FILE != "" {
-		CONFIG_FILE = "config.yaml"
-	}
-}
 
 // LoadConfig loads the configuration for the application
 func LoadHostingConfig() error {
@@ -130,4 +124,29 @@ func toEnvName(name string) string {
 
 func GetHostingConfig() types.HostingConfig {
 	return hostingConfig
+}
+
+// TempDir returns the temporary directory to store the data
+func TempDir() string {
+	return defaultValue(hostingConfig.Data.TempDir, os.TempDir())
+}
+
+func GitHubToken() string {
+	return defaultValue(hostingConfig.GitHub.Token, os.Getenv("GITHUB_TOKEN"))
+}
+
+func GoPath() string {
+	return os.Getenv("GOPATH")
+}
+
+func GoProxy() string {
+	return defaultValue(os.Getenv("GOPROXY"), "https://proxy.golang.org,direct")
+}
+
+func defaultValue[T comparable](value, defaultValue T) T {
+	if value == *new(T) {
+		return defaultValue
+	}
+
+	return value
 }

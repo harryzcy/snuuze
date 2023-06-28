@@ -3,10 +3,10 @@ package updater
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/harryzcy/snuuze/cmdutil"
+	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/types"
 )
 
@@ -51,7 +51,7 @@ func postGoMod(cache *Cache) error {
 			Command: []string{"go", "mod", "tidy"},
 			Dir:     dir,
 			Env: map[string]string{
-				"GOPATH": os.Getenv("GOPATH"),
+				"GOPATH": config.GoPath(),
 			},
 		})
 		if err != nil {

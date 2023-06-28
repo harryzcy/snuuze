@@ -3,15 +3,12 @@ package platform
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/platform/auth"
 	"github.com/shurcooL/githubv4"
 )
-
-var GITHUB_TOKEN = os.Getenv("GITHUB_TOKEN")
 
 type GitHubClient struct {
 	client *githubv4.Client
@@ -28,7 +25,7 @@ func NewGitHubClient() (Client, error) {
 			return nil, fmt.Errorf("failed to create GitHub client: %v", err)
 		}
 	} else if authType == "pat" {
-		client = auth.GitHubPATClient(GITHUB_TOKEN)
+		client = auth.GitHubPATClient()
 	}
 
 	return &GitHubClient{

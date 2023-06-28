@@ -12,16 +12,6 @@ import (
 	"github.com/harryzcy/snuuze/platform"
 )
 
-var (
-	TEMP_DIR = os.Getenv("TEMP_DIR")
-)
-
-func init() {
-	if TEMP_DIR == "" {
-		TEMP_DIR = os.TempDir()
-	}
-}
-
 func GetOriginURL() (string, error) {
 	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
 		Command: []string{"git", "remote", "get-url", "origin"},
@@ -35,7 +25,7 @@ func GetOriginURL() (string, error) {
 
 // CloneRepo clones a git repo to a temp directory
 func CloneRepo(gitURL string) (string, error) {
-	dirPath, err := os.MkdirTemp(TEMP_DIR, "snuuze-*")
+	dirPath, err := os.MkdirTemp(config.TempDir(), "snuuze-*")
 	if err != nil {
 		log.Fatal(err)
 	}
