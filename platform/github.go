@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/harryzcy/snuuze/config"
@@ -73,47 +71,7 @@ func (c *GitHubClient) ListTags(params *ListTagsInput) ([]string, error) {
 		tags = append(tags, edge.Node.Name)
 	}
 
-	return sortTags(tags), nil
-}
-
-func sortTags(tags []string) []string {
-	sort.SliceStable(tags, func(i, j int) bool {
-		tag1, err1 := parseTag(tags[i])
-		tag2, err2 := parseTag(tags[j])
-		if err1 != nil || err2 != nil {
-			// if one of the tags is not a valid tag, then compare the string
-			return tags[i] > tags[j]
-		}
-		minLen := len(tag1)
-		if len(tag2) < minLen {
-			minLen = len(tag2)
-		}
-
-		for i := 0; i < minLen; i++ {
-			if tag1[i] > tag2[i] {
-				return true
-			}
-			if tag1[i] < tag2[i] {
-				return false
-			}
-		}
-		return len(tag1) > len(tag2)
-	})
-	return tags
-}
-
-func parseTag(tag string) ([]int, error) {
-	tag = strings.TrimPrefix(tag, "v")
-	parts := strings.Split(tag, ".")
-	intParts := make([]int, len(parts))
-	var err error
-	for i, part := range parts {
-		intParts[i], err = strconv.Atoi(part)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return intParts, nil
+	return tags, nil
 }
 
 func (c *GitHubClient) CreatePullRequest(input *CreatePullRequestInput) error {

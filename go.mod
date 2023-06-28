@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/bradleyfalzon/ghinstallation v1.1.1
+	github.com/hashicorp/go-version v1.6.0
 	github.com/shurcooL/githubv4 v0.0.0-20230424031643-6cea62ecd5a9
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
