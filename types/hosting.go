@@ -37,3 +37,8 @@ type GiteaConfig struct {
 func (c *GiteaConfig) GetHost() string {
 	return strings.TrimSuffix(c.Host, "/")
 }
+
+const (
+	AuthTypeToken     = "token"
+	AuthTypeGithubApp = "github-app"
+)
