@@ -29,6 +29,8 @@ func TestHostingConfig(t *testing.T) {
 	assert.NoError(t, err)
 	config = GetHostingConfig()
 	assert.Equal(t, int64(54321), config.GitHub.AppID)
+	assert.Len(t, config.Gitea, 1)
+	assert.Equal(t, "https://gitea.com", config.Gitea[0].Host)
 }
 
 func TestToEnvName(t *testing.T) {

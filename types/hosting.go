@@ -1,8 +1,9 @@
 package types
 
 type HostingConfig struct {
-	Data   DataConfig   `yaml:"data"`
-	GitHub GitHubConfig `yaml:"github"`
+	Data   DataConfig    `yaml:"data"`
+	GitHub GitHubConfig  `yaml:"github"`
+	Gitea  []GiteaConfig `yaml:"gitea"`
 }
 
 type DataConfig struct {
@@ -21,4 +22,12 @@ type GitHubConfig struct {
 	InstallationID int64  `yaml:"installationID"`
 	AppName        string `yaml:"appName"`
 	AppUserID      int64  `yaml:"appUserID"`
+}
+
+type GiteaConfig struct {
+	Host     string `yaml:"host"`
+	AuthType string `yaml:"authType"` // token
+
+	// if auth-type is token
+	Token string `yaml:"token"`
 }
