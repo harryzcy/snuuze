@@ -13,14 +13,8 @@ import (
 )
 
 var (
-	TEMP_DIR = os.Getenv("TEMP_DIR")
+	ErrNoUserID = errors.New("app user ID is not set")
 )
-
-func init() {
-	if TEMP_DIR == "" {
-		TEMP_DIR = os.TempDir()
-	}
-}
 
 func GetOriginURL() (string, error) {
 	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
@@ -35,7 +29,7 @@ func GetOriginURL() (string, error) {
 
 // CloneRepo clones a git repo to a temp directory
 func CloneRepo(gitURL string) (string, error) {
-	dirPath, err := os.MkdirTemp(TEMP_DIR, "snuuze-*")
+	dirPath, err := os.MkdirTemp(config.TempDir(), "snuuze-*")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,7 +47,7 @@ func CloneRepo(gitURL string) (string, error) {
 
 func UpdateCommitter(gitURL, dirPath string) error {
 	// TODO: support other git platforms
-	if platform.GitPlatform(gitURL) != platform.GitPlatformGitHub {
+	if gitPlatform, _ := platform.DetermineGitPlatform(gitURL); gitPlatform != platform.GitPlatformGitHub {
 		return nil
 	}
 
@@ -67,7 +61,7 @@ func UpdateCommitter(gitURL, dirPath string) error {
 
 	appUserID := config.GetHostingConfig().GitHub.AppUserID
 	if appUserID == 0 {
-		return errors.New("app user ID is not set")
+		return ErrNoUserID
 	}
 
 	_, err := cmdutil.RunCommand(cmdutil.CommandInputs{

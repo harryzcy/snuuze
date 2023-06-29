@@ -3,15 +3,13 @@ package platform
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/platform/auth"
+	"github.com/harryzcy/snuuze/types"
 	"github.com/shurcooL/githubv4"
 )
-
-var GITHUB_TOKEN = os.Getenv("GITHUB_TOKEN")
 
 type GitHubClient struct {
 	client *githubv4.Client
@@ -21,14 +19,14 @@ type GitHubClient struct {
 func NewGitHubClient() (Client, error) {
 	authType := config.GetHostingConfig().GitHub.AuthType
 	var client *githubv4.Client
-	if authType == "github-app" {
+	if authType == types.AuthTypeGithubApp {
 		var err error
 		client, err = auth.GithubAppInstallationClient()
 		if err != nil {
 			return nil, fmt.Errorf("failed to create GitHub client: %v", err)
 		}
-	} else if authType == "pat" {
-		client = auth.GitHubPATClient(GITHUB_TOKEN)
+	} else if authType == types.AuthTypeToken {
+		client = auth.GitHubPATClient()
 	}
 
 	return &GitHubClient{

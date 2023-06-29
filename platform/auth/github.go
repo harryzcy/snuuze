@@ -10,9 +10,9 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func GitHubPATClient(token string) *githubv4.Client {
+func GitHubPATClient() *githubv4.Client {
 	src := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: token},
+		&oauth2.Token{AccessToken: config.GitHubToken()},
 	)
 	httpClient := oauth2.NewClient(context.Background(), src)
 	return githubv4.NewClient(httpClient)

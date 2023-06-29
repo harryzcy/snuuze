@@ -3,18 +3,14 @@ package checker
 import (
 	"encoding/json"
 	"errors"
-	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/harryzcy/snuuze/cmdutil"
+	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/types"
 )
 
 var (
-	DEFAULT_TIMEOUT = 10 * time.Second
-	GOPROXY         = os.Getenv("GOPROXY")
-
 	ErrRequestFailed = errors.New("request failed")
 )
 
@@ -34,10 +30,8 @@ type GoListOutput struct {
 func isUpgradable_GoMod(dep types.Dependency) (types.UpgradeInfo, error) {
 	// run `go list -u -m -json <dep>` to get the latest version
 	envs := map[string]string{
-		"GOPATH": os.Getenv("GOPATH"),
-	}
-	if GOPROXY != "" {
-		envs["GOPROXY"] = GOPROXY
+		"GOPATH":  config.GoPath(),
+		"GOPROXY": config.GoProxy(),
 	}
 
 	dir := filepath.Dir(dep.File)
