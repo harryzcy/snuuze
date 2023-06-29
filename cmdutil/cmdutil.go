@@ -5,10 +5,8 @@ import (
 	"errors"
 	"os/exec"
 	"time"
-)
 
-const (
-	DEFAULT_TIMEOUT = 100 * time.Second
+	"github.com/harryzcy/snuuze/config"
 )
 
 var (
@@ -23,8 +21,8 @@ type CommandInputs struct {
 }
 
 func (input *CommandInputs) GetTimeout() time.Duration {
-	if input.Timeout == 0 {
-		return DEFAULT_TIMEOUT
+	if input.Timeout <= 0 {
+		return config.GetHostingConfig().Data.GetTimeout()
 	}
 	return input.Timeout
 }

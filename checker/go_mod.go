@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"path/filepath"
-	"time"
 
 	"github.com/harryzcy/snuuze/cmdutil"
 	"github.com/harryzcy/snuuze/config"
@@ -12,8 +11,6 @@ import (
 )
 
 var (
-	DEFAULT_TIMEOUT = 10 * time.Second
-
 	ErrRequestFailed = errors.New("request failed")
 )
 
