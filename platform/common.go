@@ -1,6 +1,12 @@
 package platform
 
-import "strings"
+import (
+	"errors"
+	"strings"
+
+	"github.com/harryzcy/snuuze/config"
+	"github.com/harryzcy/snuuze/types"
+)
 
 type Client interface {
 	// ListTags returns a sorted list of tags for the given repo
@@ -9,34 +15,85 @@ type Client interface {
 	CreatePullRequest(input *CreatePullRequestInput) error
 }
 
+type GitPlatform int
+
 const (
-	GitPlatformGitHub = "github.com"
-	GitPlatformGitea  = "gitea.com"
+	GitPlatformUnknown GitPlatform = iota
+	GitPlatformGitHub
+	GitPlatformGitea
 )
 
 // NewClient returns a new Client based on Git URL
 func NewClient(url string) (Client, error) {
-	switch GitPlatform(url) {
+	platform, host := DetermineGitPlatform(url)
+	switch platform {
 	case GitPlatformGitHub:
 		return NewGitHubClient()
 	case GitPlatformGitea:
-		return NewGiteaClient(), nil
+		return NewGiteaClient(host), nil
 	}
 
-	// TODO: check from config after configurations are implemented
-	return NewGiteaClient(), nil
+	return nil, errors.New("unsupported git platform")
 }
 
-func GitPlatform(gitURL string) string {
-	gitURL = strings.TrimPrefix(gitURL, "git@")
-	gitURL = strings.TrimPrefix(gitURL, "https://")
-	gitURL = strings.TrimPrefix(gitURL, "http://")
+var getGiteaConfigs = func() []types.GiteaConfig {
+	return config.GetHostingConfig().Gitea
+}
 
-	if strings.HasPrefix(gitURL, "github.com/") {
-		return GitPlatformGitHub
+// DetermineGitPlatform returns the GitPlatform and the host of the given git URL
+func DetermineGitPlatform(gitURL string) (GitPlatform, string) {
+	urlInfo, err := parseURL(gitURL)
+	if err != nil {
+		return GitPlatformUnknown, ""
 	}
 
-	return GitPlatformGitea
+	if urlInfo.host == "github.com" {
+		return GitPlatformGitHub, "https://github.com"
+	}
+
+	for _, giteaConfig := range getGiteaConfigs() {
+		configuredHost := giteaConfig.GetHost()
+		configuredInfo, err := parseURL(configuredHost)
+		if err != nil {
+			continue
+		}
+
+		if urlInfo.host == configuredInfo.host {
+			return GitPlatformGitea, configuredHost
+		}
+	}
+
+	return GitPlatformUnknown, ""
+}
+
+type hostInfo struct {
+	protocol string
+	host     string
+}
+
+func parseURL(url string) (*hostInfo, error) {
+	for _, protocol := range []string{"https", "http"} {
+		prefix := protocol + "://"
+		if strings.HasPrefix(url, prefix) {
+			url = strings.TrimPrefix(url, prefix)
+			url = strings.SplitN(url, "/", 2)[0]
+			return &hostInfo{
+				protocol: protocol,
+				host:     url,
+			}, nil
+		}
+	}
+
+	if strings.HasPrefix(url, "git@") {
+		url = strings.TrimPrefix(url, "git@")
+		url = strings.SplitN(url, ":", 2)[0]
+		return &hostInfo{
+			protocol: "ssh",
+			host:     url,
+		}, nil
+	}
+
+	return nil, errors.New("invalid git url")
 }
 
 type ListTagsInput struct {

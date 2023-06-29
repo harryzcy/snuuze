@@ -43,7 +43,7 @@ func CloneRepo(gitURL string) (string, error) {
 
 func UpdateCommitter(gitURL, dirPath string) error {
 	// TODO: support other git platforms
-	if platform.GitPlatform(gitURL) != platform.GitPlatformGitHub {
+	if gitPlatform, _ := platform.DetermineGitPlatform(gitURL); gitPlatform != platform.GitPlatformGitHub {
 		return nil
 	}
 

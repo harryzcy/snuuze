@@ -1,5 +1,7 @@
 package types
 
+import "strings"
+
 type HostingConfig struct {
 	Data   DataConfig    `yaml:"data"`
 	GitHub GitHubConfig  `yaml:"github"`
@@ -30,4 +32,8 @@ type GiteaConfig struct {
 
 	// if auth-type is token
 	Token string `yaml:"token"`
+}
+
+func (c *GiteaConfig) GetHost() string {
+	return strings.TrimSuffix(c.Host, "/")
 }

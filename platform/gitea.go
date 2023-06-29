@@ -5,14 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"os"
-	"strings"
 	"time"
-)
-
-var (
-	GITEA_SERVER = strings.TrimSuffix(os.Getenv("GITEA_SERVER"), "/") // remove trailing slash
-	GITEA_TOKEN  = os.Getenv("GITEA_TOKEN")
 )
 
 const (
@@ -21,14 +14,29 @@ const (
 
 type GiteaClient struct {
 	client http.Client
+	host   string
+	token  string
 }
 
-func NewGiteaClient() Client {
+func NewGiteaClient(host string) Client {
+	token := getGiteaToken(host)
 	return &GiteaClient{
 		client: http.Client{
 			Timeout: defaultTimeout,
 		},
+		host:  host,
+		token: token,
 	}
+}
+
+func getGiteaToken(host string) string {
+	for _, giteaConfig := range getGiteaConfigs() {
+		if giteaConfig.GetHost() == host {
+			return giteaConfig.Token
+		}
+	}
+
+	return ""
 }
 
 func (c *GiteaClient) sendRequest(method, path string, body []byte) ([]byte, error) {
@@ -42,7 +50,7 @@ func (c *GiteaClient) sendRequest(method, path string, body []byte) ([]byte, err
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	req.Header.Set("Authorization", "bearer "+GITEA_TOKEN)
+	req.Header.Set("Authorization", "bearer "+c.token)
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -74,7 +82,7 @@ type giteaTagList []struct {
 
 func (c *GiteaClient) ListTags(params *ListTagsInput) ([]string, error) {
 	// TODO: support pagination
-	url := GITEA_SERVER + "/api/v1/repos/" + params.Owner + "/" + params.Repo + "/tags"
+	url := c.host + "/api/v1/repos/" + params.Owner + "/" + params.Repo + "/tags"
 	data, err := c.sendRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
@@ -114,7 +122,7 @@ func (c *GiteaClient) CreatePullRequest(input *CreatePullRequestInput) error {
 		Body:  input.Body,
 	}
 
-	url := GITEA_SERVER + "/api/v1/repos/" + input.Owner + "/" + input.Repo + "/pulls"
+	url := c.host + "/api/v1/repos/" + input.Owner + "/" + input.Repo + "/pulls"
 
 	body, err := json.Marshal(options)
 	if err != nil {
