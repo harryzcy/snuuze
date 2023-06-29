@@ -8,6 +8,11 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
+var (
+	ErrInvalidGitPlatform = errors.New("unsupported git platform")
+	ErrInvalidGitURL      = errors.New("invalid git url")
+)
+
 type Client interface {
 	// ListTags returns a sorted list of tags for the given repo
 	ListTags(params *ListTagsInput) ([]string, error)
@@ -33,7 +38,7 @@ func NewClient(url string) (Client, error) {
 		return NewGiteaClient(host), nil
 	}
 
-	return nil, errors.New("unsupported git platform")
+	return nil, ErrInvalidGitPlatform
 }
 
 var getGiteaConfigs = func() []types.GiteaConfig {
@@ -93,7 +98,7 @@ func parseURL(url string) (*hostInfo, error) {
 		}, nil
 	}
 
-	return nil, errors.New("invalid git url")
+	return nil, ErrInvalidGitURL
 }
 
 type ListTagsInput struct {

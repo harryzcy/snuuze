@@ -1,7 +1,6 @@
 package platform
 
 import (
-	"errors"
 	"strconv"
 	"testing"
 
@@ -96,7 +95,7 @@ func TestParseURL(t *testing.T) {
 		},
 		{
 			url: "invalid@github.com",
-			err: errors.New("invalid git url"),
+			err: ErrInvalidGitURL,
 		},
 	}
 

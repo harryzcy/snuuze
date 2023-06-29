@@ -12,6 +12,10 @@ import (
 	"github.com/harryzcy/snuuze/platform"
 )
 
+var (
+	ErrNoUserID = errors.New("app user ID is not set")
+)
+
 func GetOriginURL() (string, error) {
 	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
 		Command: []string{"git", "remote", "get-url", "origin"},
@@ -57,7 +61,7 @@ func UpdateCommitter(gitURL, dirPath string) error {
 
 	appUserID := config.GetHostingConfig().GitHub.AppUserID
 	if appUserID == 0 {
-		return errors.New("app user ID is not set")
+		return ErrNoUserID
 	}
 
 	_, err := cmdutil.RunCommand(cmdutil.CommandInputs{
