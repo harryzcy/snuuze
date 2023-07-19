@@ -21,14 +21,32 @@ func LoadConfig() error {
 	c.AddConfigPath(".github")
 	err := c.ReadInConfig()
 	if err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			// use default config
+			setDefaultConfig()
+			return nil
+		}
 		return fmt.Errorf("fatal error config file: %w", err)
-	}
-
-	err = c.Unmarshal(&config)
-	if err != nil {
-		return fmt.Errorf("unable to decode into struct, %w", err)
+	} else {
+		err = c.Unmarshal(&config)
+		if err != nil {
+			return fmt.Errorf("unable to decode into struct, %w", err)
+		}
 	}
 	return nil
+}
+
+func setDefaultConfig() {
+	config.Version = "1"
+	config.Presets = []string{"base"}
+	config.Rules = []types.Rule{
+		{
+			Name: "all dependencies",
+			PackageManagers: []types.PackageManager{
+				types.PackageManagerGoMod,
+			},
+		},
+	}
 }
 
 func GetConfig() types.Config {
