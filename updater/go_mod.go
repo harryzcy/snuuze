@@ -99,18 +99,6 @@ func postGoMod(cache *Cache, goReplaceItems []*ReplaceItem) error {
 
 	for _, file := range goModFiles {
 		dir := filepath.Dir(file)
-		output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
-			Command: []string{"go", "mod", "tidy"},
-			Dir:     dir,
-			Env: map[string]string{
-				"GOPATH": config.GoPath(),
-			},
-		})
-		if err != nil {
-			fmt.Println("postGoMod: failed to run go mod tidy in", dir)
-			fmt.Println(output.Stderr.String())
-			return fmt.Errorf("postGoMod: failed to run go mod tidy in %s: %s", dir, err)
-		}
 
 		for _, replace := range goReplaceItems {
 			if replace.Dir != dir {
@@ -143,6 +131,19 @@ func postGoMod(cache *Cache, goReplaceItems []*ReplaceItem) error {
 			if err != nil {
 				return fmt.Errorf("postGoMod: failed to commit cache: %s", err)
 			}
+		}
+
+		output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+			Command: []string{"go", "mod", "tidy"},
+			Dir:     dir,
+			Env: map[string]string{
+				"GOPATH": config.GoPath(),
+			},
+		})
+		if err != nil {
+			fmt.Println("postGoMod: failed to run go mod tidy in", dir)
+			fmt.Println(output.Stderr.String())
+			return fmt.Errorf("postGoMod: failed to run go mod tidy in %s: %s", dir, err)
 		}
 	}
 	return nil
