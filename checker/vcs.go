@@ -14,16 +14,24 @@ type VSCSource interface {
 type GitHubSource struct{}
 
 // getLatestTag returns the latest tag that is not a pre-release, or the current tag if no such tag exists
-func getLatestTag(tags []string, currentTag string) (string, error) {
+func getLatestTag(tags []string, currentTag string, includeMajor bool) (string, error) {
 	currentVersion, err := version.NewVersion(currentTag)
 	if err != nil {
 		return "", err
 	}
-	versions := make([]*version.Version, len(tags))
-	for i, tag := range tags {
-		if versions[i], err = version.NewVersion(tag); err != nil {
+	versions := make([]*version.Version, 0, len(tags))
+	for _, tag := range tags {
+		v, err := version.NewVersion(tag)
+		if err != nil {
 			return "", err
 		}
+		if !includeMajor {
+			if v.Segments()[0] != currentVersion.Segments()[0] {
+				continue
+			}
+		}
+
+		versions = append(versions, v)
 	}
 
 	sort.Sort(sort.Reverse(version.Collection(versions)))

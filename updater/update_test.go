@@ -19,7 +19,7 @@ func TestPrepareCommit(t *testing.T) {
 				Rule: types.Rule{
 					Name: "test",
 				},
-				Infos: []types.UpgradeInfo{},
+				Infos: []*types.UpgradeInfo{},
 			},
 			want: &commitInfo{
 				branchName: "snuuze/test",
@@ -32,7 +32,7 @@ func TestPrepareCommit(t *testing.T) {
 				Rule: types.Rule{
 					Name: "",
 				},
-				Infos: []types.UpgradeInfo{
+				Infos: []*types.UpgradeInfo{
 					{
 						Dependency: types.Dependency{
 							Name: "github.com/aws/aws-sdk-go-v2",
@@ -52,7 +52,7 @@ func TestPrepareCommit(t *testing.T) {
 				Rule: types.Rule{
 					Name: "",
 				},
-				Infos: []types.UpgradeInfo{
+				Infos: []*types.UpgradeInfo{
 					{
 						Dependency: types.Dependency{
 							Name: "github.com/aws/aws-sdk-go-v2",

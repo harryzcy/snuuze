@@ -9,10 +9,10 @@ var getRules = config.GetRules
 
 type RuleGroup struct {
 	Rule  types.Rule
-	Infos []types.UpgradeInfo
+	Infos []*types.UpgradeInfo
 }
 
-func groupUpdates(infos []types.UpgradeInfo) []RuleGroup {
+func groupUpdates(infos []*types.UpgradeInfo) []RuleGroup {
 	rules := getRules()
 
 	infoStatus := make([]bool, len(infos))
@@ -21,7 +21,7 @@ func groupUpdates(infos []types.UpgradeInfo) []RuleGroup {
 	for _, rule := range rules {
 		group := RuleGroup{
 			Rule:  rule,
-			Infos: make([]types.UpgradeInfo, 0),
+			Infos: make([]*types.UpgradeInfo, 0),
 		}
 
 		for i, info := range infos {
@@ -43,7 +43,7 @@ func groupUpdates(infos []types.UpgradeInfo) []RuleGroup {
 					PackageManagers: []types.PackageManager{info.Dependency.PackageManager},
 					PackageNames:    []string{info.Dependency.Name},
 				},
-				Infos: []types.UpgradeInfo{info},
+				Infos: []*types.UpgradeInfo{info},
 			})
 		}
 	}
@@ -51,7 +51,7 @@ func groupUpdates(infos []types.UpgradeInfo) []RuleGroup {
 	return groups
 }
 
-func matchRule(rule types.Rule, info types.UpgradeInfo) bool {
+func matchRule(rule types.Rule, info *types.UpgradeInfo) bool {
 	if len(rule.PackageManagers) > 0 && !contains(rule.PackageManagers, info.Dependency.PackageManager) {
 		return false
 	}

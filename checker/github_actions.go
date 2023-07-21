@@ -8,13 +8,13 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
-func isUpgradable_GitHubActions(dep types.Dependency) (types.UpgradeInfo, error) {
+func isUpgradable_GitHubActions(dep types.Dependency) (*types.UpgradeInfo, error) {
 	owner, repo, err := parseRepo(dep.Name)
 	if err != nil {
-		return types.UpgradeInfo{}, err
+		return nil, err
 	}
 
-	info := types.UpgradeInfo{
+	info := &types.UpgradeInfo{
 		Dependency: dep,
 	}
 	if isSha(dep.Version) {
@@ -28,7 +28,7 @@ func isUpgradable_GitHubActions(dep types.Dependency) (types.UpgradeInfo, error)
 
 	client, err := platform.NewGitHubClient()
 	if err != nil {
-		return types.UpgradeInfo{}, err
+		return nil, err
 	}
 
 	tags, err := client.ListTags(&platform.ListTagsInput{
@@ -36,12 +36,12 @@ func isUpgradable_GitHubActions(dep types.Dependency) (types.UpgradeInfo, error)
 		Repo:  repo,
 	})
 	if err != nil {
-		return types.UpgradeInfo{}, err
+		return nil, err
 	}
 
-	latest, err := getLatestTag(tags, dep.Version)
+	latest, err := getLatestTag(tags, dep.Version, true)
 	if err != nil {
-		return types.UpgradeInfo{}, err
+		return nil, err
 	}
 
 	if latest != dep.Version {

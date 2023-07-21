@@ -8,7 +8,7 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
-func Update(gitURL, repoDir string, infos []types.UpgradeInfo) {
+func Update(gitURL, repoDir string, infos []*types.UpgradeInfo) {
 	groups := groupUpdates(infos)
 	fmt.Println("Found", len(groups), "groups of updates")
 	for _, group := range groups {
@@ -23,7 +23,7 @@ func Update(gitURL, repoDir string, infos []types.UpgradeInfo) {
 			// create branch for each info
 			for _, info := range group.Infos {
 				commitInfo := prepareCommitByUpgradeInfo(info)
-				err := updateDependencies(gitURL, repoDir, []types.UpgradeInfo{info}, commitInfo)
+				err := updateDependencies(gitURL, repoDir, []*types.UpgradeInfo{info}, commitInfo)
 				if err != nil {
 					fmt.Println(err)
 					continue
@@ -33,7 +33,7 @@ func Update(gitURL, repoDir string, infos []types.UpgradeInfo) {
 	}
 }
 
-func updateDependencies(gitURL, repoDir string, infos []types.UpgradeInfo, info *commitInfo) error {
+func updateDependencies(gitURL, repoDir string, infos []*types.UpgradeInfo, info *commitInfo) error {
 	base := getDefaultBranch(repoDir)
 	fmt.Println("Creating branch", info.branchName, "from", base)
 
@@ -88,7 +88,7 @@ func prepareCommit(group RuleGroup) (*commitInfo, bool) {
 	return nil, false
 }
 
-func prepareCommitByUpgradeInfo(info types.UpgradeInfo) *commitInfo {
+func prepareCommitByUpgradeInfo(info *types.UpgradeInfo) *commitInfo {
 	return &commitInfo{
 		branchName: formateBranchName(info.Dependency.Name),
 		message:    "Update " + info.Dependency.Name + " to " + info.ToVersion,
@@ -102,15 +102,21 @@ func formateBranchName(name string) string {
 	return fmt.Sprintf("snuuze/%s", name)
 }
 
-func delegateUpdate(infos []types.UpgradeInfo) error {
+func delegateUpdate(infos []*types.UpgradeInfo) error {
 	cache := NewCache()
+
+	goReplaceItems := []*ReplaceItem{}
 
 	errors := []error{}
 	for _, info := range infos {
 		var err error
 		switch info.Dependency.PackageManager {
 		case types.PackageManagerGoMod:
-			err = upgradeGoMod(cache, info)
+			var replace *ReplaceItem
+			replace, err = upgradeGoMod(cache, info)
+			if err == nil && replace != nil {
+				goReplaceItems = append(goReplaceItems, replace)
+			}
 		case types.PackageManagerGitHubActions:
 			err = upgradeGitHubActions(cache, info)
 		default:
@@ -129,11 +135,11 @@ func delegateUpdate(infos []types.UpgradeInfo) error {
 		}
 	}
 
-	return postUpdate(cache)
+	return postUpdate(cache, goReplaceItems)
 }
 
-func postUpdate(cache *Cache) error {
-	err := postGoMod(cache)
+func postUpdate(cache *Cache, goReplaceItems []*ReplaceItem) error {
+	err := postGoMod(cache, goReplaceItems)
 	if err != nil {
 		return fmt.Errorf("failed to post update for go.mod: %s", err)
 	}
