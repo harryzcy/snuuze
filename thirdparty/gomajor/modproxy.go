@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"path"
 	"strconv"
 	"strings"
 
@@ -196,40 +195,6 @@ func Latest(modpath string, cached bool) (*Module, error) {
 		latest = next
 	}
 	return nil, fmt.Errorf("request limit exceeded")
-}
-
-// QueryPackage tries to find the module path for the provided package path
-// it does so by repeatedly chopping off the last path element and trying to
-// use it as a path.
-func QueryPackage(pkgpath string, cached bool) (*Module, error) {
-	prefix := pkgpath
-	for prefix != "" {
-		if module.CheckPath(prefix) == nil {
-			mod, ok, err := Query(prefix, cached)
-			if err != nil {
-				return nil, err
-			}
-			if ok {
-				modprefix := ModPrefix(mod.Path)
-				if modpath, pkgdir, ok := SplitPath(modprefix, pkgpath); ok && modpath != mod.Path {
-					if major, ok := ModMajor(modpath); ok {
-						if v := mod.MaxVersion(major, false); v != "" {
-							spec := JoinPath(modprefix, "", pkgdir) + "@" + v
-							return nil, fmt.Errorf("%s doesn't support import versioning; use %s", major, spec)
-						}
-						return nil, fmt.Errorf("failed to find module for package: %s", pkgpath)
-					}
-				}
-				return mod, nil
-			}
-		}
-		remaining, last := path.Split(prefix)
-		if last == "" {
-			break
-		}
-		prefix = strings.TrimSuffix(remaining, "/")
-	}
-	return nil, fmt.Errorf("failed to find module for package: %s", pkgpath)
 }
 
 // Update reports a newer version of a module.

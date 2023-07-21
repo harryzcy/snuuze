@@ -30,7 +30,10 @@ func isUpgradable_GoMod(dep types.Dependency) (*types.UpgradeInfo, error) {
 		return nil, err
 	}
 
-	latestVersion := mod.MaxVersion("", true)
+	latestVersion, err := getLatestTag(mod.Versions, dep.Version, !dep.Indirect)
+	if err != nil {
+		return nil, err
+	}
 	if gomajor.IsNewerVersion(dep.Version, latestVersion, false) {
 		return &types.UpgradeInfo{
 			Dependency: dep,
