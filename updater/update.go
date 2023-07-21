@@ -76,7 +76,7 @@ type commitInfo struct {
 func prepareCommit(group RuleGroup) (*commitInfo, bool) {
 	if group.Rule.Name != "" {
 		return &commitInfo{
-			branchName: formateBranchName(group.Rule.Name),
+			branchName: formatBranchName(group.Rule.Name),
 			message:    "Update " + group.Rule.Name,
 		}, true
 	}
@@ -90,12 +90,12 @@ func prepareCommit(group RuleGroup) (*commitInfo, bool) {
 
 func prepareCommitByUpgradeInfo(info *types.UpgradeInfo) *commitInfo {
 	return &commitInfo{
-		branchName: formateBranchName(info.Dependency.Name),
+		branchName: formatBranchName(info.Dependency.Name),
 		message:    "Update " + info.Dependency.Name + " to " + info.ToVersion,
 	}
 }
 
-func formateBranchName(name string) string {
+func formatBranchName(name string) string {
 	name = strings.ReplaceAll(name, "/", "-")
 	name = strings.ReplaceAll(name, " ", "-")
 	name = strings.ToLower(name)

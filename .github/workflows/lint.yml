@@ -17,3 +17,7 @@ jobs:
   go-lint:
     name: Go Lint
     uses: harryzcy/github-actions/.github/workflows/golangci-lint.yml@main
+
+  spelling:
+    name: Spelling
+    uses: harryzcy/github-actions/.github/workflows/spelling.yml@main
