@@ -127,10 +127,10 @@ func postGoMod(cache *Cache, goReplaceItems []*ReplaceItem) error {
 			if err != nil {
 				return fmt.Errorf("failed to walk dir %s: %s", dir, err)
 			}
-			err = cache.Commit()
-			if err != nil {
-				return fmt.Errorf("postGoMod: failed to commit cache: %s", err)
-			}
+		}
+		err = cache.Commit()
+		if err != nil {
+			return fmt.Errorf("postGoMod: failed to commit cache: %s", err)
 		}
 
 		output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
