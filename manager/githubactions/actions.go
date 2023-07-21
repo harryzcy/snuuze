@@ -7,7 +7,7 @@ import (
 	"github.com/harryzcy/snuuze/manager/common"
 	"github.com/harryzcy/snuuze/platform"
 	"github.com/harryzcy/snuuze/types"
-	"github.com/harryzcy/snuuze/versionutil"
+	"github.com/harryzcy/snuuze/util/versionutil"
 )
 
 type GitHubActionsManager struct{}

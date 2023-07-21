@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/harryzcy/snuuze/cmdutil"
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/types"
+	"github.com/harryzcy/snuuze/util/cmdutil"
 	"github.com/hashicorp/go-version"
 )
 

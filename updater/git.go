@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/harryzcy/snuuze/cmdutil"
 	"github.com/harryzcy/snuuze/platform"
+	"github.com/harryzcy/snuuze/util/cmdutil"
 )
 
 const (

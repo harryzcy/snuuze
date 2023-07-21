@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/harryzcy/snuuze/cmdutil"
 	"github.com/harryzcy/snuuze/types"
+	"github.com/harryzcy/snuuze/util/cmdutil"
 )
 
 func Update(gitURL, repoDir string, infos []*types.UpgradeInfo) {
