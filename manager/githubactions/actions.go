@@ -1,14 +1,41 @@
-package checker
+package githubactions
 
 import (
 	"fmt"
 	"strings"
 
+	"github.com/harryzcy/snuuze/manager/common"
 	"github.com/harryzcy/snuuze/platform"
 	"github.com/harryzcy/snuuze/types"
+	"github.com/harryzcy/snuuze/versionutil"
 )
 
-func isUpgradable_GitHubActions(dep types.Dependency) (*types.UpgradeInfo, error) {
+type GitHubActionsManager struct{}
+
+func New() common.Manager {
+	return &GitHubActionsManager{}
+}
+
+func (m *GitHubActionsManager) Name() types.PackageManager {
+	return types.PackageManagerGitHubActions
+}
+
+func (m *GitHubActionsManager) Match(path string) bool {
+	if !strings.HasPrefix(path, ".github/workflows") {
+		return false
+	}
+	return strings.HasSuffix(path, ".yml") || strings.HasSuffix(path, ".yaml")
+}
+
+func (m *GitHubActionsManager) Parse(match types.Match, data []byte) ([]types.Dependency, error) {
+	return parseGitHubActions(match.File, data)
+}
+
+func (m *GitHubActionsManager) ListUpgrades(matches []types.Match) ([]*types.UpgradeInfo, error) {
+	return common.ListUpgrades(m, matches)
+}
+
+func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, error) {
 	owner, repo, err := parseRepo(dep.Name)
 	if err != nil {
 		return nil, err
@@ -39,7 +66,7 @@ func isUpgradable_GitHubActions(dep types.Dependency) (*types.UpgradeInfo, error
 		return nil, err
 	}
 
-	latest, err := getLatestTag(tags, dep.Version, true)
+	latest, err := versionutil.GetLatestTag(tags, dep.Version, true)
 	if err != nil {
 		return nil, err
 	}

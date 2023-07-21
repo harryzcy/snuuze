@@ -1,11 +1,10 @@
-package parser
+package githubactions
 
 import (
 	"strings"
 
-	"gopkg.in/yaml.v3"
-
 	"github.com/harryzcy/snuuze/types"
+	"gopkg.in/yaml.v3"
 )
 
 type minimalGitHubActions struct {

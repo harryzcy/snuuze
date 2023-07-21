@@ -1,16 +1,18 @@
-package matcher
+package manager
 
 import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
 	"strings"
+
+	"github.com/harryzcy/snuuze/types"
 )
 
 // Scan scans all the files and returns those containing dependencies
-func Scan(dir string) ([]Match, error) {
+func Scan(dir string) ([]types.Match, error) {
 	fmt.Println("Scanning files in", dir)
-	matches := make([]Match, 0)
+	matches := make([]types.Match, 0)
 
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
@@ -21,7 +23,7 @@ func Scan(dir string) ([]Match, error) {
 		}
 
 		if packageManager, ok := matchFile(dir, path); ok {
-			matches = append(matches, Match{
+			matches = append(matches, types.Match{
 				File:           path,
 				PackageManager: packageManager,
 			})
