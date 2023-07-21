@@ -1,4 +1,4 @@
-package checker
+package githubactions
 
 import (
 	"strconv"

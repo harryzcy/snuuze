@@ -1,4 +1,4 @@
-package parser
+package gomod
 
 import (
 	"testing"
@@ -81,7 +81,8 @@ func TestParseGoMod(t *testing.T) {
 		},
 	}
 
-	dependencies, err := parseGoMod(path, data)
+	m := New()
+	dependencies, err := m.Parse(types.Match{File: path}, data)
 	assert.Nil(t, err)
 	assert.Equal(t, want, dependencies)
 }

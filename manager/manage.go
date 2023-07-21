@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/harryzcy/snuuze/config"
-	"github.com/harryzcy/snuuze/manager/checker"
+	"github.com/harryzcy/snuuze/types"
 	"github.com/harryzcy/snuuze/updater"
 )
 
@@ -15,21 +15,30 @@ func Run(gitURL, repoPath string) {
 		log.Fatal(err)
 	}
 
-	infos, err := checker.ListUpgrades(matches)
-	if err != nil {
-		log.Fatal(err)
+	var allInfos []*types.UpgradeInfo
+
+	for _, m := range managers {
+		infos, err := m.ListUpgrades(matches)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if len(infos) > 0 {
+			break
+		}
+
+		allInfos = append(allInfos, infos...)
 	}
 
-	if len(infos) == 0 {
+	if len(allInfos) == 0 {
 		fmt.Println("No updates found")
 		return
 	}
-	fmt.Println("Found", len(infos), "updates")
+	fmt.Println("Found", len(allInfos), "updates")
 
 	if config.GetFlags().DryRun {
-		checker.PrintUpgradeInfos(infos)
+		PrintUpgradeInfos(allInfos)
 		return
 	}
 
-	updater.Update(gitURL, repoPath, infos)
+	updater.Update(gitURL, repoPath, allInfos)
 }

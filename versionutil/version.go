@@ -1,4 +1,4 @@
-package checker
+package versionutil
 
 import (
 	"fmt"
@@ -8,13 +8,8 @@ import (
 	"github.com/hashicorp/go-version"
 )
 
-type VSCSource interface {
-}
-
-type GitHubSource struct{}
-
-// getLatestTag returns the latest tag that is not a pre-release, or the current tag if no such tag exists
-func getLatestTag(tags []string, currentTag string, includeMajor bool) (string, error) {
+// GetLatestTag returns the latest tag that is not a pre-release, or the current tag if no such tag exists
+func GetLatestTag(tags []string, currentTag string, includeMajor bool) (string, error) {
 	currentVersion, err := version.NewVersion(currentTag)
 	if err != nil {
 		return "", err

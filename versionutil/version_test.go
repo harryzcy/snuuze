@@ -1,4 +1,4 @@
-package checker
+package versionutil
 
 import (
 	"strconv"
@@ -64,7 +64,7 @@ func TestGetLatestTag(t *testing.T) {
 
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			got, err := getLatestTag(test.tags, test.currentTag, true)
+			got, err := GetLatestTag(test.tags, test.currentTag, true)
 			assert.Equal(t, test.want, got)
 			if test.wantErr {
 				assert.Error(t, err)
