@@ -6,7 +6,7 @@ import (
 	"github.com/harryzcy/snuuze/manager/common"
 	"github.com/harryzcy/snuuze/thirdparty/gomajor"
 	"github.com/harryzcy/snuuze/types"
-	"github.com/harryzcy/snuuze/versionutil"
+	"github.com/harryzcy/snuuze/util/versionutil"
 	"golang.org/x/mod/modfile"
 )
 
