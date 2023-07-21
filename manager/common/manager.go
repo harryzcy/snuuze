@@ -1,6 +1,8 @@
 package common
 
+import "github.com/harryzcy/snuuze/types"
+
 type Manager interface {
-	Name() string
+	Name() types.PackageManager
 	Match(path string) bool
 }
