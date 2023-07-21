@@ -8,8 +8,8 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
-func ListUpgrades(matches []matcher.Match) ([]types.UpgradeInfo, error) {
-	result := []types.UpgradeInfo{}
+func ListUpgrades(matches []matcher.Match) ([]*types.UpgradeInfo, error) {
+	result := []*types.UpgradeInfo{}
 
 	for _, match := range matches {
 		dependencies, _ := parser.Parse(match)
@@ -29,18 +29,18 @@ func ListUpgrades(matches []matcher.Match) ([]types.UpgradeInfo, error) {
 	return result, nil
 }
 
-func isUpgradable(dep types.Dependency) (types.UpgradeInfo, error) {
+func isUpgradable(dep types.Dependency) (*types.UpgradeInfo, error) {
 	switch dep.PackageManager {
 	case types.PackageManagerGoMod:
 		return isUpgradable_GoMod(dep)
 	case types.PackageManagerGitHubActions:
 		return isUpgradable_GitHubActions(dep)
 	default:
-		return types.UpgradeInfo{}, nil
+		return nil, nil
 	}
 }
 
-func PrintUpgradeInfos(infos []types.UpgradeInfo) {
+func PrintUpgradeInfos(infos []*types.UpgradeInfo) {
 	for _, info := range infos {
 		fmt.Println(info.Dependency.PackageManager, info.Dependency.Name, info.Dependency.Version, info.ToVersion)
 	}

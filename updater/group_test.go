@@ -13,7 +13,7 @@ func TestGroupUpdates(t *testing.T) {
 		getRules = originalGetRules
 	}()
 
-	infos := []types.UpgradeInfo{
+	infos := []*types.UpgradeInfo{
 		{
 			Dependency: types.Dependency{
 				PackageManager: types.PackageManagerGoMod,
@@ -44,11 +44,11 @@ func TestGroupUpdates(t *testing.T) {
 
 func TestMatchRule(t *testing.T) {
 	tests := []struct {
-		info types.UpgradeInfo
+		info *types.UpgradeInfo
 		rule types.Rule
 	}{
 		{
-			info: types.UpgradeInfo{
+			info: &types.UpgradeInfo{
 				Dependency: types.Dependency{
 					PackageManager: types.PackageManagerGoMod,
 					Name:           "github.com/harryzcy/snuuze",
@@ -62,7 +62,7 @@ func TestMatchRule(t *testing.T) {
 			},
 		},
 		{
-			info: types.UpgradeInfo{
+			info: &types.UpgradeInfo{
 				Dependency: types.Dependency{
 					PackageManager: types.PackageManagerGoMod,
 					Name:           "github.com/stretchr/testify",

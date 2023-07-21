@@ -7,7 +7,7 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
-func upgradeGitHubActions(cache *Cache, info types.UpgradeInfo) error {
+func upgradeGitHubActions(cache *Cache, info *types.UpgradeInfo) error {
 	file, err := cache.Get(info.Dependency.File)
 	if err != nil {
 		return fmt.Errorf("failed to get file %s from cache: %s", info.Dependency.File, err)
