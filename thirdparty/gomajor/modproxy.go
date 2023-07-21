@@ -198,7 +198,7 @@ func Latest(modpath string, cached bool) (*Module, error) {
 }
 
 // Update reports a newer version of a module.
-// The Err field will be set if an error occured.
+// The Err field will be set if an error occurred.
 type Update struct {
 	Module  module.Version
 	Version string
