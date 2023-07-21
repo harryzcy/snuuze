@@ -6,12 +6,11 @@ import (
 
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/manager/checker"
-	"github.com/harryzcy/snuuze/manager/matcher"
 	"github.com/harryzcy/snuuze/updater"
 )
 
 func Run(gitURL, repoPath string) {
-	matches, err := matcher.Scan(repoPath)
+	matches, err := Scan(repoPath)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -3,12 +3,11 @@ package checker
 import (
 	"fmt"
 
-	"github.com/harryzcy/snuuze/manager/matcher"
 	"github.com/harryzcy/snuuze/manager/parser"
 	"github.com/harryzcy/snuuze/types"
 )
 
-func ListUpgrades(matches []matcher.Match) ([]*types.UpgradeInfo, error) {
+func ListUpgrades(matches []types.Match) ([]*types.UpgradeInfo, error) {
 	result := []*types.UpgradeInfo{}
 
 	for _, match := range matches {

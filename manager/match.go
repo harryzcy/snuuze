@@ -1,4 +1,4 @@
-package matcher
+package manager
 
 import (
 	"path/filepath"
@@ -6,11 +6,6 @@ import (
 
 	"github.com/harryzcy/snuuze/types"
 )
-
-type Match struct {
-	File           string
-	PackageManager types.PackageManager
-}
 
 func matchFile(dir, path string) (types.PackageManager, bool) {
 	filename := filepath.Base(path)
