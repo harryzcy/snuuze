@@ -3,7 +3,7 @@ package parser
 import (
 	"os"
 
-	"github.com/harryzcy/snuuze/matcher"
+	"github.com/harryzcy/snuuze/manager/matcher"
 	"github.com/harryzcy/snuuze/types"
 )
 

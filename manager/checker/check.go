@@ -3,8 +3,8 @@ package checker
 import (
 	"fmt"
 
-	"github.com/harryzcy/snuuze/matcher"
-	"github.com/harryzcy/snuuze/parser"
+	"github.com/harryzcy/snuuze/manager/matcher"
+	"github.com/harryzcy/snuuze/manager/parser"
 	"github.com/harryzcy/snuuze/types"
 )
 
