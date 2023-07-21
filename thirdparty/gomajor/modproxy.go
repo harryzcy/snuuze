@@ -6,14 +6,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"path"
 	"strconv"
 	"strings"
 
 	"golang.org/x/mod/module"
 	"golang.org/x/mod/semver"
-	"golang.org/x/sync/errgroup"
 )
 
 // Module contains the module path and versions
@@ -240,53 +238,4 @@ type Update struct {
 	Module  module.Version
 	Version string
 	Err     error
-}
-
-// UpdateOptions specifies a set of modules to check for updates.
-// The OnUpdate callback will be invoked with any updates found.
-type UpdateOptions struct {
-	Pre      bool
-	Cached   bool
-	Major    bool
-	Modules  []module.Version
-	OnUpdate func(Update)
-}
-
-// Updates finds updates for a set of specified modules.
-func Updates(opt UpdateOptions) {
-	ch := make(chan Update)
-	go func() {
-		defer close(ch)
-		private := os.Getenv("GOPRIVATE")
-		var group errgroup.Group
-		if opt.Cached {
-			group.SetLimit(3)
-		} else {
-			group.SetLimit(1)
-		}
-		for _, m := range opt.Modules {
-			m := m
-			if module.MatchPrefixPatterns(private, m.Path) {
-				continue
-			}
-			group.Go(func() error {
-				mod, err := Latest(m.Path, opt.Cached)
-				if err != nil {
-					ch <- Update{Module: m, Err: err}
-					return nil
-				}
-				v := mod.MaxVersion("", opt.Pre)
-				if IsNewerVersion(m.Version, v, opt.Major) {
-					ch <- Update{Module: m, Version: v}
-				}
-				return nil
-			})
-		}
-		group.Wait()
-	}()
-	for u := range ch {
-		if opt.OnUpdate != nil {
-			opt.OnUpdate(u)
-		}
-	}
 }
