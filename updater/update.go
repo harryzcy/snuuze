@@ -105,12 +105,18 @@ func formateBranchName(name string) string {
 func delegateUpdate(infos []*types.UpgradeInfo) error {
 	cache := NewCache()
 
+	goReplaceItems := []*ReplaceItem{}
+
 	errors := []error{}
 	for _, info := range infos {
 		var err error
 		switch info.Dependency.PackageManager {
 		case types.PackageManagerGoMod:
-			err = upgradeGoMod(cache, info)
+			var replace *ReplaceItem
+			replace, err = upgradeGoMod(cache, info)
+			if err == nil && replace != nil {
+				goReplaceItems = append(goReplaceItems, replace)
+			}
 		case types.PackageManagerGitHubActions:
 			err = upgradeGitHubActions(cache, info)
 		default:
@@ -129,11 +135,11 @@ func delegateUpdate(infos []*types.UpgradeInfo) error {
 		}
 	}
 
-	return postUpdate(cache)
+	return postUpdate(cache, goReplaceItems)
 }
 
-func postUpdate(cache *Cache) error {
-	err := postGoMod(cache)
+func postUpdate(cache *Cache, goReplaceItems []*ReplaceItem) error {
+	err := postGoMod(cache, goReplaceItems)
 	if err != nil {
 		return fmt.Errorf("failed to post update for go.mod: %s", err)
 	}

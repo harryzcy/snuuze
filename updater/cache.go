@@ -46,6 +46,7 @@ func (c *Cache) Commit() error {
 			return err
 		}
 	}
+	c.Files = nil
 	return nil
 }
 

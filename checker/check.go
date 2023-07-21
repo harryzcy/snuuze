@@ -20,7 +20,7 @@ func ListUpgrades(matches []matcher.Match) ([]*types.UpgradeInfo, error) {
 				fmt.Println(err)
 				continue
 			}
-			if info.Upgradable {
+			if info != nil && info.Upgradable {
 				result = append(result, info)
 			}
 		}
