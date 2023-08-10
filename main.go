@@ -44,20 +44,30 @@ func prepareRepo() (gitURL, gitPath string, err error) {
 		}
 	}
 
-	gitPath, err = gitutil.CloneRepo(gitURL)
-	if err != nil {
-		return "", "", err
-	}
+	flags := config.GetFlags()
+	if !flags.InPlace {
+		gitPath, err = gitutil.CloneRepo(gitURL)
+		if err != nil {
+			return "", "", err
+		}
 
-	err = gitutil.UpdateCommitter(gitURL, gitPath)
-	if err != nil {
-		return "", "", err
+		err = gitutil.UpdateCommitter(gitURL, gitPath)
+		if err != nil {
+			return "", "", err
+		}
+	} else {
+		gitPath = "."
 	}
 
 	return gitURL, gitPath, nil
 }
 
 func cleanupRepo(path string) {
+	flags := config.GetFlags()
+	if flags.InPlace {
+		return
+	}
+
 	err := gitutil.RemoveRepo(path)
 	if err != nil {
 		fmt.Println("Failed to remove repo:", err)

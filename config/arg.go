@@ -33,8 +33,8 @@ func ParseArgs() {
 		}
 	}
 
-	if flags.DryRun && flags.InPlace {
-		fmt.Fprintln(os.Stderr, "cannot have both --dry-run and --in-place")
+	if flags.InPlace && !flags.DryRun {
+		fmt.Fprintln(os.Stderr, "error: --in-place must be used with --dry-run")
 		os.Exit(1)
 	}
 }
