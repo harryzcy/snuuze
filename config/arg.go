@@ -1,12 +1,14 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strings"
 )
 
 type Flags struct {
-	DryRun bool
+	DryRun  bool
+	InPlace bool
 }
 
 var (
@@ -25,6 +27,15 @@ func ParseArgs() {
 		if arg == "--dry-run" {
 			flags.DryRun = true
 		}
+
+		if arg == "--in-place" {
+			flags.InPlace = true
+		}
+	}
+
+	if flags.InPlace && !flags.DryRun {
+		fmt.Fprintln(os.Stderr, "error: --in-place must be used with --dry-run")
+		os.Exit(1)
 	}
 }
 
