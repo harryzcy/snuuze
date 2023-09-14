@@ -13,7 +13,7 @@ func startCron(state *State) (*gocron.Scheduler, error) {
 	s := gocron.NewScheduler(time.UTC)
 	s.WaitForScheduleAll()
 
-	_, err := s.Every(5).Seconds().Do(func() {
+	_, err := s.Every(1).Hour().Do(func() {
 		err := checkUpdates(state)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Failed to check for updates:", err)
