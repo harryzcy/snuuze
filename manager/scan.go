@@ -10,9 +10,9 @@ import (
 )
 
 // Scan scans all the files and returns those containing dependencies
-func Scan(dir string) ([]types.Match, error) {
+func Scan(dir string) (map[types.PackageManager][]types.Match, error) {
 	fmt.Println("Scanning files in", dir)
-	matches := make([]types.Match, 0)
+	matches := make(map[types.PackageManager][]types.Match)
 
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
@@ -23,7 +23,7 @@ func Scan(dir string) ([]types.Match, error) {
 		}
 
 		if packageManager, ok := matchFile(dir, path); ok {
-			matches = append(matches, types.Match{
+			matches[packageManager] = append(matches[packageManager], types.Match{
 				File:           path,
 				PackageManager: packageManager,
 			})

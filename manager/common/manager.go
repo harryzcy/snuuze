@@ -1,6 +1,7 @@
 package common
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -24,18 +25,24 @@ type Manager interface {
 func ListUpgrades(m Manager, matches []types.Match) ([]*types.UpgradeInfo, error) {
 	result := []*types.UpgradeInfo{}
 
+	var allErrors []error
+
 	for _, match := range matches {
 		data, err := os.ReadFile(match.File)
 		if err != nil {
 			return nil, err
 		}
+		fmt.Println("Checking file", match.File)
 
-		dependencies, _ := m.Parse(match, data)
+		dependencies, err := m.Parse(match, data)
+		if err != nil {
+			allErrors = append(allErrors, err)
+			continue
+		}
 		for _, dependency := range dependencies {
 			info, err := m.IsUpgradable(dependency)
 			if err != nil {
-				// log error and continue
-				fmt.Println(err)
+				allErrors = append(allErrors, err)
 				continue
 			}
 			if info != nil && info.Upgradable {
@@ -44,5 +51,5 @@ func ListUpgrades(m Manager, matches []types.Match) ([]*types.UpgradeInfo, error
 		}
 	}
 
-	return result, nil
+	return result, errors.Join(allErrors...)
 }
