@@ -15,7 +15,8 @@ type GitHubClient struct {
 	client *githubv4.Client
 }
 
-// NewGitHubClient creates a new GitHubClient with the GITHUB_TOKEN environment variable
+// NewGitHubClient creates a new GitHubClient authenticated with
+// either a GitHub App or a personal access token.
 func NewGitHubClient() (Client, error) {
 	authType := config.GetHostingConfig().GitHub.AuthType
 	var client *githubv4.Client
