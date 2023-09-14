@@ -16,8 +16,7 @@ func RunForRepo(gitURL string) error {
 	}
 	defer cleanupRepo(repoPath)
 
-	manager.Run(gitURL, repoPath)
-	return nil
+	return manager.Run(gitURL, repoPath)
 }
 
 func prepareRepo(gitURL string) (gitPath string, err error) {

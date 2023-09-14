@@ -2,17 +2,16 @@ package manager
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/types"
 	"github.com/harryzcy/snuuze/updater"
 )
 
-func Run(gitURL, repoPath string) {
+func Run(gitURL, repoPath string) error {
 	matches, err := Scan(repoPath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	var allInfos []*types.UpgradeInfo
@@ -20,7 +19,7 @@ func Run(gitURL, repoPath string) {
 	for _, m := range managers {
 		infos, err := m.ListUpgrades(matches)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		if len(infos) > 0 {
 			break
@@ -31,14 +30,15 @@ func Run(gitURL, repoPath string) {
 
 	if len(allInfos) == 0 {
 		fmt.Println("No updates found")
-		return
+		return nil
 	}
 	fmt.Println("Found", len(allInfos), "updates")
 
 	if config.GetCLIConfig().DryRun {
 		PrintUpgradeInfos(allInfos)
-		return
+		return nil
 	}
 
 	updater.Update(gitURL, repoPath, allInfos)
+	return nil
 }
