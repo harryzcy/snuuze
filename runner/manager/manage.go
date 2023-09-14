@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/harryzcy/snuuze/config"
+	"github.com/harryzcy/snuuze/runner/updater"
 	"github.com/harryzcy/snuuze/types"
-	"github.com/harryzcy/snuuze/updater"
 )
 
 func Run(gitURL, repoPath string) error {
