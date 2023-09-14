@@ -5,6 +5,7 @@ import (
 
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/runner"
+	"github.com/harryzcy/snuuze/runner/git"
 	"github.com/harryzcy/snuuze/server"
 )
 
@@ -35,7 +36,7 @@ func runCli() {
 		gitURL = cliConfig.Args[0]
 	} else {
 		var err error
-		gitURL, err = runner.GetGitOriginURL()
+		gitURL, err = git.GetOriginURL()
 		if err != nil {
 			log.Fatal(err)
 			return

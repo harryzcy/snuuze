@@ -1,4 +1,4 @@
-package runner
+package git
 
 import (
 	"errors"
@@ -17,7 +17,7 @@ var (
 )
 
 // GetGitOriginURL returns url of `origin` remote of the current git repo
-func GetGitOriginURL() (string, error) {
+func GetOriginURL() (string, error) {
 	output, err := command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "remote", "get-url", "origin"},
 	})
@@ -28,8 +28,8 @@ func GetGitOriginURL() (string, error) {
 	return strings.TrimSpace(output.Stdout.String()), nil
 }
 
-// cloneRepo clones a git repo to a temp directory
-func cloneRepo(gitURL string) (string, error) {
+// CloneRepo clones a git repo to a temp directory
+func CloneRepo(gitURL string) (string, error) {
 	dirPath, err := os.MkdirTemp(config.TempDir(), "snuuze-*")
 	if err != nil {
 		log.Fatal(err)
@@ -46,7 +46,7 @@ func cloneRepo(gitURL string) (string, error) {
 	return dirPath, nil
 }
 
-func updateGitCommitter(gitURL, dirPath string) error {
+func UpdateCommitter(gitURL, dirPath string) error {
 	// TODO: support other git platforms
 	if gitPlatform, _ := platform.DetermineGitPlatform(gitURL); gitPlatform != platform.GitPlatformGitHub {
 		return nil
@@ -92,6 +92,6 @@ func updateGitCommitter(gitURL, dirPath string) error {
 	return nil
 }
 
-func removeRepo(path string) error {
+func RemoveRepo(path string) error {
 	return os.RemoveAll(path)
 }
