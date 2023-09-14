@@ -2,7 +2,6 @@ package runner
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/harryzcy/snuuze/config"
@@ -10,16 +9,16 @@ import (
 	"github.com/harryzcy/snuuze/util/gitutil"
 )
 
-func RunForRepo(gitURL string) {
+func RunForRepo(gitURL string) error {
 	cliConfig := config.GetCLIConfig()
 	repoPath, err := prepareRepo(gitURL, cliConfig.InPlace)
 	if err != nil {
-		log.Fatal(err)
-		return
+		return err
 	}
 	defer cleanupRepo(repoPath)
 
 	manager.Run(gitURL, repoPath)
+	return nil
 }
 
 func prepareRepo(gitURL string, inPlace bool) (gitPath string, err error) {

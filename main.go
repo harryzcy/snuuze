@@ -43,5 +43,8 @@ func runCli() {
 		}
 	}
 
-	runner.RunForRepo(gitURL)
+	err := runner.RunForRepo(gitURL)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

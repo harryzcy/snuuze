@@ -20,10 +20,13 @@ import (
 const Port = "1323"
 
 func Run() {
-	e, _, err := initEcho()
+	e, err := initEcho()
 	exitOnError(err)
 
-	err = startCron()
+	state, err := loadState()
+	exitOnError(err)
+
+	scheduler, err := startCron(state)
 	exitOnError(err)
 
 	go func() {
@@ -38,11 +41,13 @@ func Run() {
 	<-quit
 
 	fmt.Println("Shutting down the server...")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	err = e.Shutdown(ctx)
 	exitOnError(err)
+
+	stopCron(scheduler)
 
 	fmt.Println("Server gracefully stopped")
 }
@@ -55,10 +60,10 @@ func exitOnError(err error) {
 }
 
 // initEcho initializes the echo server and setup the routes.
-func initEcho() (*echo.Echo, *State, error) {
+func initEcho() (*echo.Echo, error) {
 	authType := config.GetHostingConfig().GitHub.AuthType
 	if authType != "github-app" {
-		return nil, nil, errors.New("only GitHub App is supported for running as a server")
+		return nil, errors.New("only GitHub App is supported for running as a server")
 	}
 
 	e := echo.New()
@@ -69,11 +74,7 @@ func initEcho() (*echo.Echo, *State, error) {
 	e.GET("/", handler.Index)
 	e.GET("/ping", handler.Ping)
 
-	state, err := loadState()
-	if err != nil {
-		return nil, nil, err
-	}
-	return e, state, nil
+	return e, nil
 }
 
 // loadState loads the state of the server.
