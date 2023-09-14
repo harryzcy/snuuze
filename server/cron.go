@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/go-co-op/gocron"
@@ -12,7 +14,10 @@ func startCron(state *State) (*gocron.Scheduler, error) {
 	s.WaitForScheduleAll()
 
 	_, err := s.Every(5).Seconds().Do(func() {
-		checkUpdates(state)
+		err := checkUpdates(state)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Failed to check for updates:", err)
+		}
 	})
 	if err != nil {
 		return nil, err
