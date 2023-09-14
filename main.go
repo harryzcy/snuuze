@@ -6,6 +6,7 @@ import (
 
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/manager"
+	"github.com/harryzcy/snuuze/server"
 	"github.com/harryzcy/snuuze/util/gitutil"
 )
 
@@ -22,6 +23,14 @@ func main() {
 		return
 	}
 
+	if config.GetArgs().AsServer() {
+		server.Init()
+	} else {
+		runCli()
+	}
+}
+
+func runCli() {
 	gitURL, repoPath, err := prepareRepo()
 	if err != nil {
 		log.Fatal(err)

@@ -6,13 +6,23 @@ import (
 	"strings"
 )
 
+type Args []string
+
+func (a Args) AsServer() bool {
+	if len(a) == 0 {
+		return true
+	}
+
+	return a[0] == "server"
+}
+
 type Flags struct {
 	DryRun  bool
 	InPlace bool
 }
 
 var (
-	args  []string
+	args  Args
 	flags Flags
 )
 
@@ -43,6 +53,6 @@ func GetFlags() Flags {
 	return flags
 }
 
-func GetArgs() []string {
+func GetArgs() Args {
 	return args
 }
