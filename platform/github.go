@@ -35,6 +35,44 @@ func NewGitHubClient() (Client, error) {
 	}, nil
 }
 
+func (c *GitHubClient) ListRepos() ([]Repo, error) {
+	var query struct {
+		Viewer struct {
+			Repositories struct {
+				Nodes []struct {
+					Owner struct {
+						Login string
+					}
+					Name             string
+					URL              string
+					IsPrivate        bool
+					DefaultBranchRef struct {
+						Name string
+					}
+				}
+			} `graphql:"repositories(first: 100, isArchived; false, orderBy: {field: NAME, direction: ASC})"`
+		}
+	}
+
+	err := c.client.Query(context.Background(), &query, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	repos := make([]Repo, 0)
+	for _, node := range query.Viewer.Repositories.Nodes {
+		repos = append(repos, Repo{
+			Owner:         node.Owner.Login,
+			Repo:          node.Name,
+			URL:           node.URL,
+			IsPrivate:     node.IsPrivate,
+			DefaultBranch: node.DefaultBranchRef.Name,
+		})
+	}
+
+	return repos, nil
+}
+
 func (c *GitHubClient) ListTags(params *ListTagsInput) ([]string, error) {
 	var query struct {
 		Repository struct {

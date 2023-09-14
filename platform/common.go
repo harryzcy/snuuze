@@ -14,6 +14,7 @@ var (
 )
 
 type Client interface {
+	ListRepos() ([]Repo, error)
 	// ListTags returns a sorted list of tags for the given repo
 	ListTags(params *ListTagsInput) ([]string, error)
 
@@ -28,9 +29,19 @@ const (
 	GitPlatformGitea
 )
 
+type NewClientOptions struct {
+	Platform GitPlatform
+	URL      string
+}
+
 // NewClient returns a new Client based on Git URL
-func NewClient(url string) (Client, error) {
-	platform, host := DetermineGitPlatform(url)
+func NewClient(options NewClientOptions) (Client, error) {
+	platform := options.Platform
+	var host string
+	if platform == GitPlatformUnknown || platform == GitPlatformGitea {
+		platform, host = DetermineGitPlatform(options.URL)
+	}
+
 	switch platform {
 	case GitPlatformGitHub:
 		return NewGitHubClient()
@@ -99,6 +110,15 @@ func parseURL(url string) (*hostInfo, error) {
 	}
 
 	return nil, ErrInvalidGitURL
+}
+
+type Repo struct {
+	Server        string
+	Owner         string
+	Repo          string
+	URL           string
+	IsPrivate     bool
+	DefaultBranch string
 }
 
 type ListTagsInput struct {

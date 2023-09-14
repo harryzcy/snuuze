@@ -25,7 +25,11 @@ func main() {
 	}
 
 	if config.GetCLIConfig().AsServer() {
-		server.Init()
+		_, err := server.Init()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
 	} else {
 		runCli()
 	}

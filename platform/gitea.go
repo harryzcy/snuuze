@@ -80,6 +80,11 @@ type giteaTagList []struct {
 	ZipballURL string `json:"zipball_url"`
 }
 
+func (c *GiteaClient) ListRepos() ([]Repo, error) {
+	// TODO
+	return nil, nil
+}
+
 func (c *GiteaClient) ListTags(params *ListTagsInput) ([]string, error) {
 	// TODO: support pagination
 	url := c.host + "/api/v1/repos/" + params.Owner + "/" + params.Repo + "/tags"
