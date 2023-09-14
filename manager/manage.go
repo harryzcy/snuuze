@@ -21,11 +21,10 @@ func Run(gitURL, repoPath string) error {
 		if err != nil {
 			return err
 		}
-		if len(infos) == 0 {
-			break
-		}
 
-		allInfos = append(allInfos, infos...)
+		if len(infos) != 0 {
+			allInfos = append(allInfos, infos...)
+		}
 	}
 
 	if len(allInfos) == 0 {
