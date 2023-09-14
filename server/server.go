@@ -6,6 +6,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+const Port = "1323"
+
 func Init() {
 	e := echo.New()
 
@@ -15,5 +17,5 @@ func Init() {
 	e.GET("/", handler.Index)
 	e.GET("/ping", handler.Ping)
 
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":" + Port))
 }
