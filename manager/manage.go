@@ -21,7 +21,7 @@ func Run(gitURL, repoPath string) error {
 		if err != nil {
 			return err
 		}
-		if len(infos) > 0 {
+		if len(infos) == 0 {
 			break
 		}
 
