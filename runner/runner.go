@@ -10,8 +10,7 @@ import (
 )
 
 func RunForRepo(gitURL string) error {
-	cliConfig := config.GetCLIConfig()
-	repoPath, err := prepareRepo(gitURL, cliConfig.InPlace)
+	repoPath, err := prepareRepo(gitURL)
 	if err != nil {
 		return err
 	}
@@ -21,8 +20,9 @@ func RunForRepo(gitURL string) error {
 	return nil
 }
 
-func prepareRepo(gitURL string, inPlace bool) (gitPath string, err error) {
-	if !inPlace {
+func prepareRepo(gitURL string) (gitPath string, err error) {
+	cliConfig := config.GetCLIConfig()
+	if !cliConfig.InPlace {
 		gitPath, err = gitutil.CloneRepo(gitURL)
 		if err != nil {
 			return "", err
