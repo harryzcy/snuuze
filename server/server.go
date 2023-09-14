@@ -21,16 +21,15 @@ const Port = "1323"
 
 func Run() {
 	e, _, err := initEcho()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	exitOnError(err)
+
+	err = startCron()
+	exitOnError(err)
 
 	go func() {
 		fmt.Println("Listening on port " + Port)
 		if err = e.Start(":" + Port); err != nil && err != http.ErrServerClosed {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+			exitOnError(err)
 		}
 	}()
 
@@ -41,12 +40,18 @@ func Run() {
 	fmt.Println("Shutting down the server...")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if err := e.Shutdown(ctx); err != nil {
+
+	err = e.Shutdown(ctx)
+	exitOnError(err)
+
+	fmt.Println("Server gracefully stopped")
+}
+
+func exitOnError(err error) {
+	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-
-	fmt.Println("Server gracefully stopped")
 }
 
 // initEcho initializes the echo server and setup the routes.
