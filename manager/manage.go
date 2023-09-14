@@ -9,7 +9,7 @@ import (
 )
 
 func Run(gitURL, repoPath string) error {
-	matches, err := Scan(repoPath)
+	allMatches, err := Scan(repoPath)
 	if err != nil {
 		return err
 	}
@@ -17,6 +17,7 @@ func Run(gitURL, repoPath string) error {
 	var allInfos []*types.UpgradeInfo
 
 	for _, m := range managers {
+		matches := allMatches[m.Name()]
 		infos, err := m.ListUpgrades(matches)
 		if err != nil {
 			return err
