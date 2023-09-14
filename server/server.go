@@ -14,7 +14,7 @@ const Port = "1323"
 
 func Init() {
 	authType := config.GetHostingConfig().GitHub.AuthType
-	if authType != "github_app" {
+	if authType != "github-app" {
 		fmt.Fprintln(os.Stderr, "Only GitHub App is supported for running as a server")
 		return
 	}
