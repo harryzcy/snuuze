@@ -7,7 +7,6 @@ import (
 	"github.com/harryzcy/snuuze/platform"
 	"github.com/harryzcy/snuuze/runner/manager/common"
 	"github.com/harryzcy/snuuze/types"
-	"github.com/harryzcy/snuuze/util/versionutil"
 )
 
 type GitHubActionsManager struct{}
@@ -66,7 +65,7 @@ func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.Upgrad
 		return nil, err
 	}
 
-	latest, err := versionutil.GetLatestTag(tags, dep.Version, true)
+	latest, err := common.GetLatestTag(tags, dep.Version, true)
 	if err != nil {
 		return nil, err
 	}
