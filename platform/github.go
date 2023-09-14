@@ -50,7 +50,7 @@ func (c *GitHubClient) ListRepos() ([]Repo, error) {
 						Name string
 					}
 				}
-			} `graphql:"repositories(first: 100, isArchived; false, orderBy: {field: NAME, direction: ASC})"`
+			} `graphql:"repositories(first: 100, isArchived: false, orderBy: {field: NAME, direction: ASC})"`
 		}
 	}
 

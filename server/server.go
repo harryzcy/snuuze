@@ -1,9 +1,14 @@
 package server
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/platform"
@@ -15,20 +20,37 @@ import (
 const Port = "1323"
 
 func Run() {
-	e, _, err := initialize()
+	e, _, err := initEcho()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	err = e.Start(":" + Port)
-	if err != nil {
+	go func() {
+		fmt.Println("Listening on port " + Port)
+		if err = e.Start(":" + Port); err != nil && err != http.ErrServerClosed {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	fmt.Println("Shutting down the server...")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+
+	fmt.Println("Server gracefully stopped")
 }
 
-func initialize() (*echo.Echo, *State, error) {
+// initEcho initializes the echo server and setup the routes.
+func initEcho() (*echo.Echo, *State, error) {
 	authType := config.GetHostingConfig().GitHub.AuthType
 	if authType != "github-app" {
 		return nil, nil, errors.New("only GitHub App is supported for running as a server")
@@ -42,24 +64,25 @@ func initialize() (*echo.Echo, *State, error) {
 	e.GET("/", handler.Index)
 	e.GET("/ping", handler.Ping)
 
-	state, err := LoadState()
+	state, err := loadState()
 	if err != nil {
 		return nil, nil, err
 	}
 	return e, state, nil
 }
 
-func LoadState() (*State, error) {
+// loadState loads the state of the server.
+func loadState() (*State, error) {
 	client, err := platform.NewClient(platform.NewClientOptions{
 		Platform: platform.GitPlatformGitHub,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create platform client: %w", err)
 	}
 
 	repos, err := client.ListRepos()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to list repos: %w", err)
 	}
 
 	return &State{
