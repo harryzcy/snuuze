@@ -2,6 +2,8 @@ package server
 
 import (
 	"errors"
+	"fmt"
+	"os"
 
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/platform"
@@ -12,10 +14,24 @@ import (
 
 const Port = "1323"
 
-func Init() (*State, error) {
+func Run() {
+	e, _, err := initialize()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	err = e.Start(":" + Port)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func initialize() (*echo.Echo, *State, error) {
 	authType := config.GetHostingConfig().GitHub.AuthType
 	if authType != "github-app" {
-		return nil, errors.New("only GitHub App is supported for running as a server")
+		return nil, nil, errors.New("only GitHub App is supported for running as a server")
 	}
 
 	e := echo.New()
@@ -26,22 +42,14 @@ func Init() (*State, error) {
 	e.GET("/", handler.Index)
 	e.GET("/ping", handler.Ping)
 
-	repos, err := LoadRepos()
+	state, err := LoadState()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-
-	err = e.Start(":" + Port)
-	if err != nil {
-		return nil, err
-	}
-
-	return &State{
-		Repos: repos,
-	}, nil
+	return e, state, nil
 }
 
-func LoadRepos() ([]platform.Repo, error) {
+func LoadState() (*State, error) {
 	client, err := platform.NewClient(platform.NewClientOptions{
 		Platform: platform.GitPlatformGitHub,
 	})
@@ -54,5 +62,7 @@ func LoadRepos() ([]platform.Repo, error) {
 		return nil, err
 	}
 
-	return repos, nil
+	return &State{
+		Repos: repos,
+	}, nil
 }
