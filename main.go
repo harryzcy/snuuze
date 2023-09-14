@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/manager"
@@ -23,7 +24,7 @@ func main() {
 		return
 	}
 
-	if config.GetArgs().AsServer() {
+	if config.GetCLIConfig().AsServer() {
 		server.Init()
 	} else {
 		runCli()
@@ -42,9 +43,9 @@ func runCli() {
 }
 
 func prepareRepo() (gitURL, gitPath string, err error) {
-	args := config.GetArgs()
-	if len(args) != 0 {
-		gitURL = args[0]
+	cliConfig := config.GetCLIConfig()
+	if len(cliConfig.Args) != 0 {
+		gitURL = cliConfig.Args[0]
 	} else {
 		var err error
 		gitURL, err = gitutil.GetOriginURL()
@@ -53,8 +54,7 @@ func prepareRepo() (gitURL, gitPath string, err error) {
 		}
 	}
 
-	flags := config.GetFlags()
-	if !flags.InPlace {
+	if !cliConfig.InPlace {
 		gitPath, err = gitutil.CloneRepo(gitURL)
 		if err != nil {
 			return "", "", err
@@ -65,15 +65,18 @@ func prepareRepo() (gitURL, gitPath string, err error) {
 			return "", "", err
 		}
 	} else {
-		gitPath = "."
+		gitPath, err = os.Getwd()
+		if err != nil {
+			return "", "", err
+		}
 	}
 
 	return gitURL, gitPath, nil
 }
 
 func cleanupRepo(path string) {
-	flags := config.GetFlags()
-	if flags.InPlace {
+	cliConfig := config.GetCLIConfig()
+	if cliConfig.InPlace {
 		return
 	}
 

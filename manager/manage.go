@@ -35,7 +35,7 @@ func Run(gitURL, repoPath string) {
 	}
 	fmt.Println("Found", len(allInfos), "updates")
 
-	if config.GetFlags().DryRun {
+	if config.GetCLIConfig().DryRun {
 		PrintUpgradeInfos(allInfos)
 		return
 	}
