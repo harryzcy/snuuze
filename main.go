@@ -32,7 +32,20 @@ func main() {
 }
 
 func runCli() {
-	gitURL, repoPath, err := prepareRepo()
+	var gitURL string
+	cliConfig := config.GetCLIConfig()
+	if len(cliConfig.Args) != 0 {
+		gitURL = cliConfig.Args[0]
+	} else {
+		var err error
+		gitURL, err = gitutil.GetOriginURL()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+	}
+
+	repoPath, err := prepareRepo(gitURL, cliConfig.InPlace)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -42,36 +55,25 @@ func runCli() {
 	manager.Run(gitURL, repoPath)
 }
 
-func prepareRepo() (gitURL, gitPath string, err error) {
-	cliConfig := config.GetCLIConfig()
-	if len(cliConfig.Args) != 0 {
-		gitURL = cliConfig.Args[0]
-	} else {
-		var err error
-		gitURL, err = gitutil.GetOriginURL()
-		if err != nil {
-			return "", "", err
-		}
-	}
-
-	if !cliConfig.InPlace {
+func prepareRepo(gitURL string, inPlace bool) (gitPath string, err error) {
+	if !inPlace {
 		gitPath, err = gitutil.CloneRepo(gitURL)
 		if err != nil {
-			return "", "", err
+			return "", err
 		}
 
 		err = gitutil.UpdateCommitter(gitURL, gitPath)
 		if err != nil {
-			return "", "", err
+			return "", err
 		}
 	} else {
 		gitPath, err = os.Getwd()
 		if err != nil {
-			return "", "", err
+			return "", err
 		}
 	}
 
-	return gitURL, gitPath, nil
+	return gitPath, nil
 }
 
 func cleanupRepo(path string) {
