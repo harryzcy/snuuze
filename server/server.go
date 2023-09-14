@@ -12,6 +12,7 @@ func Init() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	e.GET("/", handler.Index)
 	e.GET("/ping", handler.Ping)
 
 	e.Logger.Fatal(e.Start(":1323"))
