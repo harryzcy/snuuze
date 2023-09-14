@@ -7,7 +7,6 @@ import (
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/runner/manager"
 	"github.com/harryzcy/snuuze/runner/updater"
-	"github.com/harryzcy/snuuze/util/gitutil"
 )
 
 func RunForRepo(gitURL string) error {
@@ -29,12 +28,12 @@ func RunForRepo(gitURL string) error {
 func prepareRepo(gitURL string) (gitPath string, err error) {
 	cliConfig := config.GetCLIConfig()
 	if !cliConfig.InPlace {
-		gitPath, err = gitutil.CloneRepo(gitURL)
+		gitPath, err = cloneRepo(gitURL)
 		if err != nil {
 			return "", err
 		}
 
-		err = gitutil.UpdateCommitter(gitURL, gitPath)
+		err = updateGitCommitter(gitURL, gitPath)
 		if err != nil {
 			return "", err
 		}
@@ -54,7 +53,7 @@ func cleanupRepo(path string) {
 		return
 	}
 
-	err := gitutil.RemoveRepo(path)
+	err := removeRepo(path)
 	if err != nil {
 		fmt.Println("Failed to remove repo:", err)
 	}

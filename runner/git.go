@@ -1,4 +1,4 @@
-package gitutil
+package runner
 
 import (
 	"errors"
@@ -16,7 +16,8 @@ var (
 	ErrNoUserID = errors.New("app user ID is not set")
 )
 
-func GetOriginURL() (string, error) {
+// GetGitOriginURL returns url of `origin` remote of the current git repo
+func GetGitOriginURL() (string, error) {
 	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
 		Command: []string{"git", "remote", "get-url", "origin"},
 	})
@@ -27,8 +28,8 @@ func GetOriginURL() (string, error) {
 	return strings.TrimSpace(output.Stdout.String()), nil
 }
 
-// CloneRepo clones a git repo to a temp directory
-func CloneRepo(gitURL string) (string, error) {
+// cloneRepo clones a git repo to a temp directory
+func cloneRepo(gitURL string) (string, error) {
 	dirPath, err := os.MkdirTemp(config.TempDir(), "snuuze-*")
 	if err != nil {
 		log.Fatal(err)
@@ -45,7 +46,7 @@ func CloneRepo(gitURL string) (string, error) {
 	return dirPath, nil
 }
 
-func UpdateCommitter(gitURL, dirPath string) error {
+func updateGitCommitter(gitURL, dirPath string) error {
 	// TODO: support other git platforms
 	if gitPlatform, _ := platform.DetermineGitPlatform(gitURL); gitPlatform != platform.GitPlatformGitHub {
 		return nil
@@ -91,6 +92,6 @@ func UpdateCommitter(gitURL, dirPath string) error {
 	return nil
 }
 
-func RemoveRepo(path string) error {
+func removeRepo(path string) error {
 	return os.RemoveAll(path)
 }

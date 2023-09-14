@@ -6,7 +6,6 @@ import (
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/runner"
 	"github.com/harryzcy/snuuze/server"
-	"github.com/harryzcy/snuuze/util/gitutil"
 )
 
 func main() {
@@ -36,7 +35,7 @@ func runCli() {
 		gitURL = cliConfig.Args[0]
 	} else {
 		var err error
-		gitURL, err = gitutil.GetOriginURL()
+		gitURL, err = runner.GetGitOriginURL()
 		if err != nil {
 			log.Fatal(err)
 			return
