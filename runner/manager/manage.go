@@ -4,14 +4,13 @@ import (
 	"fmt"
 
 	"github.com/harryzcy/snuuze/config"
-	"github.com/harryzcy/snuuze/runner/updater"
 	"github.com/harryzcy/snuuze/types"
 )
 
-func Run(gitURL, repoPath string) error {
+func Run(gitURL, repoPath string) ([]*types.UpgradeInfo, error) {
 	allMatches, err := Scan(repoPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var allInfos []*types.UpgradeInfo
@@ -20,7 +19,7 @@ func Run(gitURL, repoPath string) error {
 		matches := allMatches[m.Name()]
 		infos, err := m.ListUpgrades(matches)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		if len(infos) != 0 {
@@ -30,15 +29,14 @@ func Run(gitURL, repoPath string) error {
 
 	if len(allInfos) == 0 {
 		fmt.Println("No updates found")
-		return nil
+		return nil, nil
 	}
 	fmt.Println("Found", len(allInfos), "updates")
 
 	if config.GetCLIConfig().DryRun {
 		PrintUpgradeInfos(allInfos)
-		return nil
+		return nil, nil
 	}
 
-	updater.Update(gitURL, repoPath, allInfos)
-	return nil
+	return allInfos, nil
 }

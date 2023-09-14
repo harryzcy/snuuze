@@ -6,6 +6,7 @@ import (
 
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/runner/manager"
+	"github.com/harryzcy/snuuze/runner/updater"
 	"github.com/harryzcy/snuuze/util/gitutil"
 )
 
@@ -16,7 +17,13 @@ func RunForRepo(gitURL string) error {
 	}
 	defer cleanupRepo(repoPath)
 
-	return manager.Run(gitURL, repoPath)
+	infos, err := manager.Run(gitURL, repoPath)
+	if err != nil {
+		return err
+	}
+
+	updater.Update(gitURL, repoPath, infos)
+	return nil
 }
 
 func prepareRepo(gitURL string) (gitPath string, err error) {
