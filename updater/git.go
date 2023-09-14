@@ -69,7 +69,9 @@ func createPullRequest(gitURL string, info *commitInfo, base string) error {
 		return err
 	}
 
-	client, err := platform.NewClient(gitURL)
+	client, err := platform.NewClient(platform.NewClientOptions{
+		URL: gitURL,
+	})
 	if err != nil {
 		return err
 	}
