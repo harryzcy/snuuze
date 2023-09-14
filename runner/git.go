@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/harryzcy/snuuze/command"
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/platform"
-	"github.com/harryzcy/snuuze/util/cmdutil"
 )
 
 var (
@@ -18,7 +18,7 @@ var (
 
 // GetGitOriginURL returns url of `origin` remote of the current git repo
 func GetGitOriginURL() (string, error) {
-	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+	output, err := command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "remote", "get-url", "origin"},
 	})
 	if err != nil {
@@ -36,7 +36,7 @@ func cloneRepo(gitURL string) (string, error) {
 	}
 
 	fmt.Println("Cloning repo to", dirPath)
-	_, err = cmdutil.RunCommand(cmdutil.CommandInputs{
+	_, err = command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "clone", gitURL, dirPath},
 	})
 	if err != nil {
@@ -65,7 +65,7 @@ func updateGitCommitter(gitURL, dirPath string) error {
 		return ErrNoUserID
 	}
 
-	_, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+	_, err := command.RunCommand(command.CommandInputs{
 		Dir:     dirPath,
 		Command: []string{"git", "config", "user.name", appName},
 	})
@@ -73,7 +73,7 @@ func updateGitCommitter(gitURL, dirPath string) error {
 		return err
 	}
 
-	_, err = cmdutil.RunCommand(cmdutil.CommandInputs{
+	_, err = command.RunCommand(command.CommandInputs{
 		Dir:     dirPath,
 		Command: []string{"git", "config", "user.email", fmt.Sprintf("%d+%s@users.noreply.github.com", appUserID, appName)},
 	})
@@ -81,7 +81,7 @@ func updateGitCommitter(gitURL, dirPath string) error {
 		return err
 	}
 
-	_, err = cmdutil.RunCommand(cmdutil.CommandInputs{
+	_, err = command.RunCommand(command.CommandInputs{
 		Dir:     dirPath,
 		Command: []string{"git", "config", "commit.gpgsign", "false"},
 	})

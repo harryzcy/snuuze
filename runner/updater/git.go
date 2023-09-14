@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/harryzcy/snuuze/command"
 	"github.com/harryzcy/snuuze/platform"
-	"github.com/harryzcy/snuuze/util/cmdutil"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 )
 
 func getDefaultBranch(repoDir string) string {
-	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+	output, err := command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "-C", repoDir, "rev-parse", "--abbrev-ref", "origin/HEAD"},
 	})
 	if err != nil {
@@ -32,14 +32,14 @@ func getDefaultBranch(repoDir string) string {
 }
 
 func commitChanges(repoDir, branchName, message string) error {
-	_, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+	_, err := command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "-C", repoDir, "add", "."},
 	})
 	if err != nil {
 		return err
 	}
 
-	_, err = cmdutil.RunCommand(cmdutil.CommandInputs{
+	_, err = command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "-C", repoDir, "commit", "-m", message},
 		Env: map[string]string{
 			"HOME": os.Getenv("HOME"), // required for git to find the user's config
@@ -53,7 +53,7 @@ func commitChanges(repoDir, branchName, message string) error {
 }
 
 func pushBranch(repoDir, branchName string) error {
-	_, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+	_, err := command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "-C", repoDir, "push", "origin", branchName, "--force"},
 	})
 	if err != nil {

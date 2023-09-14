@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/harryzcy/snuuze/command"
 	"github.com/harryzcy/snuuze/types"
-	"github.com/harryzcy/snuuze/util/cmdutil"
 )
 
 func Update(gitURL, repoDir string, infos []*types.UpgradeInfo) {
@@ -37,7 +37,7 @@ func updateDependencies(gitURL, repoDir string, infos []*types.UpgradeInfo, info
 	base := getDefaultBranch(repoDir)
 	fmt.Println("Creating branch", info.branchName, "from", base)
 
-	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+	output, err := command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "-C", repoDir, "checkout", "-b", info.branchName, base},
 	})
 	if err != nil {
