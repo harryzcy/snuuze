@@ -1,9 +1,9 @@
 package manager
 
 import (
-	"github.com/harryzcy/snuuze/manager/common"
-	"github.com/harryzcy/snuuze/manager/githubactions"
-	"github.com/harryzcy/snuuze/manager/gomod"
+	"github.com/harryzcy/snuuze/runner/manager/common"
+	"github.com/harryzcy/snuuze/runner/manager/githubactions"
+	"github.com/harryzcy/snuuze/runner/manager/gomod"
 	"github.com/harryzcy/snuuze/types"
 )
 

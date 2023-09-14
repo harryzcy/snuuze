@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/harryzcy/snuuze/config"
-	"github.com/harryzcy/snuuze/manager"
+	"github.com/harryzcy/snuuze/runner/manager"
 	"github.com/harryzcy/snuuze/util/gitutil"
 )
 

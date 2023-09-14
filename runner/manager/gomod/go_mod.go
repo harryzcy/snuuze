@@ -3,7 +3,7 @@ package gomod
 import (
 	"path/filepath"
 
-	"github.com/harryzcy/snuuze/manager/common"
+	"github.com/harryzcy/snuuze/runner/manager/common"
 	"github.com/harryzcy/snuuze/thirdparty/gomajor"
 	"github.com/harryzcy/snuuze/types"
 	"github.com/harryzcy/snuuze/util/versionutil"
