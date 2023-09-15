@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/harryzcy/snuuze/command"
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/platform"
+	"github.com/harryzcy/snuuze/runner/command"
 )
 
 var (

@@ -3,7 +3,7 @@ package git
 import (
 	"os"
 
-	"github.com/harryzcy/snuuze/command"
+	"github.com/harryzcy/snuuze/runner/command"
 )
 
 func CommitChanges(repoDir, branchName, message string) error {

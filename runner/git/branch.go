@@ -3,7 +3,7 @@ package git
 import (
 	"strings"
 
-	"github.com/harryzcy/snuuze/command"
+	"github.com/harryzcy/snuuze/runner/command"
 )
 
 const (

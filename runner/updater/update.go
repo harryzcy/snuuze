@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/harryzcy/snuuze/command"
+	"github.com/harryzcy/snuuze/runner/command"
 	"github.com/harryzcy/snuuze/runner/git"
 	"github.com/harryzcy/snuuze/types"
 )

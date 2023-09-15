@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/harryzcy/snuuze/command"
 	"github.com/harryzcy/snuuze/config"
+	"github.com/harryzcy/snuuze/runner/command"
 	"github.com/harryzcy/snuuze/types"
 	"github.com/hashicorp/go-version"
 )
