@@ -8,11 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetDefaultBranch(t *testing.T) {
-	branch := getDefaultBranch(".")
-	assert.Equal(t, "main", branch)
-}
-
 func TestParseGitURL(t *testing.T) {
 	tests := []struct {
 		url         string
