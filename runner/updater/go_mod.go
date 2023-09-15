@@ -91,13 +91,9 @@ func getGoModuleName(name, fromVersion, toVersion string) (string, error) {
 	return baseName + newSuffix, nil
 }
 
-func postGoMod(cache *Cache, goReplaceItems []*ReplaceItem) error {
-	goModFiles, err := cache.ListGoMod()
-	if err != nil {
-		return fmt.Errorf("postGoMod: failed to list go.mod files: %s", err)
-	}
-
+func postGoMod(cache *Cache, goModFiles []string, goReplaceItems []*ReplaceItem) error {
 	for _, file := range goModFiles {
+		fmt.Println("postGoMod: processing", file)
 		dir := filepath.Dir(file)
 
 		for _, replace := range goReplaceItems {
@@ -128,7 +124,7 @@ func postGoMod(cache *Cache, goReplaceItems []*ReplaceItem) error {
 				return fmt.Errorf("failed to walk dir %s: %s", dir, err)
 			}
 		}
-		err = cache.Commit()
+		err := cache.Commit()
 		if err != nil {
 			return fmt.Errorf("postGoMod: failed to commit cache: %s", err)
 		}
