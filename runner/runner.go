@@ -22,8 +22,8 @@ func RunForRepo(gitURL string) error {
 		return err
 	}
 
-	updater.Update(gitURL, repoPath, infos)
-	return nil
+	err = updater.Update(gitURL, repoPath, infos)
+	return err
 }
 
 func prepareRepo(gitURL string) (gitPath string, err error) {
