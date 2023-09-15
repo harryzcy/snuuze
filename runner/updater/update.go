@@ -1,7 +1,9 @@
 package updater
 
 import (
+	"errors"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/harryzcy/snuuze/runner/command"
@@ -9,15 +11,18 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
-func Update(gitURL, repoDir string, infos []*types.UpgradeInfo) {
+func Update(gitURL, repoDir string, infos []*types.UpgradeInfo) error {
 	groups := groupUpdates(infos)
 	fmt.Println("Found", len(groups), "groups of updates")
+
+	hasError := false
 	for _, group := range groups {
 		commitInfo, hasGroupName := prepareCommit(group)
 		if hasGroupName {
 			err := updateDependencies(gitURL, repoDir, group.Infos, commitInfo)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Fprintln(os.Stderr, err)
+				hasError = true
 				continue
 			}
 		} else {
@@ -26,12 +31,17 @@ func Update(gitURL, repoDir string, infos []*types.UpgradeInfo) {
 				commitInfo := prepareCommitByUpgradeInfo(info)
 				err := updateDependencies(gitURL, repoDir, []*types.UpgradeInfo{info}, commitInfo)
 				if err != nil {
-					fmt.Println(err)
+					fmt.Fprintln(os.Stderr, err)
+					hasError = true
 					continue
 				}
 			}
 		}
 	}
+	if hasError {
+		return errors.New("error occurred during update")
+	}
+	return nil
 }
 
 func updateDependencies(gitURL, repoDir string, infos []*types.UpgradeInfo, info *commitInfo) error {
