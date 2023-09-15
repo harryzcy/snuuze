@@ -118,7 +118,7 @@ func delegateUpdate(infos []*types.UpgradeInfo) error {
 
 	goReplaceItems := []*ReplaceItem{}
 
-	errors := []error{}
+	var errs []error
 	for _, info := range infos {
 		var err error
 		switch info.Dependency.PackageManager {
@@ -134,23 +134,33 @@ func delegateUpdate(infos []*types.UpgradeInfo) error {
 			err = fmt.Errorf("unsupported package manager: %s", info.Dependency.PackageManager)
 		}
 		if err != nil {
-			errors = append(errors, err)
+			errs = append(errs, err)
 		}
 	}
 
-	err := cache.Commit()
+	err := postUpdate(cache, goReplaceItems)
 	if err != nil {
-		errors = append(errors, err)
-		if len(errors) > 0 {
-			return fmt.Errorf("failed to update dependencies: %v", errors)
-		}
+		errs = append(errs, err)
 	}
 
-	return postUpdate(cache, goReplaceItems)
+	if len(errs) > 0 {
+		return fmt.Errorf("failed to update dependencies: %v", errs)
+	}
+	return nil
 }
 
 func postUpdate(cache *Cache, goReplaceItems []*ReplaceItem) error {
-	err := postGoMod(cache, goReplaceItems)
+	goModFiles, err := cache.ListGoMod()
+	if err != nil {
+		return fmt.Errorf("postGoMod: failed to list go.mod files: %s", err)
+	}
+
+	err = cache.Commit()
+	if err != nil {
+		return err
+	}
+
+	err = postGoMod(cache, goModFiles, goReplaceItems)
 	if err != nil {
 		return fmt.Errorf("failed to post update for go.mod: %s", err)
 	}
