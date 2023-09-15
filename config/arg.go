@@ -23,7 +23,9 @@ var (
 
 func ParseArgs() {
 	args := os.Args[1:]
-	if len(args) == 0 || args[0] == "server" {
+	if len(args) == 0 {
+		cliConfig.Mode = "server"
+	} else if args[0] == "server" {
 		cliConfig.Mode = "server"
 		args = args[1:]
 	} else if args[0] == "cli" {
