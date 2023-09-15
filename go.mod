@@ -3,7 +3,7 @@ module github.com/harryzcy/snuuze
 go 1.20
 
 require (
-	github.com/bradleyfalzon/ghinstallation/v2 v2.6.0
+	github.com/bradleyfalzon/ghinstallation/v2 v2.7.0
 	github.com/go-co-op/gocron v1.33.1
 	github.com/hashicorp/go-version v1.6.0
 	github.com/labstack/echo/v4 v4.11.1
@@ -53,3 +53,4 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
+
