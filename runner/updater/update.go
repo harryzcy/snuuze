@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/harryzcy/snuuze/runner/command"
+	"github.com/harryzcy/snuuze/runner/git"
 	"github.com/harryzcy/snuuze/types"
-	"github.com/harryzcy/snuuze/util/cmdutil"
 )
 
 func Update(gitURL, repoDir string, infos []*types.UpgradeInfo) {
@@ -34,10 +35,10 @@ func Update(gitURL, repoDir string, infos []*types.UpgradeInfo) {
 }
 
 func updateDependencies(gitURL, repoDir string, infos []*types.UpgradeInfo, info *commitInfo) error {
-	base := getDefaultBranch(repoDir)
+	base := git.GetDefaultBranch(repoDir)
 	fmt.Println("Creating branch", info.branchName, "from", base)
 
-	output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+	output, err := command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "-C", repoDir, "checkout", "-b", info.branchName, base},
 	})
 	if err != nil {
@@ -49,12 +50,12 @@ func updateDependencies(gitURL, repoDir string, infos []*types.UpgradeInfo, info
 		return fmt.Errorf("failed to update dependencies: %s", err)
 	}
 
-	err = commitChanges(repoDir, info.branchName, info.message)
+	err = git.CommitChanges(repoDir, info.branchName, info.message)
 	if err != nil {
 		return fmt.Errorf("failed to commit changes: %s", err)
 	}
 
-	err = pushBranch(repoDir, info.branchName)
+	err = git.PushBranch(repoDir, info.branchName)
 	if err != nil {
 		return fmt.Errorf("failed to push branch: %s", err)
 	}

@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/harryzcy/snuuze/config"
+	"github.com/harryzcy/snuuze/runner/command"
 	"github.com/harryzcy/snuuze/types"
-	"github.com/harryzcy/snuuze/util/cmdutil"
 	"github.com/hashicorp/go-version"
 )
 
@@ -133,7 +133,7 @@ func postGoMod(cache *Cache, goReplaceItems []*ReplaceItem) error {
 			return fmt.Errorf("postGoMod: failed to commit cache: %s", err)
 		}
 
-		output, err := cmdutil.RunCommand(cmdutil.CommandInputs{
+		output, err := command.RunCommand(command.CommandInputs{
 			Command: []string{"go", "mod", "tidy"},
 			Dir:     dir,
 			Env: map[string]string{

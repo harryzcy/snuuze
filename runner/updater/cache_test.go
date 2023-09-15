@@ -3,7 +3,6 @@ package updater
 import (
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 
@@ -11,13 +10,17 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	_, b, _, _ := runtime.Caller(0)
-	basepath := filepath.Dir(b)
-	if strings.HasSuffix(basepath, "snuuze/updater") {
-		_ = os.Chdir("../")
+	wd, _ := os.Getwd()
+	for !strings.HasSuffix(wd, "snuuze") {
+		wd = filepath.Dir(wd)
 	}
 
-	_ = os.Chdir("./testdata")
+	testdataDir := filepath.Join(wd, "testdata")
+
+	err := os.Chdir(testdataDir)
+	if err != nil {
+		panic(err)
+	}
 
 	m.Run()
 }

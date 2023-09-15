@@ -3,10 +3,9 @@ package gomod
 import (
 	"path/filepath"
 
-	"github.com/harryzcy/snuuze/manager/common"
+	"github.com/harryzcy/snuuze/runner/manager/common"
 	"github.com/harryzcy/snuuze/thirdparty/gomajor"
 	"github.com/harryzcy/snuuze/types"
-	"github.com/harryzcy/snuuze/util/versionutil"
 	"golang.org/x/mod/modfile"
 )
 
@@ -63,7 +62,7 @@ func (m *GolangManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, 
 		return nil, err
 	}
 
-	latestVersion, err := versionutil.GetLatestTag(mod.Versions, dep.Version, !dep.Indirect)
+	latestVersion, err := common.GetLatestTag(mod.Versions, dep.Version, !dep.Indirect)
 	if err != nil {
 		return nil, err
 	}
