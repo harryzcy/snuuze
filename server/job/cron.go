@@ -1,4 +1,4 @@
-package server
+package job
 
 import (
 	"fmt"
@@ -6,10 +6,9 @@ import (
 	"time"
 
 	"github.com/go-co-op/gocron"
-	"github.com/harryzcy/snuuze/runner"
 )
 
-func startCron(state *State) (*gocron.Scheduler, error) {
+func StartCron(state *State) (*gocron.Scheduler, error) {
 	s := gocron.NewScheduler(time.UTC)
 	s.WaitForScheduleAll()
 
@@ -27,16 +26,6 @@ func startCron(state *State) (*gocron.Scheduler, error) {
 	return s, nil
 }
 
-func stopCron(s *gocron.Scheduler) {
+func StopCron(s *gocron.Scheduler) {
 	s.Stop()
-}
-
-func checkUpdates(state *State) error {
-	for _, repo := range state.Repos {
-		err := runner.RunForRepo(repo.URL)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }
