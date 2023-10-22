@@ -16,7 +16,6 @@ func checkUpdates(state *State) {
 			fmt.Fprintln(os.Stderr, "Failed to get dependency for repo", repo.URL, ":", err)
 			continue
 		}
-		state.RepoDependencies[repo] = dependencies
 		updateDependencyIndex(state, repo, dependencies)
 
 		err = runner.RunForRepo(repo.URL)
@@ -28,6 +27,8 @@ func checkUpdates(state *State) {
 }
 
 func updateDependencyIndex(state *State, repo platform.Repo, dependencies map[types.PackageManager][]*types.Dependency) {
+	state.RepoDependencies[repo] = dependencies
+
 	previousDependencies := flattenDependencies(state.RepoDependencies[repo])
 	currentDependencies := flattenDependencies(dependencies)
 	currentHashed := make(map[string]bool)
