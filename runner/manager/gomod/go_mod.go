@@ -24,16 +24,16 @@ func (m *GolangManager) Match(path string) bool {
 	return filename == "go.mod"
 }
 
-func (m *GolangManager) Parse(match types.Match, data []byte) ([]types.Dependency, error) {
+func (m *GolangManager) Parse(match types.Match, data []byte) ([]*types.Dependency, error) {
 	filename := filepath.Base(match.File)
 	file, err := modfile.Parse(filename, data, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	dependencies := make([]types.Dependency, 0, len(file.Require))
+	dependencies := make([]*types.Dependency, 0, len(file.Require))
 	for _, require := range file.Require {
-		dependencies = append(dependencies, types.Dependency{
+		dependencies = append(dependencies, &types.Dependency{
 			File:           match.File,
 			Name:           require.Mod.Path,
 			Version:        require.Mod.Version,
@@ -50,6 +50,10 @@ func (m *GolangManager) Parse(match types.Match, data []byte) ([]types.Dependenc
 	}
 
 	return dependencies, nil
+}
+
+func (m *GolangManager) FindDependencies(matches []types.Match) ([]*types.Dependency, error) {
+	return common.FindDependencies(m, matches)
 }
 
 func (m *GolangManager) ListUpgrades(matches []types.Match) ([]*types.UpgradeInfo, error) {

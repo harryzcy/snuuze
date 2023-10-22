@@ -1,13 +1,35 @@
 package job
 
-import "github.com/harryzcy/snuuze/runner"
+import (
+	"fmt"
+	"os"
 
-func checkUpdates(state *State) error {
+	"github.com/harryzcy/snuuze/platform"
+	"github.com/harryzcy/snuuze/runner"
+	"github.com/harryzcy/snuuze/types"
+)
+
+func checkUpdates(state *State) {
 	for _, repo := range state.Repos {
-		err := runner.RunForRepo(repo.URL)
+		dependencies, err := getDependencyForRepo(repo)
 		if err != nil {
-			return err
+			fmt.Fprintln(os.Stderr, "Failed to get dependency for repo", repo.URL, ":", err)
+			continue
+		}
+		state.Dependencies = append(state.Dependencies, dependencies...)
+
+		err = runner.RunForRepo(repo.URL)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Failed to run for repo", repo.URL, ":", err)
+			continue
 		}
 	}
-	return nil
+}
+
+func getDependencyForRepo(repo platform.Repo) ([]*types.Dependency, error) {
+	dependencies, err := runner.GetDependencyForRepo(repo.URL)
+	if err != nil {
+		return nil, err
+	}
+	return dependencies, nil
 }

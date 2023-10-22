@@ -21,10 +21,7 @@ func Run(gitURL, repoPath string) ([]*types.UpgradeInfo, error) {
 		if err != nil {
 			return nil, err
 		}
-
-		if len(infos) != 0 {
-			allInfos = append(allInfos, infos...)
-		}
+		allInfos = append(allInfos, infos...)
 	}
 
 	if len(allInfos) == 0 {
@@ -39,4 +36,24 @@ func Run(gitURL, repoPath string) ([]*types.UpgradeInfo, error) {
 	}
 
 	return allInfos, nil
+}
+
+func FindAll(repoPath string) ([]*types.Dependency, error) {
+	allMatches, err := Scan(repoPath)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*types.Dependency
+
+	for _, m := range managers {
+		matches := allMatches[m.Name()]
+		dependencies, err := m.FindDependencies(matches)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, dependencies...)
+	}
+
+	return result, nil
 }

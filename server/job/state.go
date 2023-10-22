@@ -4,10 +4,12 @@ import (
 	"fmt"
 
 	"github.com/harryzcy/snuuze/platform"
+	"github.com/harryzcy/snuuze/types"
 )
 
 type State struct {
-	Repos []platform.Repo
+	Repos        []platform.Repo
+	Dependencies []*types.Dependency
 }
 
 // InitState loads the state for the server.

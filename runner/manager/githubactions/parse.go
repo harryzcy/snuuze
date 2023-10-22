@@ -20,14 +20,14 @@ type step struct {
 	Uses string
 }
 
-func parseGitHubActions(path string, data []byte) ([]types.Dependency, error) {
+func parseGitHubActions(path string, data []byte) ([]*types.Dependency, error) {
 	var content minimalGitHubActions
 	err := yaml.Unmarshal(data, &content)
 	if err != nil {
 		return nil, err
 	}
 
-	dependencies := make([]types.Dependency, 0)
+	dependencies := make([]*types.Dependency, 0)
 	for _, job := range content.Jobs {
 		if job.Uses != "" {
 			// reusable workflow
@@ -50,16 +50,16 @@ func parseGitHubActions(path string, data []byte) ([]types.Dependency, error) {
 	return dependencies, nil
 }
 
-func parseWorkflow(path, uses string) (types.Dependency, bool) {
+func parseWorkflow(path, uses string) (*types.Dependency, bool) {
 	if uses == "" {
-		return types.Dependency{}, false
+		return nil, false
 	}
 
 	parts := strings.Split(uses, "@")
 	name := parts[0]
 	if strings.HasPrefix(name, "./") {
 		// local repository, skip
-		return types.Dependency{}, false
+		return nil, false
 	}
 
 	version := ""
@@ -67,7 +67,7 @@ func parseWorkflow(path, uses string) (types.Dependency, bool) {
 		version = parts[1]
 	}
 
-	return types.Dependency{
+	return &types.Dependency{
 		File:           path,
 		Name:           name,
 		Version:        version,
