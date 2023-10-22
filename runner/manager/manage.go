@@ -38,21 +38,21 @@ func Run(gitURL, repoPath string) ([]*types.UpgradeInfo, error) {
 	return allInfos, nil
 }
 
-func FindAll(repoPath string) ([]*types.Dependency, error) {
+func FindAll(repoPath string) (map[types.PackageManager][]*types.Dependency, error) {
 	allMatches, err := Scan(repoPath)
 	if err != nil {
 		return nil, err
 	}
 
-	var result []*types.Dependency
+	result := make(map[types.PackageManager][]*types.Dependency)
 
-	for _, m := range managers {
-		matches := allMatches[m.Name()]
+	for name, m := range managers {
+		matches := allMatches[name]
 		dependencies, err := m.FindDependencies(matches)
 		if err != nil {
 			return nil, err
 		}
-		result = append(result, dependencies...)
+		result[name] = dependencies
 	}
 
 	return result, nil

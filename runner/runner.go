@@ -27,7 +27,7 @@ func RunForRepo(gitURL string) error {
 	return err
 }
 
-func GetDependencyForRepo(gitURL string) ([]*types.Dependency, error) {
+func GetDependencyForRepo(gitURL string) (map[types.PackageManager][]*types.Dependency, error) {
 	repoPath, err := prepareRepo(gitURL)
 	if err != nil {
 		return nil, err
