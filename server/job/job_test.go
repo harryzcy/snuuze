@@ -11,7 +11,7 @@ import (
 
 func TestUpdateDependencyIndex(t *testing.T) {
 	state := &State{
-		RepoDependencies: make(map[platform.Repo]map[types.PackageManager][]*types.Dependency),
+		RepoDependencies: make(map[string]map[types.PackageManager][]*types.Dependency),
 		ReverseDependencyIndex: make(map[string]struct {
 			Dependency *types.Dependency
 			Repos      []platform.Repo
@@ -35,7 +35,7 @@ func TestUpdateDependencyIndex(t *testing.T) {
 	}
 	updateDependencyIndex(state, repo, deps1)
 	assert.Len(t, state.RepoDependencies, 1)
-	assert.Equal(t, deps1, state.RepoDependencies[repo])
+	assert.Equal(t, deps1, state.RepoDependencies[repo.URL])
 	assert.Len(t, state.ReverseDependencyIndex, 2)
 	assert.Contains(t, state.ReverseDependencyIndex, deps1[types.PackageManagerGoMod][0].Hash())
 	assert.Contains(t, state.ReverseDependencyIndex, deps1[types.PackageManagerGoMod][1].Hash())
@@ -54,7 +54,7 @@ func TestUpdateDependencyIndex(t *testing.T) {
 	}
 	updateDependencyIndex(state, repo, deps2)
 	assert.Len(t, state.RepoDependencies, 1)
-	assert.Equal(t, deps2, state.RepoDependencies[repo])
+	assert.Equal(t, deps2, state.RepoDependencies[repo.URL])
 	assert.Len(t, state.ReverseDependencyIndex, 2)
 	assert.Contains(t, state.ReverseDependencyIndex, deps2[types.PackageManagerGoMod][0].Hash())
 	assert.Contains(t, state.ReverseDependencyIndex, deps2[types.PackageManagerGoMod][1].Hash())

@@ -27,7 +27,7 @@ func checkUpdates(state *State) {
 }
 
 func updateDependencyIndex(state *State, repo platform.Repo, dependencies map[types.PackageManager][]*types.Dependency) {
-	previousDependencies := flattenDependencies(state.RepoDependencies[repo])
+	previousDependencies := flattenDependencies(state.RepoDependencies[repo.URL])
 	currentDependencies := flattenDependencies(dependencies)
 	currentHashed := make(map[string]bool)
 
@@ -71,7 +71,7 @@ func updateDependencyIndex(state *State, repo platform.Repo, dependencies map[ty
 		}
 	}
 
-	state.RepoDependencies[repo] = dependencies
+	state.RepoDependencies[repo.URL] = dependencies
 }
 
 func containRepo(repos []platform.Repo, repo platform.Repo) bool {

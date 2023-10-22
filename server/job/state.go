@@ -8,8 +8,13 @@ import (
 )
 
 type State struct {
-	Repos                  []platform.Repo
-	RepoDependencies       map[platform.Repo]map[types.PackageManager][]*types.Dependency
+	Repos []platform.Repo
+
+	// RepoDependencies maps a repo URL to its dependencies.
+	RepoDependencies map[string]map[types.PackageManager][]*types.Dependency
+
+	// ReverseDependencyIndex maps a dependency hash to its dependency and the repos that depend on it.
+	// The dependency hash is obtained by calling the Hash() method on the dependency.
 	ReverseDependencyIndex map[string]struct {
 		Dependency *types.Dependency
 		Repos      []platform.Repo
@@ -32,7 +37,7 @@ func InitState() (*State, error) {
 
 	return &State{
 		Repos:            repos,
-		RepoDependencies: make(map[platform.Repo]map[types.PackageManager][]*types.Dependency),
+		RepoDependencies: make(map[string]map[types.PackageManager][]*types.Dependency),
 		ReverseDependencyIndex: make(map[string]struct {
 			Dependency *types.Dependency
 			Repos      []platform.Repo
