@@ -69,9 +69,7 @@ func removeRepo(repos []platform.Repo, repo platform.Repo) []platform.Repo {
 func flattenDependencies(dependencies map[types.PackageManager][]*types.Dependency) []*types.Dependency {
 	result := make([]*types.Dependency, 0)
 	for _, deps := range dependencies {
-		for _, dep := range deps {
-			result = append(result, dep)
-		}
+		result = append(result, deps...)
 	}
 	return result
 }
