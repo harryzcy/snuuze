@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/harryzcy/snuuze/platform"
 	"github.com/harryzcy/snuuze/runner"
+	"github.com/harryzcy/snuuze/types"
 )
 
 func checkUpdates(state *State) {
@@ -15,6 +17,17 @@ func checkUpdates(state *State) {
 			continue
 		}
 		state.RepoDependencies[repo] = dependencies
+		for manager, deps := range dependencies {
+			for _, dep := range deps {
+				state.ReverseIndex[dep] = struct {
+					Repo    platform.Repo
+					Manager types.PackageManager
+				}{
+					Repo:    repo,
+					Manager: manager,
+				}
+			}
+		}
 
 		err = runner.RunForRepo(repo.URL)
 		if err != nil {
