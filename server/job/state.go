@@ -8,12 +8,9 @@ import (
 )
 
 type State struct {
-	Repos            []platform.Repo
-	RepoDependencies map[platform.Repo]map[types.PackageManager][]*types.Dependency
-	ReverseIndex     map[*types.Dependency]struct {
-		Repo    platform.Repo
-		Manager types.PackageManager
-	}
+	Repos                  []platform.Repo
+	RepoDependencies       map[platform.Repo]map[types.PackageManager][]*types.Dependency
+	ReverseDependencyIndex map[*types.Dependency][]platform.Repo
 }
 
 // InitState loads the state for the server.

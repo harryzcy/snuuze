@@ -17,17 +17,7 @@ func checkUpdates(state *State) {
 			continue
 		}
 		state.RepoDependencies[repo] = dependencies
-		for manager, deps := range dependencies {
-			for _, dep := range deps {
-				state.ReverseIndex[dep] = struct {
-					Repo    platform.Repo
-					Manager types.PackageManager
-				}{
-					Repo:    repo,
-					Manager: manager,
-				}
-			}
-		}
+		updateDependencyIndex(state, repo, dependencies)
 
 		err = runner.RunForRepo(repo.URL)
 		if err != nil {
@@ -35,4 +25,52 @@ func checkUpdates(state *State) {
 			continue
 		}
 	}
+}
+
+func updateDependencyIndex(state *State, repo platform.Repo, dependencies map[types.PackageManager][]*types.Dependency) {
+	previousDependencies := flattenDependencies(state.RepoDependencies[repo])
+	currentDependencies := flattenDependencies(dependencies)
+	currentHashed := make(map[string]bool)
+
+	for _, dep := range currentDependencies {
+		if !containRepo(state.ReverseDependencyIndex[dep], repo) {
+			state.ReverseDependencyIndex[dep] = append(state.ReverseDependencyIndex[dep], repo)
+		}
+
+		currentHashed[dep.Hash()] = true
+	}
+
+	for _, dep := range previousDependencies {
+		if _, ok := currentHashed[dep.Hash()]; !ok {
+			state.ReverseDependencyIndex[dep] = removeRepo(state.ReverseDependencyIndex[dep], repo)
+		}
+	}
+}
+
+func containRepo(repos []platform.Repo, repo platform.Repo) bool {
+	for _, r := range repos {
+		if r.URL == repo.URL {
+			return true
+		}
+	}
+	return false
+}
+
+func removeRepo(repos []platform.Repo, repo platform.Repo) []platform.Repo {
+	for i, r := range repos {
+		if r.URL == repo.URL {
+			return append(repos[:i], repos[i+1:]...)
+		}
+	}
+	return repos
+}
+
+func flattenDependencies(dependencies map[types.PackageManager][]*types.Dependency) []*types.Dependency {
+	result := make([]*types.Dependency, 0)
+	for _, deps := range dependencies {
+		for _, dep := range deps {
+			result = append(result, dep)
+		}
+	}
+	return result
 }
