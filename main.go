@@ -23,10 +23,14 @@ func main() {
 	}
 
 	if config.GetCLIConfig().AsServer() {
-		server.Run()
+		runServer()
 	} else {
 		runCli()
 	}
+}
+
+func runServer() {
+	server.Run()
 }
 
 func runCli() {
