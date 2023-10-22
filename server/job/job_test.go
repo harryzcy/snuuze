@@ -9,6 +9,53 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestUpdateDependencyIndex(t *testing.T) {
+	state := &State{
+		RepoDependencies: make(map[platform.Repo]map[types.PackageManager][]*types.Dependency),
+		ReverseDependencyIndex: make(map[string]struct {
+			Dependency *types.Dependency
+			Repos      []platform.Repo
+		}),
+	}
+
+	repo := platform.Repo{
+		URL: "https://github.com/harryzcy/snuuze",
+	}
+	deps1 := map[types.PackageManager][]*types.Dependency{
+		types.PackageManagerGoMod: {
+			{
+				Name:    "github.com/spf13/viper",
+				Version: "v1.16.0",
+			},
+			{
+				Name:    "github.com/stretchr/testify",
+				Version: "v1.8.4",
+			},
+		},
+	}
+	updateDependencyIndex(state, repo, deps1)
+	assert.Len(t, state.RepoDependencies, 1)
+	assert.Equal(t, deps1, state.RepoDependencies[repo])
+	assert.Len(t, state.ReverseDependencyIndex, 2)
+
+	deps2 := map[types.PackageManager][]*types.Dependency{
+		types.PackageManagerGoMod: {
+			{
+				Name:    "github.com/labstack/echo/v4",
+				Version: "v4.11.1",
+			},
+			{
+				Name:    "github.com/stretchr/testify",
+				Version: "v1.8.4",
+			},
+		},
+	}
+	updateDependencyIndex(state, repo, deps2)
+	assert.Len(t, state.RepoDependencies, 1)
+	assert.Equal(t, deps2, state.RepoDependencies[repo])
+	assert.Len(t, state.ReverseDependencyIndex, 2)
+}
+
 func TestContainRepo(t *testing.T) {
 	tests := []struct {
 		repos []platform.Repo

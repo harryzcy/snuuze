@@ -27,15 +27,28 @@ func checkUpdates(state *State) {
 }
 
 func updateDependencyIndex(state *State, repo platform.Repo, dependencies map[types.PackageManager][]*types.Dependency) {
-	state.RepoDependencies[repo] = dependencies
-
 	previousDependencies := flattenDependencies(state.RepoDependencies[repo])
 	currentDependencies := flattenDependencies(dependencies)
 	currentHashed := make(map[string]bool)
 
 	for _, dep := range currentDependencies {
-		if !containRepo(state.ReverseDependencyIndex[dep], repo) {
-			state.ReverseDependencyIndex[dep] = append(state.ReverseDependencyIndex[dep], repo)
+		if _, ok := state.ReverseDependencyIndex[dep.Hash()]; !ok {
+			state.ReverseDependencyIndex[dep.Hash()] = struct {
+				Dependency *types.Dependency
+				Repos      []platform.Repo
+			}{
+				Dependency: dep,
+				Repos:      make([]platform.Repo, 0),
+			}
+		}
+		if !containRepo(state.ReverseDependencyIndex[dep.Hash()].Repos, repo) {
+			state.ReverseDependencyIndex[dep.Hash()] = struct {
+				Dependency *types.Dependency
+				Repos      []platform.Repo
+			}{
+				Dependency: state.ReverseDependencyIndex[dep.Hash()].Dependency,
+				Repos:      append(state.ReverseDependencyIndex[dep.Hash()].Repos, repo),
+			}
 		}
 
 		currentHashed[dep.Hash()] = true
@@ -43,9 +56,22 @@ func updateDependencyIndex(state *State, repo platform.Repo, dependencies map[ty
 
 	for _, dep := range previousDependencies {
 		if _, ok := currentHashed[dep.Hash()]; !ok {
-			state.ReverseDependencyIndex[dep] = removeRepo(state.ReverseDependencyIndex[dep], repo)
+			updatedRepos := removeRepo(state.ReverseDependencyIndex[dep.Hash()].Repos, repo)
+			if len(updatedRepos) == 0 {
+				delete(state.ReverseDependencyIndex, dep.Hash())
+			} else {
+				state.ReverseDependencyIndex[dep.Hash()] = struct {
+					Dependency *types.Dependency
+					Repos      []platform.Repo
+				}{
+					Dependency: state.ReverseDependencyIndex[dep.Hash()].Dependency,
+					Repos:      updatedRepos,
+				}
+			}
 		}
 	}
+
+	state.RepoDependencies[repo] = dependencies
 }
 
 func containRepo(repos []platform.Repo, repo platform.Repo) bool {

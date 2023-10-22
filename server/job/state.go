@@ -10,7 +10,10 @@ import (
 type State struct {
 	Repos                  []platform.Repo
 	RepoDependencies       map[platform.Repo]map[types.PackageManager][]*types.Dependency
-	ReverseDependencyIndex map[*types.Dependency][]platform.Repo
+	ReverseDependencyIndex map[string]struct {
+		Dependency *types.Dependency
+		Repos      []platform.Repo
+	}
 }
 
 // InitState loads the state for the server.
@@ -28,6 +31,11 @@ func InitState() (*State, error) {
 	}
 
 	return &State{
-		Repos: repos,
+		Repos:            repos,
+		RepoDependencies: make(map[platform.Repo]map[types.PackageManager][]*types.Dependency),
+		ReverseDependencyIndex: make(map[string]struct {
+			Dependency *types.Dependency
+			Repos      []platform.Repo
+		}),
 	}, nil
 }
