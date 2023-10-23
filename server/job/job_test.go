@@ -238,7 +238,7 @@ func TestFlattenDependencies(t *testing.T) {
 			got := flattenDependencies(test.deps)
 			assert.Len(t, got, len(test.want))
 			for i := range got {
-				assert.EqualValues(t, test.want[i], got[i])
+				assert.Equal(t, *test.want[i], *got[i])
 			}
 		})
 	}
