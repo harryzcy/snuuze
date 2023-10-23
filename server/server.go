@@ -20,10 +20,10 @@ import (
 const Port = "1323"
 
 func Run() {
-	e, err := initEcho()
+	state, err := job.InitState()
 	exitOnError(err)
 
-	state, err := job.InitState()
+	e, err := initEcho(state)
 	exitOnError(err)
 
 	scheduler, err := job.StartCron(state)
@@ -60,7 +60,7 @@ func exitOnError(err error) {
 }
 
 // initEcho initializes the echo server and setup the routes.
-func initEcho() (*echo.Echo, error) {
+func initEcho(state *job.State) (*echo.Echo, error) {
 	authType := config.GetHostingConfig().GitHub.AuthType
 	if authType != "github-app" {
 		return nil, errors.New("only GitHub App is supported for running as a server")
@@ -73,6 +73,9 @@ func initEcho() (*echo.Echo, error) {
 
 	e.GET("/", handler.Index)
 	e.GET("/ping", handler.Ping)
+
+	apiV1 := e.Group("/api/v1")
+	apiV1.GET("/repos", handler.ListRepos(state))
 
 	return e, nil
 }
