@@ -113,12 +113,12 @@ func parseURL(url string) (*hostInfo, error) {
 }
 
 type Repo struct {
-	Server        string
-	Owner         string
-	Repo          string
-	URL           string
-	IsPrivate     bool
-	DefaultBranch string
+	Server        string `json:"server"`
+	Owner         string `json:"owner"`
+	Repo          string `json:"repo"`
+	URL           string `json:"url"`
+	IsPrivate     bool   `json:"isPrivate"`
+	DefaultBranch string `json:"defaultBranch"`
 }
 
 type ListTagsInput struct {

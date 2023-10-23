@@ -2,12 +2,15 @@ package job
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/harryzcy/snuuze/platform"
 	"github.com/harryzcy/snuuze/types"
 )
 
 type State struct {
+	mutex sync.Mutex
+
 	Repos []platform.Repo
 
 	// RepoDependencies maps a repo URL to its dependencies.
@@ -19,6 +22,14 @@ type State struct {
 		Dependency *types.Dependency
 		Repos      []platform.Repo
 	}
+}
+
+func (s *State) Lock() {
+	s.mutex.Lock()
+}
+
+func (s *State) Unlock() {
+	s.mutex.Unlock()
 }
 
 // InitState loads the state for the server.

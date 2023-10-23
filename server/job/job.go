@@ -10,13 +10,19 @@ import (
 )
 
 func checkUpdates(state *State) {
-	for _, repo := range state.Repos {
+	state.Lock()
+	repos := state.Repos
+	state.Unlock()
+
+	for _, repo := range repos {
 		dependencies, err := runner.GetDependencyForRepo(repo.URL)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Failed to get dependency for repo", repo.URL, ":", err)
 			continue
 		}
+		state.Lock()
 		updateDependencyIndex(state, repo, dependencies)
+		state.Unlock()
 
 		err = runner.RunForRepo(repo.URL)
 		if err != nil {
@@ -26,6 +32,8 @@ func checkUpdates(state *State) {
 	}
 }
 
+// updateDependencyIndex updates the dependency index in the state.
+// It requires the state to be locked.
 func updateDependencyIndex(state *State, repo platform.Repo, dependencies map[types.PackageManager][]*types.Dependency) {
 	previousDependencies := flattenDependencies(state.RepoDependencies[repo.URL])
 	currentDependencies := flattenDependencies(dependencies)

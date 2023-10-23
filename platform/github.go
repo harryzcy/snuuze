@@ -62,6 +62,7 @@ func (c *GitHubClient) ListRepos() ([]Repo, error) {
 	repos := make([]Repo, 0)
 	for _, node := range query.Viewer.Repositories.Nodes {
 		repos = append(repos, Repo{
+			Server:        "github.com",
 			Owner:         node.Owner.Login,
 			Repo:          node.Name,
 			URL:           node.URL,
