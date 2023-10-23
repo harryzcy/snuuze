@@ -12,7 +12,7 @@ func TestParseGitHubActions(t *testing.T) {
 	tests := []struct {
 		path string
 		data []byte
-		want []types.Dependency
+		want []*types.Dependency
 		err  error
 	}{
 		{
@@ -23,7 +23,7 @@ jobs:
     name: Super Linter
     uses: harryzcy/github-actions/.github/workflows/linter.yml@main
 `),
-			want: []types.Dependency{
+			want: []*types.Dependency{
 				{
 					File:           ".github/workflows/lint.yml",
 					Name:           "harryzcy/github-actions/.github/workflows/linter.yml",
@@ -45,7 +45,7 @@ jobs:
       - uses: release-drafter/release-drafter@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}`),
-			want: []types.Dependency{
+			want: []*types.Dependency{
 				{
 					File:           ".github/workflows/release-drafter.yml",
 					Name:           "release-drafter/release-drafter",
@@ -56,7 +56,7 @@ jobs:
 		},
 		{
 			data: []byte(``),
-			want: []types.Dependency{},
+			want: []*types.Dependency{},
 		},
 	}
 

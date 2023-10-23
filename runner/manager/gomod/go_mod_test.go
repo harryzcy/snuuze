@@ -22,7 +22,7 @@ func TestParseGoMod(t *testing.T) {
 	require (
 		github.com/davecgh/go-spew v1.1.1 // indirect
 	)`)
-	want := []types.Dependency{
+	want := []*types.Dependency{
 		{
 			File:           "go.mod",
 			Name:           "github.com/docker/docker",

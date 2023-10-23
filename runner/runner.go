@@ -8,6 +8,7 @@ import (
 	"github.com/harryzcy/snuuze/runner/git"
 	"github.com/harryzcy/snuuze/runner/manager"
 	"github.com/harryzcy/snuuze/runner/updater"
+	"github.com/harryzcy/snuuze/types"
 )
 
 func RunForRepo(gitURL string) error {
@@ -24,6 +25,20 @@ func RunForRepo(gitURL string) error {
 
 	err = updater.Update(gitURL, repoPath, infos)
 	return err
+}
+
+func GetDependencyForRepo(gitURL string) (map[types.PackageManager][]*types.Dependency, error) {
+	repoPath, err := prepareRepo(gitURL)
+	if err != nil {
+		return nil, err
+	}
+	defer cleanupRepo(repoPath)
+
+	dependencies, err := manager.FindAll(repoPath)
+	if err != nil {
+		return nil, err
+	}
+	return dependencies, nil
 }
 
 func prepareRepo(gitURL string) (gitPath string, err error) {

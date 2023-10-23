@@ -23,12 +23,18 @@ func main() {
 	}
 
 	if config.GetCLIConfig().AsServer() {
-		server.Run()
+		runServer()
 	} else {
 		runCli()
 	}
 }
 
+// runServer runs as a server
+func runServer() {
+	server.Run()
+}
+
+// runCli runs as a CLI tool
 func runCli() {
 	var gitURL string
 	cliConfig := config.GetCLIConfig()

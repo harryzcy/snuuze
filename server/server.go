@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/harryzcy/snuuze/config"
-	"github.com/harryzcy/snuuze/platform"
 	"github.com/harryzcy/snuuze/server/handler"
+	"github.com/harryzcy/snuuze/server/job"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -23,10 +23,10 @@ func Run() {
 	e, err := initEcho()
 	exitOnError(err)
 
-	state, err := loadState()
+	state, err := job.InitState()
 	exitOnError(err)
 
-	scheduler, err := startCron(state)
+	scheduler, err := job.StartCron(state)
 	exitOnError(err)
 
 	go func() {
@@ -47,7 +47,7 @@ func Run() {
 	err = e.Shutdown(ctx)
 	exitOnError(err)
 
-	stopCron(scheduler)
+	job.StopCron(scheduler)
 
 	fmt.Println("Server gracefully stopped")
 }
@@ -75,23 +75,4 @@ func initEcho() (*echo.Echo, error) {
 	e.GET("/ping", handler.Ping)
 
 	return e, nil
-}
-
-// loadState loads the state of the server.
-func loadState() (*State, error) {
-	client, err := platform.NewClient(platform.NewClientOptions{
-		Platform: platform.GitPlatformGitHub,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create platform client: %w", err)
-	}
-
-	repos, err := client.ListRepos()
-	if err != nil {
-		return nil, fmt.Errorf("failed to list repos: %w", err)
-	}
-
-	return &State{
-		Repos: repos,
-	}, nil
 }

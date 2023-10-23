@@ -26,8 +26,12 @@ func (m *GitHubActionsManager) Match(path string) bool {
 	return strings.HasSuffix(path, ".yml") || strings.HasSuffix(path, ".yaml")
 }
 
-func (m *GitHubActionsManager) Parse(match types.Match, data []byte) ([]types.Dependency, error) {
+func (m *GitHubActionsManager) Parse(match types.Match, data []byte) ([]*types.Dependency, error) {
 	return parseGitHubActions(match.File, data)
+}
+
+func (m *GitHubActionsManager) FindDependencies(matches []types.Match) ([]*types.Dependency, error) {
+	return common.FindDependencies(m, matches)
 }
 
 func (m *GitHubActionsManager) ListUpgrades(matches []types.Match) ([]*types.UpgradeInfo, error) {

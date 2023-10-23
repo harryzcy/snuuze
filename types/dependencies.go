@@ -1,5 +1,7 @@
 package types
 
+import "fmt"
+
 type Dependency struct {
 	File           string // file path of go.mod
 	Name           string
@@ -8,6 +10,10 @@ type Dependency struct {
 	PackageManager PackageManager
 	Position       Position // position is only used for some package managers
 	Extra          map[string]interface{}
+}
+
+func (d Dependency) Hash() string {
+	return fmt.Sprintf("%s:%s:%s", d.File, d.Name, d.PackageManager)
 }
 
 type Position struct {
