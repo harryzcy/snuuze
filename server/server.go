@@ -76,6 +76,7 @@ func initEcho(state *job.State) (*echo.Echo, error) {
 
 	apiV1 := e.Group("/api/v1")
 	apiV1.GET("/repos", handler.ListRepos(state))
+	apiV1.GET("/dependencies", handler.ListDependencies(state))
 
 	return e, nil
 }
