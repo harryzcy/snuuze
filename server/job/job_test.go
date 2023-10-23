@@ -236,7 +236,10 @@ func TestFlattenDependencies(t *testing.T) {
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			got := flattenDependencies(test.deps)
-			assert.Equal(t, test.want, got)
+			assert.Len(t, got, len(test.want))
+			for i := range got {
+				assert.EqualValues(t, test.want[i], got[i])
+			}
 		})
 	}
 }
