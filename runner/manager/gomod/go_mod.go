@@ -66,7 +66,7 @@ func (m *GolangManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, 
 		return nil, err
 	}
 
-	latestVersion, err := common.GetLatestTag(mod.Versions, dep.Version, !dep.Indirect)
+	latestVersion, err := common.GetLatestTag(dep.Name, mod.Versions, dep.Version, !dep.Indirect)
 	if err != nil {
 		return nil, err
 	}

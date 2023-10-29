@@ -69,7 +69,7 @@ func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.Upgrad
 		return nil, err
 	}
 
-	latest, err := common.GetLatestTag(tags, dep.Version, true)
+	latest, err := common.GetLatestTag(dep.Name, tags, dep.Version, true)
 	if err != nil {
 		return nil, err
 	}
