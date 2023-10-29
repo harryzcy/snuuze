@@ -18,7 +18,8 @@ func GetLatestTag(tags []string, currentTag string, includeMajor bool) (string, 
 	for _, tag := range tags {
 		v, err := version.NewVersion(tag)
 		if err != nil {
-			return "", err
+			fmt.Printf("warning: failed to parse tag (%s), ignoring\n", tag)
+			continue
 		}
 		if !includeMajor {
 			if v.Segments()[0] != currentVersion.Segments()[0] {
