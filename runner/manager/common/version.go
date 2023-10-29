@@ -29,6 +29,9 @@ func GetLatestTag(depName string, tags []string, currentTag string, includeMajor
 
 		versions = append(versions, v)
 	}
+	if len(versions) == 0 {
+		return currentTag, nil
+	}
 
 	sort.Sort(sort.Reverse(version.Collection(versions)))
 

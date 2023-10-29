@@ -52,8 +52,8 @@ func TestGetLatestTag(t *testing.T) {
 		{
 			tags:       []string{"invalid"},
 			currentTag: "v1",
-			want:       "",
-			wantErr:    true,
+			want:       "v1",
+			wantErr:    false,
 		},
 		{
 			tags:       []string{"1.2.5"},
