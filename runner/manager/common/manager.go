@@ -37,7 +37,7 @@ func FindDependencies(m Manager, matches []types.Match) ([]*types.Dependency, er
 
 		dependencies, err := m.Parse(match, data)
 		if err != nil {
-			allErrors = append(allErrors, err)
+			allErrors = append(allErrors, fmt.Errorf("failed to parse %s: %w", match.File, err))
 			continue
 		}
 		result = append(result, dependencies...)
@@ -59,7 +59,7 @@ func ListUpgrades(m Manager, matches []types.Match) ([]*types.UpgradeInfo, error
 	for _, dependency := range dependencies {
 		info, err := m.IsUpgradable(*dependency)
 		if err != nil {
-			allErrors = append(allErrors, err)
+			allErrors = append(allErrors, fmt.Errorf("failed to check if %s is upgradable: %w", dependency.Name, err))
 			continue
 		}
 		if info != nil && info.Upgradable {
