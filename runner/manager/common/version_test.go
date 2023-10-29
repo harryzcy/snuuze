@@ -52,8 +52,7 @@ func TestGetLatestTag(t *testing.T) {
 		{
 			tags:       []string{"invalid"},
 			currentTag: "v1",
-			want:       "",
-			wantErr:    true,
+			want:       "v1",
 		},
 		{
 			tags:       []string{"1.2.5"},
@@ -64,7 +63,7 @@ func TestGetLatestTag(t *testing.T) {
 
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			got, err := GetLatestTag(test.tags, test.currentTag, true)
+			got, err := GetLatestTag("test", test.tags, test.currentTag, true)
 			assert.Equal(t, test.want, got)
 			if test.wantErr {
 				assert.Error(t, err)

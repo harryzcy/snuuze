@@ -9,7 +9,7 @@ import (
 )
 
 // GetLatestTag returns the latest tag that is not a pre-release, or the current tag if no such tag exists
-func GetLatestTag(tags []string, currentTag string, includeMajor bool) (string, error) {
+func GetLatestTag(depName string, tags []string, currentTag string, includeMajor bool) (string, error) {
 	currentVersion, err := version.NewVersion(currentTag)
 	if err != nil {
 		return "", err
@@ -18,7 +18,8 @@ func GetLatestTag(tags []string, currentTag string, includeMajor bool) (string, 
 	for _, tag := range tags {
 		v, err := version.NewVersion(tag)
 		if err != nil {
-			return "", err
+			fmt.Printf("warning: failed to parse tag (%s) for %s, ignoring\n", tag, depName)
+			continue
 		}
 		if !includeMajor {
 			if v.Segments()[0] != currentVersion.Segments()[0] {
@@ -27,6 +28,9 @@ func GetLatestTag(tags []string, currentTag string, includeMajor bool) (string, 
 		}
 
 		versions = append(versions, v)
+	}
+	if len(versions) == 0 {
+		return currentTag, nil
 	}
 
 	sort.Sort(sort.Reverse(version.Collection(versions)))
