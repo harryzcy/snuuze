@@ -3,7 +3,6 @@ package git
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -32,7 +31,7 @@ func GetOriginURL() (string, error) {
 func CloneRepo(gitURL string) (string, error) {
 	dirPath, err := os.MkdirTemp(config.TempDir(), "snuuze-*")
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	fmt.Println("Cloning repo to", dirPath)

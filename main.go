@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/harryzcy/snuuze/config"
@@ -13,12 +14,12 @@ func main() {
 	config.ParseArgs()
 	err := config.LoadConfig()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(fmt.Errorf("failed to load config: %w", err))
 		return
 	}
 	err = config.LoadHostingConfig()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(fmt.Errorf("failed to load hosting config: %w", err))
 		return
 	}
 
@@ -44,13 +45,13 @@ func runCli() {
 		var err error
 		gitURL, err = git.GetOriginURL()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(fmt.Errorf("failed to get git origin url: %w", err))
 			return
 		}
 	}
 
 	err := runner.RunForRepo(gitURL)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(fmt.Errorf("failed to run for repo: %w", err))
 	}
 }
