@@ -34,7 +34,7 @@ func TestParseImageName(t *testing.T) {
 		{
 			name:     "alpine",
 			endpoint: "index.docker.io",
-			image:    "alpine",
+			image:    "library/alpine",
 		},
 		{
 			name:     "ghcr.io/harryzcy/snuuze",
