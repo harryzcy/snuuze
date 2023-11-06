@@ -1,8 +1,11 @@
 package pip
 
 import (
+	"encoding/json"
+	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/harryzcy/snuuze/runner/manager/common"
 	"github.com/harryzcy/snuuze/types"
@@ -49,6 +52,69 @@ func (m *PipManager) ListUpgrades(matches []types.Match) ([]*types.UpgradeInfo, 
 	return common.ListUpgrades(m, matches)
 }
 
+type pipJson struct {
+	Releases map[string]interface{} `json:"releases"`
+}
+
 func (m *PipManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, error) {
-	return nil, nil
+	info := &types.UpgradeInfo{
+		Dependency: dep,
+	}
+
+	if dep.Version == "" {
+		return info, nil
+	}
+
+	if constraints, ok := dep.Extra["constraints"].([][2]string); !ok || len(constraints) > 1 {
+		// Dependencies with multiple constraints are not supported
+		return info, nil
+	}
+
+	if dep.Version[:2] != "==" || dep.Version[2:] == ">=" {
+		// Only support exact version match or greater than match
+		return info, nil
+	}
+
+	currentVersion := strings.TrimSpace(dep.Version[2:])
+	versions, err := getPipPackageVersions(dep.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	latest, err := common.GetLatestTag(dep.Name, versions, currentVersion, true)
+	if err != nil {
+		return nil, err
+	}
+	if latest != dep.Version {
+		info.Upgradable = true
+		info.ToVersion = latest
+	}
+	return info, nil
+}
+
+func getPipPackageVersions(name string) ([]string, error) {
+	jsonURL := "https://pypi.org/pypi/" + name + "/json"
+	client := http.Client{
+		Timeout: 10 * time.Second,
+	}
+	resp, err := client.Get(jsonURL)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, types.ErrRequestFailed
+	}
+
+	var data pipJson
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	versions := make([]string, 0)
+	for version := range data.Releases {
+		versions = append(versions, version)
+	}
+	return versions, nil
 }

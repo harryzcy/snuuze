@@ -19,8 +19,9 @@ func NewParser(file, line string) *Parser {
 	return &Parser{
 		scanner: NewScanner(line),
 		dep: &types.Dependency{
-			File:  file,
-			Extra: map[string]interface{}{},
+			File:           file,
+			PackageManager: types.PackageManagerPip,
+			Extra:          map[string]interface{}{},
 		},
 	}
 }
