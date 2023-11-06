@@ -2,6 +2,7 @@ package docker
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -111,14 +112,45 @@ func (m *DockerManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, 
 		Dependency: dep,
 	}
 
-	endpoints, image := parseImageName(dep.Name)
+	tags, err := getDockerImageTags(dep.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	latest, err := common.GetLatestTag(dep.Name, tags, dep.Version, true)
+	if err != nil {
+		return nil, err
+	}
+	if latest != dep.Version {
+		info.Upgradable = true
+		info.ToVersion = latest
+	}
+	return info, nil
+}
+
+func getDockerImageTags(name string) ([]string, error) {
+	endpoints, image := parseImageName(name)
 
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 	}
 
-	url := endpoints + "/v2/" + image + "/tags/list"
-	resp, err := client.Get(url)
+	url := "https://" + endpoints + "/v2/" + image + "/tags/list"
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if endpoints == "index.docker.io" {
+		token, err := getDockerHubToken(client, image)
+		fmt.Println(token, err)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Authorization", "Bearer "+token)
+	}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -133,30 +165,47 @@ func (m *DockerManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, 
 		return nil, err
 	}
 
-	latest, err := common.GetLatestTag(dep.Name, tagsResponse.Tags, dep.Version, true)
+	return tagsResponse.Tags, nil
+}
+
+type dockerHubTokenResponse struct {
+	Token string `json:"token"`
+}
+
+// getDockerHubToken gets a token from auth.docker.io/token.
+func getDockerHubToken(client *http.Client, image string) (token string, err error) {
+	url := "https://auth.docker.io/token?service=registry.docker.io&scope=repository:" + image + ":pull"
+	resp, err := client.Get(url)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	if latest != dep.Version {
-		info.Upgradable = true
-		info.ToVersion = latest
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return "", types.ErrRequestFailed
 	}
-	return info, nil
+
+	var tokenResponse dockerHubTokenResponse
+	err = json.NewDecoder(resp.Body).Decode(&tokenResponse)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenResponse.Token, nil
 }
 
 func parseImageName(name string) (endpoint, image string) {
 	imageParts := strings.Split(name, "/")
 	if len(imageParts) == 1 {
-		endpoint = "https://index.docker.io"
-		image = imageParts[0]
+		endpoint = "index.docker.io"
+		image = "library/" + imageParts[0]
 	} else {
 		if strings.Contains(imageParts[0], ".") {
 			// first part is a domain
-			endpoint = "https://" + imageParts[0]
+			endpoint = imageParts[0]
 			image = strings.Join(imageParts[1:], "/")
 		} else {
 			// first part is a user
-			endpoint = "https://index.docker.io"
+			endpoint = "index.docker.io"
 			image = strings.Join(imageParts, "/")
 		}
 	}
