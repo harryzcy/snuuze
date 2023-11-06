@@ -130,14 +130,16 @@ func delegateUpdate(infos []*types.UpgradeInfo) error {
 	for _, info := range infos {
 		var err error
 		switch info.Dependency.PackageManager {
+		case types.PackageManagerDocker:
+			err = upgradeDocker(cache, info)
+		case types.PackageManagerGitHubActions:
+			err = upgradeGitHubActions(cache, info)
 		case types.PackageManagerGoMod:
 			var replace *ReplaceItem
 			replace, err = upgradeGoMod(cache, info)
 			if err == nil && replace != nil {
 				goReplaceItems = append(goReplaceItems, replace)
 			}
-		case types.PackageManagerGitHubActions:
-			err = upgradeGitHubActions(cache, info)
 		case types.PackageManagerPip:
 			err = upgradePip(cache, info)
 		default:
