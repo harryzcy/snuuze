@@ -3,7 +3,6 @@ package manager
 import (
 	"fmt"
 
-	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/types"
 )
 
@@ -29,11 +28,6 @@ func Run(gitURL, repoPath string) ([]*types.UpgradeInfo, error) {
 		return nil, nil
 	}
 	fmt.Println("Found", len(allInfos), "updates")
-
-	if config.GetCLIConfig().DryRun {
-		PrintUpgradeInfos(allInfos)
-		return nil, nil
-	}
 
 	return allInfos, nil
 }

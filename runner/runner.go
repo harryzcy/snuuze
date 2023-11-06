@@ -12,6 +12,8 @@ import (
 )
 
 func RunForRepo(gitURL string) error {
+	cliConfig := config.GetCLIConfig()
+
 	repoPath, err := prepareRepo(gitURL)
 	if err != nil {
 		return err
@@ -23,7 +25,11 @@ func RunForRepo(gitURL string) error {
 		return err
 	}
 
-	err = updater.Update(gitURL, repoPath, infos)
+	if cliConfig.InPlace {
+		manager.PrintUpgradeInfos(infos)
+	}
+
+	err = updater.Update(gitURL, repoPath, infos, !cliConfig.InPlace)
 	return err
 }
 
