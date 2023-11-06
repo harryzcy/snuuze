@@ -85,7 +85,7 @@ func (m *PipManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, err
 	if err != nil {
 		return nil, err
 	}
-	if latest != dep.Version {
+	if latest != currentVersion {
 		info.Upgradable = true
 		info.ToVersion = latest
 	}
