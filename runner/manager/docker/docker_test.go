@@ -28,6 +28,17 @@ RUN echo "hello world"
 		"versionType": "tag",
 	}, dependencies[0].Extra)
 
+	data = []byte(`FROM alpine@sha256:48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86
+RUN echo "hello world"
+`)
+	dependencies, err = manager.Parse(match, data)
+	assert.NoError(t, err)
+	assert.Len(t, dependencies, 1)
+	assert.Equal(t, "sha256:48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86", dependencies[0].Version)
+	assert.Equal(t, map[string]interface{}{
+		"versionType": "digest",
+	}, dependencies[0].Extra)
+
 	data = []byte(`FROM alpine
 RUN echo "hello world"
 `)
@@ -51,7 +62,7 @@ func TestGetDockerImageTags(t *testing.T) {
 	tags, err := getDockerImageTags("library/alpine")
 	assert.NoError(t, err)
 	assert.NotEmpty(t, tags)
-	assert.Contains(t, tags, "3.18.3")
+	assert.Contains(t, tags, "3.18.4")
 }
 
 func TestParseImageName(t *testing.T) {

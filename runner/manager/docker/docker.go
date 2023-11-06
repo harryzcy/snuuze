@@ -75,14 +75,14 @@ func parseDockerfileFromDirective(value string) (image, version, versionType str
 			continue
 		}
 
-		if strings.Contains(part, ":") {
-			image = strings.Split(part, ":")[0]
-			version = strings.Split(part, ":")[1]
-			versionType = "tag"
-		} else if strings.Contains(part, "@") {
+		if strings.Contains(part, "@") {
 			image = strings.Split(part, "@")[0]
 			version = strings.Split(part, "@")[1]
 			versionType = "digest"
+		} else if strings.Contains(part, ":") {
+			image = strings.Split(part, ":")[0]
+			version = strings.Split(part, ":")[1]
+			versionType = "tag"
 		} else {
 			image = part
 		}
