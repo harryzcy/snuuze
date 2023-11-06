@@ -127,7 +127,7 @@ func (p *Parser) parseConstraints(initialOperator string) (string, [][2]string, 
 	constraints = append(constraints, [2]string{initialOperator, tokenValue})
 
 	for {
-		tokenType, tokenValue, err = p.scanner.Scan()
+		tokenType, _, err = p.scanner.Scan()
 		if err != nil {
 			return "", nil, err
 		}
