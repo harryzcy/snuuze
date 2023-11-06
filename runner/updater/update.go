@@ -130,6 +130,8 @@ func delegateUpdate(infos []*types.UpgradeInfo) error {
 			}
 		case types.PackageManagerGitHubActions:
 			err = upgradeGitHubActions(cache, info)
+		case types.PackageManagerPip:
+			err = upgradePip(cache, info)
 		default:
 			err = fmt.Errorf("unsupported package manager: %s", info.Dependency.PackageManager)
 		}
