@@ -1,8 +1,8 @@
 package docker
 
 import (
+	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -29,19 +29,18 @@ func (m *DockerManager) Match(path string) bool {
 }
 
 func (m *DockerManager) Parse(match types.Match, data []byte) ([]*types.Dependency, error) {
-	p := &parser.DirectiveParser{}
-	directives, err := p.ParseAll(data)
+	result, err := parser.Parse(bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
 
 	dependencies := make([]*types.Dependency, 0)
-	for _, directive := range directives {
-		if directive.Name != "FROM" {
+	for _, child := range result.AST.Children {
+		if child.Value != "FROM" {
 			continue
 		}
 
-		image, version, versionType := parseDockerfileFromDirective(directive.Value)
+		image, version, versionType := parseDockerfileFromDirective(child.Original)
 		dependencies = append(dependencies, &types.Dependency{
 			File:           match.File,
 			Name:           image,
@@ -49,9 +48,7 @@ func (m *DockerManager) Parse(match types.Match, data []byte) ([]*types.Dependen
 			Indirect:       false,
 			PackageManager: types.PackageManagerDocker,
 			Position: types.Position{
-				Line:     directive.Location[0].Start.Line,
-				ColStart: directive.Location[0].Start.Character,
-				ColEnd:   directive.Location[0].End.Character,
+				Line: child.StartLine,
 			},
 			Extra: map[string]interface{}{
 				"versionType": versionType,
@@ -65,8 +62,8 @@ func (m *DockerManager) Parse(match types.Match, data []byte) ([]*types.Dependen
 // parseDockerfileFromDirective parses a FROM directive in a Dockerfile.
 //
 // The value of the directive is expected to be in the format of:
-// [--platform=<platform>] <image>[:<tag>] [AS <name>] or
-// [--platform=<platform>] <image>[@<digest>] [AS <name>]
+// FROM [--platform=<platform>] <image>[:<tag>] [AS <name>] or
+// FROM [--platform=<platform>] <image>[@<digest>] [AS <name>]
 //
 // Returns the image, version, and version type (tag or digest).
 func parseDockerfileFromDirective(value string) (image, version, versionType string) {
@@ -74,7 +71,7 @@ func parseDockerfileFromDirective(value string) (image, version, versionType str
 
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
-		if part == "" || strings.HasPrefix(part, "--") {
+		if part == "" || part == "FROM" || strings.HasPrefix(part, "--") {
 			continue
 		}
 
@@ -143,7 +140,6 @@ func getDockerImageTags(name string) ([]string, error) {
 
 	if endpoints == "index.docker.io" {
 		token, err := getDockerHubToken(client, image)
-		fmt.Println(token, err)
 		if err != nil {
 			return nil, err
 		}

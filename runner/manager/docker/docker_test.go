@@ -8,6 +8,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestDockerManager_Parse(t *testing.T) {
+	manager := New()
+	match := types.Match{
+		File: "Dockerfile",
+	}
+	data := []byte(`FROM alpine:3.18.0
+RUN echo "hello world"
+`)
+
+	dependencies, err := manager.Parse(match, data)
+	assert.NoError(t, err)
+	assert.Len(t, dependencies, 1)
+	assert.Equal(t, "alpine", dependencies[0].Name)
+	assert.Equal(t, "3.18.0", dependencies[0].Version)
+	assert.Equal(t, types.PackageManagerDocker, dependencies[0].PackageManager)
+	assert.Equal(t, 1, dependencies[0].Position.Line)
+	assert.Equal(t, map[string]interface{}{
+		"versionType": "tag",
+	}, dependencies[0].Extra)
+
+	data = []byte(`FROM alpine
+RUN echo "hello world"
+`)
+	dependencies, err = manager.Parse(match, data)
+	assert.NoError(t, err)
+	assert.Len(t, dependencies, 1)
+	assert.Equal(t, "", dependencies[0].Version)
+}
+
 func TestDockerManager_IsUpgradable(t *testing.T) {
 	manager := New()
 	info, err := manager.IsUpgradable(types.Dependency{
