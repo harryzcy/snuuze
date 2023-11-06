@@ -109,6 +109,10 @@ func (m *DockerManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, 
 		Dependency: dep,
 	}
 
+	if dep.Extra == nil || dep.Extra["versionType"] != "tag" {
+		return info, nil
+	}
+
 	tags, err := getDockerImageTags(dep.Name)
 	if err != nil {
 		return nil, err
