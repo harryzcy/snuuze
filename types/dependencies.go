@@ -33,6 +33,7 @@ type UpgradeInfo struct {
 type PackageManager string
 
 const (
-	PackageManagerGoMod         PackageManager = "go-mod"
 	PackageManagerGitHubActions PackageManager = "github-actions"
+	PackageManagerGoMod         PackageManager = "go-mod"
+	PackageManagerPip           PackageManager = "pip"
 )
