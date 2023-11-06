@@ -42,19 +42,14 @@ func ParseArgs() {
 			cliConfig.Args = append(cliConfig.Args, arg)
 		}
 
-		if arg == "--dry-run" {
-			cliConfig.DryRun = true
-		} else if arg == "--in-place" {
+		if arg == "--in-place" {
 			cliConfig.InPlace = true
+		} else if arg == "--dry-run" {
+			cliConfig.DryRun = true
 		} else {
 			fmt.Fprintln(os.Stderr, "error: invalid flag: "+arg)
 			os.Exit(1)
 		}
-	}
-
-	if cliConfig.InPlace && !cliConfig.DryRun {
-		fmt.Fprintln(os.Stderr, "error: --in-place must be used together with --dry-run")
-		os.Exit(1)
 	}
 }
 
