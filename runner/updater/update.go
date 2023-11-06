@@ -11,7 +11,15 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
-func Update(gitURL, repoDir string, infos []*types.UpgradeInfo) error {
+func Update(gitURL, repoDir string, infos []*types.UpgradeInfo, newCommit bool) error {
+	if newCommit {
+		err := delegateUpdate(infos)
+		if err != nil {
+			return fmt.Errorf("failed to update dependencies: %s", err)
+		}
+		return nil
+	}
+
 	groups := groupUpdates(infos)
 	fmt.Println("Found", len(groups), "groups of updates")
 

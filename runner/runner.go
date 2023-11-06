@@ -27,10 +27,9 @@ func RunForRepo(gitURL string) error {
 
 	if cliConfig.InPlace {
 		manager.PrintUpgradeInfos(infos)
-	} else {
-		err = updater.Update(gitURL, repoPath, infos)
 	}
 
+	err = updater.Update(gitURL, repoPath, infos, !cliConfig.InPlace)
 	return err
 }
 
