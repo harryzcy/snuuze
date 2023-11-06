@@ -19,6 +19,9 @@ func TestParser_Parse(t *testing.T) {
 				Name:           "django",
 				Version:        "== 1.11.0",
 				PackageManager: types.PackageManagerPip,
+				Position: types.Position{
+					Line: 0,
+				},
 				Extra: map[string]interface{}{
 					"constraints": [][2]string{{"==", "1.11.0"}},
 				},
@@ -30,7 +33,10 @@ func TestParser_Parse(t *testing.T) {
 				Name:           "SomeProject",
 				Version:        "",
 				PackageManager: types.PackageManagerPip,
-				Extra:          map[string]interface{}{},
+				Position: types.Position{
+					Line: 0,
+				},
+				Extra: map[string]interface{}{},
 			},
 		},
 		{
@@ -39,6 +45,9 @@ func TestParser_Parse(t *testing.T) {
 				Name:           "SomeProject",
 				Version:        "== 1.3",
 				PackageManager: types.PackageManagerPip,
+				Position: types.Position{
+					Line: 0,
+				},
 				Extra: map[string]interface{}{
 					"constraints": [][2]string{{"==", "1.3"}},
 				},
@@ -50,6 +59,9 @@ func TestParser_Parse(t *testing.T) {
 				Name:           "SomeProject",
 				Version:        ">= 1.2, < 2.0",
 				PackageManager: types.PackageManagerPip,
+				Position: types.Position{
+					Line: 0,
+				},
 				Extra: map[string]interface{}{
 					"constraints": [][2]string{{">=", "1.2"}, {"<", "2.0"}},
 				},
@@ -61,6 +73,9 @@ func TestParser_Parse(t *testing.T) {
 				Name:           "SomeProject",
 				Version:        "",
 				PackageManager: types.PackageManagerPip,
+				Position: types.Position{
+					Line: 0,
+				},
 				Extra: map[string]interface{}{
 					"extras": "foo, bar",
 				},
@@ -72,6 +87,9 @@ func TestParser_Parse(t *testing.T) {
 				Name:           "SomeProject",
 				Version:        "== 1.3",
 				PackageManager: types.PackageManagerPip,
+				Position: types.Position{
+					Line: 0,
+				},
 				Extra: map[string]interface{}{
 					"extras":      "foo, bar",
 					"constraints": [][2]string{{"==", "1.3"}},
@@ -84,6 +102,9 @@ func TestParser_Parse(t *testing.T) {
 				Name:           "SomeProject",
 				Version:        "~= 1.4.2",
 				PackageManager: types.PackageManagerPip,
+				Position: types.Position{
+					Line: 0,
+				},
 				Extra: map[string]interface{}{
 					"constraints": [][2]string{{"~=", "1.4.2"}},
 				},
@@ -95,6 +116,9 @@ func TestParser_Parse(t *testing.T) {
 				Name:           "SomeProject",
 				Version:        "== 5.4",
 				PackageManager: types.PackageManagerPip,
+				Position: types.Position{
+					Line: 0,
+				},
 				Extra: map[string]interface{}{
 					"constraints": [][2]string{{"==", "5.4"}},
 				},
@@ -106,7 +130,10 @@ func TestParser_Parse(t *testing.T) {
 				Name:           "SomeProject",
 				Version:        "",
 				PackageManager: types.PackageManagerPip,
-				Extra:          map[string]interface{}{},
+				Position: types.Position{
+					Line: 0,
+				},
+				Extra: map[string]interface{}{},
 			},
 		},
 		{
@@ -115,6 +142,9 @@ func TestParser_Parse(t *testing.T) {
 				Name:           "requests",
 				Version:        ">= 2.8.1, == 2.8.*",
 				PackageManager: types.PackageManagerPip,
+				Position: types.Position{
+					Line: 0,
+				},
 				Extra: map[string]interface{}{
 					"extras":      "security",
 					"constraints": [][2]string{{">=", "2.8.1"}, {"==", "2.8.*"}},
@@ -125,7 +155,7 @@ func TestParser_Parse(t *testing.T) {
 
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			parser := NewParser("", test.line)
+			parser := NewParser("", test.line, 0)
 			dep, err := parser.Parse()
 
 			assert.Nil(t, err)

@@ -15,13 +15,16 @@ type Parser struct {
 	dep     *types.Dependency
 }
 
-func NewParser(file, line string) *Parser {
+func NewParser(file, line string, lineNumber int) *Parser {
 	return &Parser{
 		scanner: NewScanner(line),
 		dep: &types.Dependency{
 			File:           file,
 			PackageManager: types.PackageManagerPip,
-			Extra:          map[string]interface{}{},
+			Position: types.Position{
+				Line: lineNumber,
+			},
+			Extra: map[string]interface{}{},
 		},
 	}
 }

@@ -32,8 +32,8 @@ func (m *PipManager) Parse(match types.Match, data []byte) ([]*types.Dependency,
 	lines := strings.Split(text, "\n")
 
 	dependencies := make([]*types.Dependency, 0)
-	for _, line := range lines {
-		parser := NewParser(match.File, line)
+	for lineNum, line := range lines {
+		parser := NewParser(match.File, line, lineNum)
 		dep, err := parser.Parse()
 		if err != nil {
 			continue
