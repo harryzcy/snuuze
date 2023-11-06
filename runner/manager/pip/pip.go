@@ -70,7 +70,7 @@ func (m *PipManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, err
 		return info, nil
 	}
 
-	if dep.Version[:2] != "==" || dep.Version[2:] == ">=" {
+	if len(dep.Version) > 2 && (dep.Version[:2] != "==" || dep.Version[:2] == ">=" || dep.Version[:1] == ">") {
 		// Only support exact version match or greater than match
 		return info, nil
 	}
