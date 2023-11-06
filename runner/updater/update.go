@@ -12,7 +12,7 @@ import (
 )
 
 func Update(gitURL, repoDir string, infos []*types.UpgradeInfo, newCommit bool) error {
-	if newCommit {
+	if !newCommit {
 		err := delegateUpdate(infos)
 		if err != nil {
 			return fmt.Errorf("failed to update dependencies: %s", err)
