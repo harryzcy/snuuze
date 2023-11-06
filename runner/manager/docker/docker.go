@@ -1,8 +1,11 @@
 package docker
 
 import (
+	"encoding/json"
+	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/harryzcy/snuuze/runner/manager/common"
 	"github.com/harryzcy/snuuze/types"
@@ -98,6 +101,65 @@ func (m *DockerManager) ListUpgrades(matches []types.Match) ([]*types.UpgradeInf
 	return common.ListUpgrades(m, matches)
 }
 
+type dockerTagsResponse struct {
+	Name string   `json:"name"`
+	Tags []string `json:"tags"`
+}
+
 func (m *DockerManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, error) {
-	return nil, nil
+	info := &types.UpgradeInfo{
+		Dependency: dep,
+	}
+
+	endpoints, image := parseImageName(dep.Name)
+
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	url := endpoints + "/v2/" + image + "/tags/list"
+	resp, err := client.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, types.ErrRequestFailed
+	}
+
+	var tagsResponse dockerTagsResponse
+	err = json.NewDecoder(resp.Body).Decode(&tagsResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	latest, err := common.GetLatestTag(dep.Name, tagsResponse.Tags, dep.Version, true)
+	if err != nil {
+		return nil, err
+	}
+	if latest != dep.Version {
+		info.Upgradable = true
+		info.ToVersion = latest
+	}
+	return info, nil
+}
+
+func parseImageName(name string) (endpoint, image string) {
+	imageParts := strings.Split(name, "/")
+	if len(imageParts) == 1 {
+		endpoint = "https://index.docker.io"
+		image = imageParts[0]
+	} else {
+		if strings.Contains(imageParts[0], ".") {
+			// first part is a domain
+			endpoint = "https://" + imageParts[0]
+			image = strings.Join(imageParts[1:], "/")
+		} else {
+			// first part is a user
+			endpoint = "https://index.docker.io"
+			image = strings.Join(imageParts, "/")
+		}
+	}
+
+	return endpoint, image
 }
