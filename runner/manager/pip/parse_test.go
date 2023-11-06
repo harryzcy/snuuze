@@ -16,8 +16,9 @@ func TestParser_Parse(t *testing.T) {
 		{
 			line: "django==1.11.0",
 			want: &types.Dependency{
-				Name:    "django",
-				Version: "== 1.11.0",
+				Name:           "django",
+				Version:        "== 1.11.0",
+				PackageManager: types.PackageManagerPip,
 				Extra: map[string]interface{}{
 					"constraints": [][2]string{{"==", "1.11.0"}},
 				},
@@ -26,16 +27,18 @@ func TestParser_Parse(t *testing.T) {
 		{
 			line: "SomeProject",
 			want: &types.Dependency{
-				Name:    "SomeProject",
-				Version: "",
-				Extra:   map[string]interface{}{},
+				Name:           "SomeProject",
+				Version:        "",
+				PackageManager: types.PackageManagerPip,
+				Extra:          map[string]interface{}{},
 			},
 		},
 		{
 			line: "SomeProject == 1.3",
 			want: &types.Dependency{
-				Name:    "SomeProject",
-				Version: "== 1.3",
+				Name:           "SomeProject",
+				Version:        "== 1.3",
+				PackageManager: types.PackageManagerPip,
 				Extra: map[string]interface{}{
 					"constraints": [][2]string{{"==", "1.3"}},
 				},
@@ -44,8 +47,9 @@ func TestParser_Parse(t *testing.T) {
 		{
 			line: "SomeProject >= 1.2, < 2.0",
 			want: &types.Dependency{
-				Name:    "SomeProject",
-				Version: ">= 1.2, < 2.0",
+				Name:           "SomeProject",
+				Version:        ">= 1.2, < 2.0",
+				PackageManager: types.PackageManagerPip,
 				Extra: map[string]interface{}{
 					"constraints": [][2]string{{">=", "1.2"}, {"<", "2.0"}},
 				},
@@ -54,8 +58,9 @@ func TestParser_Parse(t *testing.T) {
 		{
 			line: "SomeProject[foo, bar]",
 			want: &types.Dependency{
-				Name:    "SomeProject",
-				Version: "",
+				Name:           "SomeProject",
+				Version:        "",
+				PackageManager: types.PackageManagerPip,
 				Extra: map[string]interface{}{
 					"extras": "foo, bar",
 				},
@@ -64,8 +69,9 @@ func TestParser_Parse(t *testing.T) {
 		{
 			line: "SomeProject[foo, bar] == 1.3",
 			want: &types.Dependency{
-				Name:    "SomeProject",
-				Version: "== 1.3",
+				Name:           "SomeProject",
+				Version:        "== 1.3",
+				PackageManager: types.PackageManagerPip,
 				Extra: map[string]interface{}{
 					"extras":      "foo, bar",
 					"constraints": [][2]string{{"==", "1.3"}},
@@ -75,8 +81,9 @@ func TestParser_Parse(t *testing.T) {
 		{
 			line: "SomeProject ~= 1.4.2",
 			want: &types.Dependency{
-				Name:    "SomeProject",
-				Version: "~= 1.4.2",
+				Name:           "SomeProject",
+				Version:        "~= 1.4.2",
+				PackageManager: types.PackageManagerPip,
 				Extra: map[string]interface{}{
 					"constraints": [][2]string{{"~=", "1.4.2"}},
 				},
@@ -85,8 +92,9 @@ func TestParser_Parse(t *testing.T) {
 		{
 			line: "SomeProject == 5.4 ; python_version < '3.8'",
 			want: &types.Dependency{
-				Name:    "SomeProject",
-				Version: "== 5.4",
+				Name:           "SomeProject",
+				Version:        "== 5.4",
+				PackageManager: types.PackageManagerPip,
 				Extra: map[string]interface{}{
 					"constraints": [][2]string{{"==", "5.4"}},
 				},
@@ -95,16 +103,18 @@ func TestParser_Parse(t *testing.T) {
 		{
 			line: "SomeProject ; sys_platform == 'win32'",
 			want: &types.Dependency{
-				Name:    "SomeProject",
-				Version: "",
-				Extra:   map[string]interface{}{},
+				Name:           "SomeProject",
+				Version:        "",
+				PackageManager: types.PackageManagerPip,
+				Extra:          map[string]interface{}{},
 			},
 		},
 		{
 			line: "requests [security] >= 2.8.1, == 2.8.* ; python_version < \"2.7\"",
 			want: &types.Dependency{
-				Name:    "requests",
-				Version: ">= 2.8.1, == 2.8.*",
+				Name:           "requests",
+				Version:        ">= 2.8.1, == 2.8.*",
+				PackageManager: types.PackageManagerPip,
 				Extra: map[string]interface{}{
 					"extras":      "security",
 					"constraints": [][2]string{{">=", "2.8.1"}, {"==", "2.8.*"}},

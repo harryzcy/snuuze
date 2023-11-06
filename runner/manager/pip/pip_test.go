@@ -21,6 +21,30 @@ func TestPipManager_IsUpgradable(t *testing.T) {
 	info, err := New().IsUpgradable(*dep)
 	assert.NoError(t, err)
 	assert.True(t, info.Upgradable)
+
+	dep = &types.Dependency{
+		Name:           "requests",
+		Version:        "",
+		PackageManager: types.PackageManagerPip,
+	}
+	info, err = New().IsUpgradable(*dep)
+	assert.NoError(t, err)
+	assert.False(t, info.Upgradable)
+
+	dep = &types.Dependency{
+		Name:           "requests",
+		Version:        ">= 2.25.1, < 2.26.0",
+		PackageManager: types.PackageManagerPip,
+		Extra: map[string]interface{}{
+			"constraints": [][2]string{
+				{">=", "2.25.1"},
+				{"<", "2.26.0"},
+			},
+		},
+	}
+	info, err = New().IsUpgradable(*dep)
+	assert.NoError(t, err)
+	assert.False(t, info.Upgradable)
 }
 
 func TestGetPipPackageVersions(t *testing.T) {
