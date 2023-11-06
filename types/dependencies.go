@@ -33,6 +33,7 @@ type UpgradeInfo struct {
 type PackageManager string
 
 const (
+	PackageManagerDocker        PackageManager = "docker"
 	PackageManagerGitHubActions PackageManager = "github-actions"
 	PackageManagerGoMod         PackageManager = "go-mod"
 	PackageManagerPip           PackageManager = "pip"
