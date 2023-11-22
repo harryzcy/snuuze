@@ -25,8 +25,10 @@ func (m *DockerManager) Name() types.PackageManager {
 }
 
 func (m *DockerManager) Match(path string) bool {
-	filename := filepath.Base(path)
-	return strings.HasPrefix(strings.ToLower(filename), "dockerfile")
+	filename := strings.ToLower(filepath.Base(path))
+	return filename == "dockerfile" ||
+		strings.HasPrefix(filename, "dockerfile.") ||
+		strings.HasSuffix(filename, ".dockerfile")
 }
 
 func (m *DockerManager) Parse(match types.Match, data []byte) ([]*types.Dependency, error) {
