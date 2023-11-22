@@ -77,6 +77,9 @@ func parseDockerfileFromDirective(value string) (image, version, versionType str
 		if part == "" || part == "FROM" || strings.HasPrefix(part, "--") {
 			continue
 		}
+		if strings.ToLower(part) == "as" {
+			break
+		}
 
 		if strings.Contains(part, "@") {
 			image = strings.Split(part, "@")[0]
