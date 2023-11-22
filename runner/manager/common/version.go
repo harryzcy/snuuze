@@ -20,7 +20,6 @@ type GetLatestTagInput struct {
 
 // GetLatestTag returns the latest tag that is not a pre-release,
 // or the current tag if no such tag exists.
-// If a delimiter is provided, it will be used to split the tag
 func GetLatestTag(input *GetLatestTagInput) (string, error) {
 	isMultiPart := input.Delimiter != "" && strings.Contains(input.CurrentTag, input.Delimiter)
 	if !isMultiPart {
