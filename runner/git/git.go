@@ -37,10 +37,19 @@ func CloneRepo(gitURL string) (string, error) {
 
 	fmt.Println("Cloning repo to", dirPath)
 
-	authGitURL, err := getGitURLWithToken(gitURL)
+	gitPlatform, url := platform.DetermineGitPlatform(gitURL)
+	client, err := platform.NewClient(platform.NewClientOptions{
+		URL:      url,
+		Platform: gitPlatform,
+	})
 	if err != nil {
 		return "", err
 	}
+	authGitURL, err := getGitURLWithToken(client, gitURL)
+	if err != nil {
+		return "", err
+	}
+
 	_, err = command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "clone", authGitURL, dirPath},
 	})
@@ -52,16 +61,7 @@ func CloneRepo(gitURL string) (string, error) {
 }
 
 // getGitURLWithToken returns a git url with token set
-func getGitURLWithToken(gitURL string) (string, error) {
-	gitPlatform, url := platform.DetermineGitPlatform(gitURL)
-	client, err := platform.NewClient(platform.NewClientOptions{
-		URL:      url,
-		Platform: gitPlatform,
-	})
-	if err != nil {
-		return "", err
-	}
-
+func getGitURLWithToken(client platform.Client, gitURL string) (string, error) {
 	ctx := context.Background()
 	token, err := client.Token(ctx)
 	if err != nil {
