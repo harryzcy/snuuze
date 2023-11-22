@@ -68,7 +68,6 @@ func (m *DockerManager) Parse(match types.Match, data []byte) ([]*types.Dependen
 //
 // Returns the image, version, and version type (tag or digest).
 func parseDockerfileFromDirective(value string) (image, version, versionType string) {
-
 	parts := strings.Split(value, " ")
 
 	for _, part := range parts {
@@ -76,7 +75,6 @@ func parseDockerfileFromDirective(value string) (image, version, versionType str
 		if part == "" || part == "FROM" || strings.HasPrefix(part, "--") {
 			continue
 		}
-
 		if strings.ToLower(part) == "as" {
 			break
 		}
