@@ -122,7 +122,7 @@ func isGreater(currentTag, nextTag string, isMajorOnly, allowMajor bool) (bool, 
 	}
 
 	// segments of different length
-	if !isMajorOnly && segmentLength(next.Segments()) != segmentLength(current.Segments()) {
+	if !isMajorOnly && segmentLength(nextTag) != segmentLength(currentTag) {
 		return false, nil
 	}
 
@@ -141,15 +141,8 @@ func isGreater(currentTag, nextTag string, isMajorOnly, allowMajor bool) (bool, 
 	return next.GreaterThan(current), nil
 }
 
-func segmentLength(segments []int) int {
-	l := 0
-	for _, s := range segments {
-		if s == 0 {
-			break
-		}
-		l++
-	}
-	return l
+func segmentLength(version string) int {
+	return strings.Count(version, ".") + 1
 }
 
 func letterPrefix(version string) string {
