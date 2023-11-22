@@ -28,30 +28,47 @@ func GetLatestTag(input *GetLatestTagInput) (string, error) {
 	return getLatestTagTwoParts(input)
 }
 
+type MultiVersion struct {
+	Original string
+	Parts    []string
+}
+
 func getLatestTagTwoParts(input *GetLatestTagInput) (string, error) {
 	isMajorOnly := !strings.Contains(input.CurrentTag, ".")
 
-	// get possible versions based on first part
-	possibleVersions := []string{}
+	choices := []MultiVersion{}
 	for _, tag := range input.Tags {
-		latestParts := strings.Split(input.CurrentTag, input.Delimiter)
 		tagParts := strings.Split(tag, input.Delimiter)
+		if len(tagParts) != 2 {
+			continue
+		}
+		choices = append(choices, MultiVersion{
+			Original: tag,
+			Parts:    tagParts,
+		})
+	}
 
-		if len(latestParts) != len(tagParts) {
+	latest := MultiVersion{
+		Original: input.CurrentTag,
+		Parts:    strings.Split(input.CurrentTag, input.Delimiter),
+	}
+	// get possible versions based on first part
+	filtered := []MultiVersion{}
+	for _, choice := range choices {
+		if len(latest.Parts) != len(choice.Parts) {
 			continue
 		}
 
-		if greater, err := isGreater(latestParts[0], tagParts[0], isMajorOnly, input.AllowMajor); err != nil {
+		if greater, err := isGreater(latest.Parts[0], choice.Parts[0], isMajorOnly, input.AllowMajor); err != nil {
 			return "", err
 		} else if greater {
-			possibleVersions = append(possibleVersions, tag)
+			filtered = append(filtered, choice)
 		}
 	}
 
-	latest := input.CurrentTag
-	for _, tag := range possibleVersions {
-		latestPart := strings.Split(latest, input.Delimiter)[1]
-		tagPart := strings.Split(tag, input.Delimiter)[1]
+	for _, current := range filtered {
+		latestPart := latest.Parts[1]
+		tagPart := current.Parts[1]
 
 		prefix := letterPrefix(latestPart)
 		if strings.HasPrefix(tagPart, prefix) {
@@ -60,7 +77,7 @@ func getLatestTagTwoParts(input *GetLatestTagInput) (string, error) {
 		}
 
 		if latestPart == tagPart {
-			latest = tag
+			latest = current
 			continue
 		}
 		if len(latestPart) == 0 || len(tagPart) == 0 {
@@ -70,11 +87,11 @@ func getLatestTagTwoParts(input *GetLatestTagInput) (string, error) {
 		if greater, err := isGreater(latestPart, tagPart, isMajorOnly, input.AllowMajor); err != nil {
 			return "", err
 		} else if greater {
-			latest = tag
+			latest = current
 		}
 	}
 
-	return latest, nil
+	return latest.Original, nil
 }
 
 func getLatestTagSinglePart(input *GetLatestTagInput) (string, error) {
