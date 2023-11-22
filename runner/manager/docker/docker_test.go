@@ -46,6 +46,12 @@ RUN echo "hello world"
 	assert.NoError(t, err)
 	assert.Len(t, dependencies, 1)
 	assert.Equal(t, "", dependencies[0].Version)
+
+	data = []byte(`FROM golang:1.21.1-alpine3.18 as builder`)
+	dependencies, err = manager.Parse(match, data)
+	assert.NoError(t, err)
+	assert.Len(t, dependencies, 1)
+	assert.Equal(t, "golang", dependencies[0].Name)
 }
 
 func TestDockerManager_IsUpgradable(t *testing.T) {
