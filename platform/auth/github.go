@@ -10,25 +10,26 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func GitHubPATClient() *githubv4.Client {
+func GitHubPATClient() (client *githubv4.Client, token string) {
+	token = config.GitHubToken()
 	src := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: config.GitHubToken()},
+		&oauth2.Token{AccessToken: token},
 	)
 	httpClient := oauth2.NewClient(context.Background(), src)
-	return githubv4.NewClient(httpClient)
+	return githubv4.NewClient(httpClient), token
 }
 
-func GithubAppInstallationClient() (*githubv4.Client, error) {
+func GithubAppInstallationClient() (*githubv4.Client, *ghinstallation.Transport, error) {
 	conf := config.GetHostingConfig()
 	appID := conf.GitHub.AppID
 	installationID := conf.GitHub.InstallationID
 	privateKeyFile := conf.GitHub.PEMFile
 
 	tr := http.DefaultTransport
-	itr, err := ghinstallation.NewKeyFromFile(tr, appID, installationID, privateKeyFile)
+	transport, err := ghinstallation.NewKeyFromFile(tr, appID, installationID, privateKeyFile)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return githubv4.NewClient(&http.Client{Transport: itr}), nil
+	return githubv4.NewClient(&http.Client{Transport: transport}), transport, nil
 }

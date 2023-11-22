@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/bradleyfalzon/ghinstallation/v2"
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/platform/auth"
 	"github.com/harryzcy/snuuze/types"
@@ -12,27 +13,39 @@ import (
 )
 
 type GitHubClient struct {
-	client *githubv4.Client
+	authType  string
+	client    *githubv4.Client
+	transport *ghinstallation.Transport // only used for GitHub App
+	token     string                    // only used for personal access token
 }
+
+var _ Client = &GitHubClient{}
 
 // NewGitHubClient creates a new GitHubClient authenticated with
 // either a GitHub App or a personal access token.
 func NewGitHubClient() (Client, error) {
-	authType := config.GetHostingConfig().GitHub.AuthType
-	var client *githubv4.Client
-	if authType == types.AuthTypeGithubApp {
+	client := &GitHubClient{
+		authType: config.GetHostingConfig().GitHub.AuthType,
+	}
+
+	if client.authType == types.AuthTypeGithubApp {
 		var err error
-		client, err = auth.GithubAppInstallationClient()
+		client.client, client.transport, err = auth.GithubAppInstallationClient()
 		if err != nil {
 			return nil, fmt.Errorf("failed to create GitHub client: %v", err)
 		}
-	} else if authType == types.AuthTypeToken {
-		client = auth.GitHubPATClient()
+	} else if client.authType == types.AuthTypeToken {
+		client.client, client.token = auth.GitHubPATClient()
 	}
 
-	return &GitHubClient{
-		client: client,
-	}, nil
+	return client, nil
+}
+
+func (c *GitHubClient) Token(ctx context.Context) (string, error) {
+	if c.authType == types.AuthTypeGithubApp {
+		return c.transport.Token(ctx)
+	}
+	return c.token, nil
 }
 
 func (c *GitHubClient) ListRepos() ([]Repo, error) {

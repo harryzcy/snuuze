@@ -1,6 +1,7 @@
 package platform
 
 import (
+	"context"
 	"errors"
 	"strings"
 
@@ -14,6 +15,8 @@ var (
 )
 
 type Client interface {
+	Token(ctx context.Context) (string, error)
+
 	ListRepos() ([]Repo, error)
 	// ListTags returns a sorted list of tags for the given repo
 	ListTags(params *ListTagsInput) ([]string, error)

@@ -1,6 +1,7 @@
 package git
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -35,6 +36,7 @@ func CloneRepo(gitURL string) (string, error) {
 	}
 
 	fmt.Println("Cloning repo to", dirPath)
+	fmt.Println(gitURL)
 	_, err = command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "clone", gitURL, dirPath},
 	})
@@ -43,6 +45,25 @@ func CloneRepo(gitURL string) (string, error) {
 	}
 
 	return dirPath, nil
+}
+
+func getGitURLWithToken(gitURL string) (string, error) {
+	gitPlatform, url := platform.DetermineGitPlatform(gitURL)
+	client, err := platform.NewClient(platform.NewClientOptions{
+		URL:      url,
+		Platform: gitPlatform,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	ctx := context.Background()
+	token, err := client.Token(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	return strings.ReplaceAll(gitURL, "https://", fmt.Sprintf("https://%s:%s@", "x-oauth-basic", token)), nil
 }
 
 func UpdateCommitter(gitURL, dirPath string) error {
