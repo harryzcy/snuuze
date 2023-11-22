@@ -124,7 +124,13 @@ func (m *DockerManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, 
 		return nil, err
 	}
 
-	latest, err := common.GetLatestTag(dep.Name, tags, dep.Version, true)
+	latest, err := common.GetLatestTag(&common.GetLatestTagInput{
+		DepName:    dep.Name,
+		Tags:       tags,
+		CurrentTag: dep.Version,
+		AllowMajor: true,
+		Delimiter:  "",
+	})
 	if err != nil {
 		return nil, err
 	}
