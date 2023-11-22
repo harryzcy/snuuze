@@ -14,7 +14,7 @@ func upgradeDocker(cache *Cache, info *types.UpgradeInfo) error {
 	}
 
 	lines := bytes.Split(file, []byte("\n"))
-	lineIdx := info.Dependency.Position.Line
+	lineIdx := info.Dependency.Position.Line - 1
 
 	oldVersion := info.Dependency.Version
 	newVersion := info.ToVersion
