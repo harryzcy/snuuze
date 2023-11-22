@@ -59,6 +59,12 @@ func TestGetLatestTag(t *testing.T) {
 			currentTag: "v1",
 			want:       "1",
 		},
+		{
+			// alpine
+			tags:       []string{"3.8.4", "20230901", "3.8.3", "3.8.2"},
+			currentTag: "3.8.3",
+			want:       "3.8.4",
+		},
 	}
 
 	for i, test := range tests {
