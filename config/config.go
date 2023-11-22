@@ -41,10 +41,8 @@ func setDefaultConfig() {
 	config.Presets = []string{"base"}
 	config.Rules = []types.Rule{
 		{
-			Name: "all dependencies",
-			PackageManagers: []types.PackageManager{
-				types.PackageManagerGoMod,
-			},
+			Name:            "all dependencies",
+			PackageManagers: types.AllPackageManagers,
 		},
 	}
 }

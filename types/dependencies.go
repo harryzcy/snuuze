@@ -38,3 +38,10 @@ const (
 	PackageManagerGoMod         PackageManager = "go-mod"
 	PackageManagerPip           PackageManager = "pip"
 )
+
+var AllPackageManagers = []PackageManager{
+	PackageManagerDocker,
+	PackageManagerGitHubActions,
+	PackageManagerGoMod,
+	PackageManagerPip,
+}
