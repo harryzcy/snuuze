@@ -104,6 +104,7 @@ func getPipPackageVersions(name string) ([]string, error) {
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return nil, &types.RequestFailedError{
+			For:        jsonURL,
 			StatusCode: resp.StatusCode,
 		}
 	}

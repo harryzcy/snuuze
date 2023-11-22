@@ -3,6 +3,8 @@ package docker
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -157,6 +159,7 @@ func getDockerImageTags(name string) ([]string, error) {
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return nil, &types.RequestFailedError{
+			For:        url,
 			StatusCode: resp.StatusCode,
 		}
 	}
@@ -183,8 +186,15 @@ func getDockerHubToken(client *http.Client, image string) (token string, err err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println("Failed to read response body", err)
+		}
+
 		return "", &types.RequestFailedError{
+			For:        url,
 			StatusCode: resp.StatusCode,
+			Body:       string(body),
 		}
 	}
 
