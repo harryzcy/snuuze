@@ -29,7 +29,8 @@ func GetLatestTag(depName string, tags []string, currentTag string, includeMajor
 
 		// ignore weird versions likely it's SemVer vs CalVer.
 		// e.g. alpine 3.18.4 vs 20230901
-		if currentVersion.Segments()[0] < 200 && v.Segments()[0] > 100000 {
+		if currentVersion.Segments()[0] < 200 &&
+			v.Segments()[0] > 100000 && v.Segments()[1] == 0 && v.Segments()[2] == 0 {
 			continue
 		}
 
