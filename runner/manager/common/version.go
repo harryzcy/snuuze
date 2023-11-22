@@ -42,7 +42,7 @@ func getLatestTagTwoParts(input *GetLatestTagInput) (string, error) {
 			continue
 		}
 
-		if greater, err := isGreaterSinglePart(latestParts[0], tagParts[0], isMajorOnly, input.AllowMajor); err != nil {
+		if greater, err := isGreater(latestParts[0], tagParts[0], isMajorOnly, input.AllowMajor); err != nil {
 			return "", err
 		} else if greater {
 			possibleVersions = append(possibleVersions, tag)
@@ -68,7 +68,7 @@ func getLatestTagTwoParts(input *GetLatestTagInput) (string, error) {
 			continue
 		}
 
-		if greater, err := isGreaterSinglePart(latestPart, tagPart, isMajorOnly, input.AllowMajor); err != nil {
+		if greater, err := isGreater(latestPart, tagPart, isMajorOnly, input.AllowMajor); err != nil {
 			return "", err
 		} else if greater {
 			latest = tag
@@ -83,7 +83,7 @@ func getLatestTagSinglePart(input *GetLatestTagInput) (string, error) {
 	isMajorOnly := !strings.Contains(latest, ".")
 
 	for _, tag := range input.Tags {
-		if greater, err := isGreaterSinglePart(latest, tag, isMajorOnly, input.AllowMajor); err != nil {
+		if greater, err := isGreater(latest, tag, isMajorOnly, input.AllowMajor); err != nil {
 			return "", err
 		} else if greater {
 			latest = tag
@@ -105,7 +105,8 @@ func getLatestTagSinglePart(input *GetLatestTagInput) (string, error) {
 	return latest, nil
 }
 
-func isGreaterSinglePart(currentTag, nextTag string, isMajorOnly, allowMajor bool) (bool, error) {
+// isGreater returns true if nextTag is greater than currentTag.
+func isGreater(currentTag, nextTag string, isMajorOnly, allowMajor bool) (bool, error) {
 	current, err := version.NewVersion(currentTag)
 	if err != nil {
 		return false, err
