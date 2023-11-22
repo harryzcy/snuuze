@@ -156,7 +156,9 @@ func getDockerImageTags(name string) ([]string, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return nil, types.ErrRequestFailed
+		return nil, &types.RequestFailedError{
+			StatusCode: resp.StatusCode,
+		}
 	}
 
 	var tagsResponse dockerTagsResponse
@@ -181,7 +183,9 @@ func getDockerHubToken(client *http.Client, image string) (token string, err err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return "", types.ErrRequestFailed
+		return "", &types.RequestFailedError{
+			StatusCode: resp.StatusCode,
+		}
 	}
 
 	var tokenResponse dockerHubTokenResponse

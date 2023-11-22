@@ -103,7 +103,9 @@ func getPipPackageVersions(name string) ([]string, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return nil, types.ErrRequestFailed
+		return nil, &types.RequestFailedError{
+			StatusCode: resp.StatusCode,
+		}
 	}
 
 	var data pipJson

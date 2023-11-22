@@ -23,6 +23,7 @@ func NewGitHubClient() (Client, error) {
 	if authType == types.AuthTypeGithubApp {
 		var err error
 		client, err = auth.GithubAppInstallationClient()
+		fmt.Println(26)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create GitHub client: %v", err)
 		}

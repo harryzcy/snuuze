@@ -1,7 +1,11 @@
 package types
 
-import "errors"
+import "strconv"
 
-var (
-	ErrRequestFailed = errors.New("request failed")
-)
+type RequestFailedError struct {
+	StatusCode int
+}
+
+func (e *RequestFailedError) Error() string {
+	return "request failed with status code " + strconv.Itoa(e.StatusCode)
+}
