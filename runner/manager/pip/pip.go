@@ -9,6 +9,7 @@ import (
 
 	"github.com/harryzcy/snuuze/runner/manager/common"
 	"github.com/harryzcy/snuuze/types"
+	"github.com/harryzcy/snuuze/util/requestutil"
 )
 
 type PipManager struct{}
@@ -103,7 +104,11 @@ func getPipPackageVersions(name string) ([]string, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return nil, types.ErrRequestFailed
+		return nil, &types.RequestFailedError{
+			For:        jsonURL,
+			StatusCode: resp.StatusCode,
+			Body:       string(requestutil.MustReadAll(resp)),
+		}
 	}
 
 	var data pipJson

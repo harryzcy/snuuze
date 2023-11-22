@@ -10,6 +10,7 @@ import (
 
 	"github.com/harryzcy/snuuze/runner/manager/common"
 	"github.com/harryzcy/snuuze/types"
+	"github.com/harryzcy/snuuze/util/requestutil"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 )
 
@@ -156,7 +157,11 @@ func getDockerImageTags(name string) ([]string, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return nil, types.ErrRequestFailed
+		return nil, &types.RequestFailedError{
+			For:        url,
+			StatusCode: resp.StatusCode,
+			Body:       string(requestutil.MustReadAll(resp)),
+		}
 	}
 
 	var tagsResponse dockerTagsResponse
@@ -181,7 +186,11 @@ func getDockerHubToken(client *http.Client, image string) (token string, err err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return "", types.ErrRequestFailed
+		return "", &types.RequestFailedError{
+			For:        url,
+			StatusCode: resp.StatusCode,
+			Body:       string(requestutil.MustReadAll(resp)),
+		}
 	}
 
 	var tokenResponse dockerHubTokenResponse
