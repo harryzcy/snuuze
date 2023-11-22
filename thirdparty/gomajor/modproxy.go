@@ -13,18 +13,6 @@ import (
 	"golang.org/x/mod/semver"
 )
 
-// Module contains the module path and versions
-type Module struct {
-	Path     string
-	Versions []string
-}
-
-// MultiVersionModule contains multiple modules with different major versions
-type MultiVersionModule struct {
-	// Modules is a list of modules with different major versions, in ascending order.
-	Modules []*Module
-}
-
 // MaxVersion returns the latest version.
 // If there are no versions, the empty string is returned.
 // Prefix can be used to filter the versions based on a prefix.
@@ -162,10 +150,10 @@ func QueryCurrent(modpath string, cached bool) (*Module, bool, error) {
 	return &mod, true, nil
 }
 
-// Query finds the current and latest major version of a module
+// Query finds the all versions of a module with major versions greater than or equal to current one.
 // cached sets the Disable-Module-Fetch: true header
-func Query(modpath string, cached bool) (*MultiVersionModule, error) {
-	multiModule := &MultiVersionModule{}
+func Query(modpath string, cached bool) (*MultiModule, error) {
+	multiModule := &MultiModule{}
 
 	latest, ok, err := QueryCurrent(modpath, cached)
 	if err != nil {
@@ -203,6 +191,7 @@ func Query(modpath string, cached bool) (*MultiVersionModule, error) {
 			return multiModule, nil
 		}
 		multiModule.Modules = append(multiModule.Modules, next)
+		latest = next
 	}
 	return nil, fmt.Errorf("request limit exceeded")
 }

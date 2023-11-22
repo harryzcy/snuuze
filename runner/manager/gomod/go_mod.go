@@ -61,12 +61,12 @@ func (m *GolangManager) ListUpgrades(matches []types.Match) ([]*types.UpgradeInf
 }
 
 func (m *GolangManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, error) {
-	mod, err := gomajor.Latest(dep.Name, false)
+	mod, err := gomajor.Query(dep.Name, false)
 	if err != nil {
 		return nil, err
 	}
 
-	latestVersion, err := common.GetLatestTag(dep.Name, mod.Versions, dep.Version, !dep.Indirect)
+	latestVersion, err := common.GetLatestTag(dep.Name, mod.Versions(), dep.Version, !dep.Indirect)
 	if err != nil {
 		return nil, err
 	}
