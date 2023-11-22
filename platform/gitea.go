@@ -2,6 +2,7 @@ package platform
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -18,6 +19,8 @@ type GiteaClient struct {
 	token  string
 }
 
+var _ Client = &GiteaClient{}
+
 func NewGiteaClient(host string) Client {
 	token := getGiteaToken(host)
 	return &GiteaClient{
@@ -27,6 +30,10 @@ func NewGiteaClient(host string) Client {
 		host:  host,
 		token: token,
 	}
+}
+
+func (c *GiteaClient) Token(ctx context.Context) (string, error) {
+	return c.token, nil
 }
 
 func getGiteaToken(host string) string {
