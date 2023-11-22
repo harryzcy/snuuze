@@ -68,7 +68,7 @@ func getGitURLWithToken(client platform.Client, gitURL string) (string, error) {
 		return "", err
 	}
 
-	return strings.ReplaceAll(gitURL, "https://", fmt.Sprintf("https://%s@", token)), nil
+	return strings.ReplaceAll(gitURL, "https://", fmt.Sprintf("https://x-oauth-basic:%s@", token)), nil
 }
 
 func UpdateCommitter(gitURL, dirPath string) error {
