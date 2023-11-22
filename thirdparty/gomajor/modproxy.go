@@ -19,6 +19,12 @@ type Module struct {
 	Versions []string
 }
 
+// MultiVersionModule contains multiple modules with different major versions
+type MultiVersionModule struct {
+	// Modules is a list of modules with different major versions, in ascending order.
+	Modules []*Module
+}
+
 // MaxVersion returns the latest version.
 // If there are no versions, the empty string is returned.
 // Prefix can be used to filter the versions based on a prefix.
@@ -111,10 +117,10 @@ func (m *Module) NextMajorPath() (string, bool) {
 	return m.WithMajorPath(next), true
 }
 
-// Query the module proxy for all versions of a module.
+// QueryCurrent finds the current major version of a module via go proxy.
 // If the module does not exist, the second return parameter will be false
 // cached sets the Disable-Module-Fetch: true header
-func Query(modpath string, cached bool) (*Module, bool, error) {
+func QueryCurrent(modpath string, cached bool) (*Module, bool, error) {
 	escaped, err := module.EscapePath(modpath)
 	if err != nil {
 		return nil, false, err
@@ -124,7 +130,7 @@ func Query(modpath string, cached bool) (*Module, bool, error) {
 	if err != nil {
 		return nil, false, err
 	}
-	req.Header.Set("User-Agent", "GoMajor/1.0")
+	req.Header.Set("User-Agent", "snuuze/0.0")
 	if cached {
 		req.Header.Set("Disable-Module-Fetch", "true")
 	}
@@ -156,22 +162,26 @@ func Query(modpath string, cached bool) (*Module, bool, error) {
 	return &mod, true, nil
 }
 
-// Latest finds the latest major version of a module
+// Query finds the current and latest major version of a module
 // cached sets the Disable-Module-Fetch: true header
-func Latest(modpath string, cached bool) (*Module, error) {
-	latest, ok, err := Query(modpath, cached)
+func Query(modpath string, cached bool) (*MultiVersionModule, error) {
+	multiModule := &MultiVersionModule{}
+
+	latest, ok, err := QueryCurrent(modpath, cached)
 	if err != nil {
 		return nil, err
 	}
 	if !ok {
 		return nil, fmt.Errorf("module not found: %s", modpath)
 	}
+	multiModule.Modules = append(multiModule.Modules, latest)
+
 	for i := 0; i < 100; i++ {
 		nextpath, ok := latest.NextMajorPath()
 		if !ok {
-			return latest, nil
+			return multiModule, nil
 		}
-		next, ok, err := Query(nextpath, cached)
+		next, ok, err := QueryCurrent(nextpath, cached)
 		if err != nil {
 			return nil, err
 		}
@@ -182,7 +192,7 @@ func Latest(modpath string, cached bool) (*Module, error) {
 			if semver.Build(version) == "+incompatible" {
 				nextpath = latest.WithMajorPath(semver.Major(version))
 				if nextpath != latest.Path {
-					next, ok, err = Query(nextpath, cached)
+					next, ok, err = QueryCurrent(nextpath, cached)
 					if err != nil {
 						return nil, err
 					}
@@ -190,9 +200,9 @@ func Latest(modpath string, cached bool) (*Module, error) {
 			}
 		}
 		if !ok {
-			return latest, nil
+			return multiModule, nil
 		}
-		latest = next
+		multiModule.Modules = append(multiModule.Modules, next)
 	}
 	return nil, fmt.Errorf("request limit exceeded")
 }
