@@ -3,7 +3,6 @@ package docker
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -69,7 +68,6 @@ func (m *DockerManager) Parse(match types.Match, data []byte) ([]*types.Dependen
 //
 // Returns the image, version, and version type (tag or digest).
 func parseDockerfileFromDirective(value string) (image, version, versionType string) {
-	fmt.Println(value)
 
 	parts := strings.Split(value, " ")
 
