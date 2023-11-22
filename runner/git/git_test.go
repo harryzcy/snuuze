@@ -37,5 +37,5 @@ func TestGetGitURLWithToken(t *testing.T) {
 
 	url, err := getGitURLWithToken(client, "https://github.com/owner/repo.git")
 	assert.NoError(t, err)
-	assert.Equal(t, "https://test-token@github.com/owner/repo.git", url)
+	assert.Equal(t, "https://x-oauth-basic:test-token@github.com/owner/repo.git", url)
 }
