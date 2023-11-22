@@ -40,8 +40,6 @@ func GetLatestTag(depName string, tags []string, currentTag string, includeMajor
 		return currentTag, nil
 	}
 
-	fmt.Println(36, currentTag, versions)
-
 	sort.Sort(sort.Reverse(version.Collection(versions)))
 
 	var latest *version.Version
