@@ -4,9 +4,9 @@ go 1.21
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.8.0
-	github.com/go-co-op/gocron v1.35.2
+	github.com/go-co-op/gocron v1.36.0
 	github.com/hashicorp/go-version v1.6.0
-	github.com/labstack/echo/v4 v4.11.1
+	github.com/labstack/echo/v4 v4.11.3
 	github.com/moby/buildkit v0.12.3
 	github.com/shurcooL/githubv4 v0.0.0-20230704064427-599ae7bbf278
 	github.com/spf13/viper v1.17.0
@@ -55,7 +55,7 @@ require (
 	golang.org/x/sys v0.14.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.4.0 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
