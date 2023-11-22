@@ -3,8 +3,6 @@ package docker
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -12,6 +10,7 @@ import (
 
 	"github.com/harryzcy/snuuze/runner/manager/common"
 	"github.com/harryzcy/snuuze/types"
+	"github.com/harryzcy/snuuze/util/requestutil"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 )
 
@@ -161,6 +160,7 @@ func getDockerImageTags(name string) ([]string, error) {
 		return nil, &types.RequestFailedError{
 			For:        url,
 			StatusCode: resp.StatusCode,
+			Body:       string(requestutil.MustReadAll(resp)),
 		}
 	}
 
@@ -186,15 +186,10 @@ func getDockerHubToken(client *http.Client, image string) (token string, err err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Println("Failed to read response body", err)
-		}
-
 		return "", &types.RequestFailedError{
 			For:        url,
 			StatusCode: resp.StatusCode,
-			Body:       string(body),
+			Body:       string(requestutil.MustReadAll(resp)),
 		}
 	}
 
