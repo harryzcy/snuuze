@@ -77,27 +77,27 @@ func TestGetLatestTag(t *testing.T) {
 			want:       "1.21-alpine",
 			delimiter:  "-",
 		},
-		// {
-		// 	tags: []string{
-		// 		"1.20-alpine", "1.20-alpine3.17", "1.20-alpine3.18",
-		// 		"1.21-alpine", "1.21-alpine3.18", "1.21-alpine3.17",
-		// 	},
-		// 	currentTag: "1.20-alpine3.17",
-		// 	want:       "1.21-alpine3.18",
-		// 	delimiter:  "-",
-		// },
-		// {
-		// 	tags:       []string{"3.17.0", "3.17", "3.18", "3.18.0"},
-		// 	currentTag: "3.17",
-		// 	want:       "3.18",
-		// 	delimiter:  "-",
-		// },
-		// {
-		// 	tags:       []string{"3.17.0", "3.17", "3.18", "3.18.0"},
-		// 	currentTag: "3.17.0",
-		// 	want:       "3.18.0",
-		// 	delimiter:  "-",
-		// },
+		{
+			tags: []string{
+				"1.20-alpine", "1.20-alpine3.17", "1.20-alpine3.18",
+				"1.21-alpine", "1.21-alpine3.18", "1.21-alpine3.17",
+			},
+			currentTag: "1.20-alpine3.17",
+			want:       "1.21-alpine3.18",
+			delimiter:  "-",
+		},
+		{
+			tags:       []string{"3.17.0", "3.17", "3.18", "3.18.0"},
+			currentTag: "3.17",
+			want:       "3.18",
+			delimiter:  "-",
+		},
+		{
+			tags:       []string{"3.17.0", "3.17", "3.18", "3.18.0"},
+			currentTag: "3.17.0",
+			want:       "3.18.0",
+			delimiter:  "-",
+		},
 	}
 
 	for i, test := range tests {
