@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/go-version"
 )
 
+// GetLatestTagInput holds the input for GetLatestTag.
 type GetLatestTagInput struct {
 	DepName    string
 	Tags       []string
@@ -28,11 +29,14 @@ func GetLatestTag(input *GetLatestTagInput) (string, error) {
 	return getLatestTagMultiParts(input)
 }
 
+// MultiVersion represents a compounded tag.
 type MultiVersion struct {
 	Original string
 	Parts    []string
 }
 
+// getLatestTagMultiParts returns the latest tag for compounded tags.
+// e.g. 1.20-alpine3.18
 func getLatestTagMultiParts(input *GetLatestTagInput) (string, error) {
 	isMajorOnly := !strings.Contains(input.CurrentTag, ".")
 
@@ -103,6 +107,7 @@ func containValidPart(currentPart, nextPart string) bool {
 	return true
 }
 
+// getLatestTagSinglePart returns the latest tag that is not a pre-release,
 func getLatestTagSinglePart(input *GetLatestTagInput) (string, error) {
 	latest := input.CurrentTag
 	isMajorOnly := !strings.Contains(latest, ".")
@@ -133,7 +138,7 @@ func getLatestTagSinglePart(input *GetLatestTagInput) (string, error) {
 	return latest, nil
 }
 
-// isGreaterAndEqual returns true if nextTag is greater than currentTag.
+// isGreaterAndEqual returns two booleans values: isGreater and isEqual.
 func isGreaterAndEqual(currentTag, nextTag string, isMajorOnly, allowMajor bool) (bool, bool, error) {
 	current, err := version.NewVersion(currentTag)
 	if err != nil {
