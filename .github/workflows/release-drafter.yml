@@ -13,4 +13,7 @@ permissions:
 jobs:
   update_release_draft:
     name: Release Drafter
+    permissions:
+      contents: write
+      pull-requests: write
     uses: harryzcy/github-actions/.github/workflows/release-drafter.yml@main
