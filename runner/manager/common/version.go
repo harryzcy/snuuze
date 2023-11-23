@@ -108,6 +108,9 @@ func getLatestTagSinglePart(input *GetLatestTagInput) (string, error) {
 	isMajorOnly := !strings.Contains(latest, ".")
 
 	for _, tag := range input.Tags {
+		if tag == "" {
+			continue
+		}
 		if greater, _, err := isGreaterAndEqual(latest, tag, isMajorOnly, input.AllowMajor); err != nil {
 			return "", err
 		} else if greater {
@@ -139,7 +142,7 @@ func isGreaterAndEqual(currentTag, nextTag string, isMajorOnly, allowMajor bool)
 
 	next, err := version.NewVersion(nextTag)
 	if err != nil {
-		fmt.Printf("warning: failed to parse tag (%s), ignoring\n", next)
+		fmt.Printf("warning: failed to parse tag (%s), ignoring\n", nextTag)
 		return false, false, nil
 	}
 
