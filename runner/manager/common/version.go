@@ -174,6 +174,8 @@ func segmentLength(version string) int {
 	return strings.Count(version, ".") + 1
 }
 
+// letterPrefix returns the first part of the string that are all letters.
+// e.g. alpine3.18 => alpine
 func letterPrefix(version string) string {
 	prefix := ""
 	for _, c := range version {
