@@ -36,10 +36,18 @@ type MultiVersion struct {
 func getLatestTagTwoParts(input *GetLatestTagInput) (string, error) {
 	isMajorOnly := !strings.Contains(input.CurrentTag, ".")
 
+	current := MultiVersion{
+		Original: input.CurrentTag,
+		Parts:    strings.Split(input.CurrentTag, input.Delimiter),
+	}
+
 	choices := []MultiVersion{}
 	for _, tag := range input.Tags {
 		tagParts := strings.Split(tag, input.Delimiter)
 		if len(tagParts) != 2 {
+			continue
+		}
+		if len(current.Parts) != len(tagParts) {
 			continue
 		}
 		choices = append(choices, MultiVersion{
@@ -48,50 +56,51 @@ func getLatestTagTwoParts(input *GetLatestTagInput) (string, error) {
 		})
 	}
 
-	latest := MultiVersion{
-		Original: input.CurrentTag,
-		Parts:    strings.Split(input.CurrentTag, input.Delimiter),
-	}
-	// get possible versions based on first part
-	filtered := []MultiVersion{}
-	for _, choice := range choices {
-		if len(latest.Parts) != len(choice.Parts) {
-			continue
+	latest := []MultiVersion{}
+
+	partsNumber := len(current.Parts)
+	for i := 0; i < partsNumber; i++ {
+		for _, next := range choices {
+			prefix := letterPrefix(current.Parts[i])
+			currentPart := strings.TrimPrefix(current.Parts[i], prefix)
+			nextPart := strings.TrimPrefix(next.Parts[i], prefix)
+			if !containValidPart(currentPart, nextPart) {
+				continue
+			}
+
+			if len(latest) == 0 {
+				latest = []MultiVersion{next}
+				continue
+			}
+			latestPart := strings.TrimPrefix(latest[0].Parts[i], prefix)
+
+			if greater, equal, err := isGreaterAndEqual(latestPart, nextPart, isMajorOnly, input.AllowMajor); err != nil {
+				return "", err
+			} else if greater {
+				latest = []MultiVersion{next}
+			} else if equal {
+				latest = append(latest, next)
+			}
 		}
 
-		if greater, err := isGreater(latest.Parts[0], choice.Parts[0], isMajorOnly, input.AllowMajor); err != nil {
-			return "", err
-		} else if greater {
-			filtered = append(filtered, choice)
+		choices = latest
+		if len(choices) == 0 {
+			return input.CurrentTag, nil
 		}
-	}
-
-	for _, current := range filtered {
-		latestPart := latest.Parts[1]
-		tagPart := current.Parts[1]
-
-		prefix := letterPrefix(latestPart)
-		if strings.HasPrefix(tagPart, prefix) {
-			latestPart = latestPart[len(prefix):]
-			tagPart = tagPart[len(prefix):]
-		}
-
-		if latestPart == tagPart {
-			latest = current
-			continue
-		}
-		if len(latestPart) == 0 || len(tagPart) == 0 {
-			continue
-		}
-
-		if greater, err := isGreater(latestPart, tagPart, isMajorOnly, input.AllowMajor); err != nil {
-			return "", err
-		} else if greater {
-			latest = current
-		}
+		latest = []MultiVersion{}
 	}
 
-	return latest.Original, nil
+	return choices[0].Original, nil
+}
+
+func containValidPart(currentPart, nextPart string) bool {
+	if len(currentPart) == 0 && len(nextPart) != 0 {
+		return false
+	}
+	if len(currentPart) != 0 && len(nextPart) == 0 {
+		return false
+	}
+	return true
 }
 
 func getLatestTagSinglePart(input *GetLatestTagInput) (string, error) {
@@ -99,7 +108,7 @@ func getLatestTagSinglePart(input *GetLatestTagInput) (string, error) {
 	isMajorOnly := !strings.Contains(latest, ".")
 
 	for _, tag := range input.Tags {
-		if greater, err := isGreater(latest, tag, isMajorOnly, input.AllowMajor); err != nil {
+		if greater, _, err := isGreaterAndEqual(latest, tag, isMajorOnly, input.AllowMajor); err != nil {
 			return "", err
 		} else if greater {
 			latest = tag
@@ -121,41 +130,41 @@ func getLatestTagSinglePart(input *GetLatestTagInput) (string, error) {
 	return latest, nil
 }
 
-// isGreater returns true if nextTag is greater than currentTag.
-func isGreater(currentTag, nextTag string, isMajorOnly, allowMajor bool) (bool, error) {
+// isGreaterAndEqual returns true if nextTag is greater than currentTag.
+func isGreaterAndEqual(currentTag, nextTag string, isMajorOnly, allowMajor bool) (bool, bool, error) {
 	current, err := version.NewVersion(currentTag)
 	if err != nil {
-		return false, err
+		return false, false, err
 	}
 
 	next, err := version.NewVersion(nextTag)
 	if err != nil {
 		fmt.Printf("warning: failed to parse tag (%s), ignoring\n", next)
-		return false, nil
+		return false, false, nil
 	}
 
 	if !allowMajor && next.Segments()[0] != current.Segments()[0] {
-		return false, nil
+		return false, false, nil
 	}
 
 	// segments of different length
 	if !isMajorOnly && segmentLength(nextTag) != segmentLength(currentTag) {
-		return false, nil
+		return false, false, nil
 	}
 
 	// ignore weird versions likely it's SemVer vs CalVer.
 	// e.g. alpine 3.18.4 vs 20230901 in docker
 	if current.Segments()[0] < 200 &&
 		next.Segments()[0] > 100000 && next.Segments()[1] == 0 && next.Segments()[2] == 0 {
-		return false, nil
+		return false, false, nil
 	}
 
 	// don't upgrade from release to pre-release
 	if current.Prerelease() == "" && next.Prerelease() != "" {
-		return false, nil
+		return false, false, nil
 	}
 
-	return next.GreaterThan(current), nil
+	return next.GreaterThan(current), next.Equal(current), nil
 }
 
 func segmentLength(version string) int {
