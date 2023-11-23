@@ -29,13 +29,13 @@ func GetLatestTag(input *GetLatestTagInput) (string, error) {
 	return getLatestTagMultiParts(input)
 }
 
-// MultiVersion represents a compounded tag.
+// MultiVersion represents a complex tag.
 type MultiVersion struct {
 	Original string
 	Parts    []string
 }
 
-// getLatestTagMultiParts returns the latest tag for compounded tags.
+// getLatestTagMultiParts returns the latest tag for complex tags.
 // e.g. 1.20-alpine3.18
 func getLatestTagMultiParts(input *GetLatestTagInput) (string, error) {
 	isMajorOnly := !strings.Contains(input.CurrentTag, ".")
