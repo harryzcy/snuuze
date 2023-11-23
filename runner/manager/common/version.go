@@ -2,73 +2,193 @@ package common
 
 import (
 	"fmt"
-	"sort"
 	"strings"
+	"unicode"
 
 	"github.com/hashicorp/go-version"
 )
 
-// GetLatestTag returns the latest tag that is not a pre-release, or the current tag if no such tag exists
-func GetLatestTag(depName string, tags []string, currentTag string, includeMajor bool) (string, error) {
-	currentVersion, err := version.NewVersion(currentTag)
-	if err != nil {
-		return "", err
+// GetLatestTagInput holds the input for GetLatestTag.
+type GetLatestTagInput struct {
+	DepName    string
+	Tags       []string
+	CurrentTag string
+	// AllowMajor specifies whether to allow major version upgrade.
+	AllowMajor bool
+	// Delimiter is optional, used to split the tag, i.e. docker image tag go:1.20-alpine3.18
+	Delimiter string
+}
+
+// GetLatestTag returns the latest tag that is not a pre-release,
+// or the current tag if no such tag exists.
+func GetLatestTag(input *GetLatestTagInput) (string, error) {
+	isMultiPart := input.Delimiter != "" && strings.Contains(input.CurrentTag, input.Delimiter)
+	if !isMultiPart {
+		return getLatestTagSinglePart(input)
 	}
-	versions := make([]*version.Version, 0, len(tags))
-	for _, tag := range tags {
-		v, err := version.NewVersion(tag)
-		if err != nil {
-			fmt.Printf("warning: failed to parse tag (%s) for %s, ignoring\n", tag, depName)
+	return getLatestTagMultiParts(input)
+}
+
+// MultiVersion represents a complex tag.
+type MultiVersion struct {
+	Original string
+	Parts    []string
+}
+
+// getLatestTagMultiParts returns the latest tag for complex tags.
+// e.g. 1.20-alpine3.18
+func getLatestTagMultiParts(input *GetLatestTagInput) (string, error) {
+	isMajorOnly := !strings.Contains(input.CurrentTag, ".")
+
+	current := MultiVersion{
+		Original: input.CurrentTag,
+		Parts:    strings.Split(input.CurrentTag, input.Delimiter),
+	}
+
+	choices := []MultiVersion{}
+	for _, tag := range input.Tags {
+		tagParts := strings.Split(tag, input.Delimiter)
+		if len(tagParts) != 2 {
 			continue
 		}
-		if !includeMajor {
-			if v.Segments()[0] != currentVersion.Segments()[0] {
+		if len(current.Parts) != len(tagParts) {
+			continue
+		}
+		choices = append(choices, MultiVersion{
+			Original: tag,
+			Parts:    tagParts,
+		})
+	}
+
+	latest := []MultiVersion{}
+
+	partsNumber := len(current.Parts)
+	for i := 0; i < partsNumber; i++ {
+		for _, next := range choices {
+			prefix := letterPrefix(current.Parts[i])
+			currentPart := strings.TrimPrefix(current.Parts[i], prefix)
+			nextPart := strings.TrimPrefix(next.Parts[i], prefix)
+			if !containValidPart(currentPart, nextPart) {
 				continue
+			}
+
+			if len(latest) == 0 {
+				latest = []MultiVersion{next}
+				continue
+			}
+			latestPart := strings.TrimPrefix(latest[0].Parts[i], prefix)
+
+			if greater, equal, err := isGreaterAndEqual(latestPart, nextPart, isMajorOnly, input.AllowMajor); err != nil {
+				return "", err
+			} else if greater {
+				latest = []MultiVersion{next}
+			} else if equal {
+				latest = append(latest, next)
 			}
 		}
 
-		// ignore weird versions likely it's SemVer vs CalVer.
-		// e.g. alpine 3.18.4 vs 20230901
-		if currentVersion.Segments()[0] < 200 &&
-			v.Segments()[0] > 100000 && v.Segments()[1] == 0 && v.Segments()[2] == 0 {
+		choices = latest
+		if len(choices) == 0 {
+			return input.CurrentTag, nil
+		}
+		latest = []MultiVersion{}
+	}
+
+	return choices[0].Original, nil
+}
+
+func containValidPart(currentPart, nextPart string) bool {
+	if len(currentPart) == 0 && len(nextPart) != 0 {
+		return false
+	}
+	if len(currentPart) != 0 && len(nextPart) == 0 {
+		return false
+	}
+	return true
+}
+
+// getLatestTagSinglePart returns the latest tag that is not a pre-release,
+func getLatestTagSinglePart(input *GetLatestTagInput) (string, error) {
+	latest := input.CurrentTag
+	isMajorOnly := !strings.Contains(latest, ".")
+
+	for _, tag := range input.Tags {
+		if tag == "" {
 			continue
 		}
-
-		versions = append(versions, v)
-	}
-	if len(versions) == 0 {
-		return currentTag, nil
-	}
-
-	sort.Sort(sort.Reverse(version.Collection(versions)))
-
-	var latest *version.Version
-	for _, v := range versions {
-		if v.Prerelease() != "" {
-			continue
-		}
-
-		if v.GreaterThan(currentVersion) {
-			latest = v
-			break
+		if greater, _, err := isGreaterAndEqual(latest, tag, isMajorOnly, input.AllowMajor); err != nil {
+			return "", err
+		} else if greater {
+			latest = tag
 		}
 	}
 
-	if latest == nil {
-		return currentTag, nil
-	}
-
-	if isMajorOnly(currentTag) {
-		major := latest.Segments()[0]
-		if latest.Original()[0] == 'v' {
+	if isMajorOnly {
+		fullVersion, err := version.NewVersion(latest)
+		if err != nil {
+			return "", err
+		}
+		major := fullVersion.Segments()[0]
+		if fullVersion.Original()[0] == 'v' {
 			return fmt.Sprintf("v%d", major), nil
 		}
 		return fmt.Sprintf("%d", major), nil
 	}
 
-	return latest.Original(), nil
+	return latest, nil
 }
 
-func isMajorOnly(v string) bool {
-	return !strings.Contains(v, ".")
+// isGreaterAndEqual returns two booleans values: isGreater and isEqual.
+func isGreaterAndEqual(currentTag, nextTag string, isMajorOnly, allowMajor bool) (bool, bool, error) {
+	current, err := version.NewVersion(currentTag)
+	if err != nil {
+		return false, false, err
+	}
+
+	next, err := version.NewVersion(nextTag)
+	if err != nil {
+		fmt.Printf("warning: failed to parse tag (%s), ignoring\n", nextTag)
+		return false, false, nil
+	}
+
+	if !allowMajor && next.Segments()[0] != current.Segments()[0] {
+		return false, false, nil
+	}
+
+	// segments of different length
+	if !isMajorOnly && segmentLength(nextTag) != segmentLength(currentTag) {
+		return false, false, nil
+	}
+
+	// ignore weird versions likely it's SemVer vs CalVer.
+	// e.g. alpine 3.18.4 vs 20230901 in docker
+	if current.Segments()[0] < 200 &&
+		next.Segments()[0] > 100000 && next.Segments()[1] == 0 && next.Segments()[2] == 0 {
+		return false, false, nil
+	}
+
+	// don't upgrade from release to pre-release
+	if current.Prerelease() == "" && next.Prerelease() != "" {
+		return false, false, nil
+	}
+
+	return next.GreaterThan(current), next.Equal(current), nil
+}
+
+func segmentLength(version string) int {
+	return strings.Count(version, ".") + 1
+}
+
+// letterPrefix returns the first part of the string that are all letters.
+// e.g. alpine3.18 => alpine
+func letterPrefix(version string) string {
+	prefix := ""
+	for _, c := range version {
+		if unicode.IsLetter(c) {
+			prefix += string(c)
+		} else {
+			break
+		}
+	}
+	return prefix
 }

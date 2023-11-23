@@ -82,7 +82,12 @@ func (m *PipManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, err
 		return nil, err
 	}
 
-	latest, err := common.GetLatestTag(dep.Name, versions, currentVersion, true)
+	latest, err := common.GetLatestTag(&common.GetLatestTagInput{
+		DepName:    dep.Name,
+		Tags:       versions,
+		CurrentTag: currentVersion,
+		AllowMajor: true,
+	})
 	if err != nil {
 		return nil, err
 	}
