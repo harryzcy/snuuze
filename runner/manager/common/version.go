@@ -25,7 +25,7 @@ func GetLatestTag(input *GetLatestTagInput) (string, error) {
 	if !isMultiPart {
 		return getLatestTagSinglePart(input)
 	}
-	return getLatestTagTwoParts(input)
+	return getLatestTagMultiParts(input)
 }
 
 type MultiVersion struct {
@@ -33,7 +33,7 @@ type MultiVersion struct {
 	Parts    []string
 }
 
-func getLatestTagTwoParts(input *GetLatestTagInput) (string, error) {
+func getLatestTagMultiParts(input *GetLatestTagInput) (string, error) {
 	isMajorOnly := !strings.Contains(input.CurrentTag, ".")
 
 	current := MultiVersion{
