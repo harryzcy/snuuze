@@ -7,7 +7,7 @@ require (
 	github.com/go-co-op/gocron v1.36.1
 	github.com/hashicorp/go-version v1.6.0
 	github.com/labstack/echo/v4 v4.11.3
-	github.com/moby/buildkit v0.12.4
+	github.com/moby/buildkit v0.12.5
 	github.com/shurcooL/githubv4 v0.0.0-20230704064427-599ae7bbf278
 	github.com/spf13/viper v1.18.1
 	github.com/stretchr/testify v1.8.4
