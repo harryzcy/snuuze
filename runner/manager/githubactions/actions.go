@@ -20,7 +20,7 @@ func (m *GitHubActionsManager) Name() types.PackageManager {
 }
 
 func (m *GitHubActionsManager) Match(path string) bool {
-	if !strings.HasPrefix(path, ".github/workflows") {
+	if !strings.HasPrefix(path, ".github/workflows") && !strings.HasPrefix(path, ".gitea/workflows") {
 		return false
 	}
 	return strings.HasSuffix(path, ".yml") || strings.HasSuffix(path, ".yaml")
