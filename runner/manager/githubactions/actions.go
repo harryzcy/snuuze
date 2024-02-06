@@ -39,7 +39,7 @@ func (m *GitHubActionsManager) ListUpgrades(matches []types.Match) ([]*types.Upg
 }
 
 func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, error) {
-	owner, repo, err := parseRepo(dep.Name)
+	domain, owner, repo, err := parseRepo(dep.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -56,9 +56,14 @@ func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.Upgrad
 		return info, nil
 	}
 
-	client, err := platform.NewGitHubClient()
-	if err != nil {
-		return nil, err
+	var client platform.Client
+	if domain == "github.com" {
+		client, err = platform.NewGitHubClient()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// TODO: support gitea
 	}
 
 	tags, err := client.ListTags(&platform.ListTagsInput{
@@ -86,15 +91,29 @@ func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.Upgrad
 	return info, nil
 }
 
-func parseRepo(uses string) (string, string, error) {
+func parseRepo(uses string) (domain, owner, repo string, err error) {
 	uses = strings.Split(uses, "@")[0]
-	parts := strings.Split(uses, "/")
-	if len(parts) < 2 {
-		return "", "", fmt.Errorf("invalid uses in github workflow file: %s", uses)
+
+	expectParts := 2
+	hasDomain := strings.HasPrefix(uses, "https://")
+	if hasDomain {
+		uses = strings.TrimPrefix(uses, "https://")
+		expectParts = 3
 	}
-	owner := parts[0]
-	repo := parts[1]
-	return owner, repo, nil
+
+	parts := strings.Split(uses, "/")
+	if len(parts) < expectParts {
+		return "", "", "", fmt.Errorf("invalid uses in github workflow file: %s", uses)
+	}
+
+	domain = "github.com"
+	if hasDomain {
+		domain = parts[0]
+		parts = parts[1:]
+	}
+	owner = parts[0]
+	repo = parts[1]
+	return domain, owner, repo, nil
 }
 
 func isSha(version string) bool {
