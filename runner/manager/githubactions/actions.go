@@ -63,7 +63,7 @@ func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.Upgrad
 			return nil, err
 		}
 	} else {
-		// TODO: support gitea
+		client, err = platform.NewGitClient(domain)
 	}
 
 	tags, err := client.ListTags(&platform.ListTagsInput{

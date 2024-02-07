@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	ErrUnimplemented      = errors.New("not implemented")
 	ErrInvalidGitPlatform = errors.New("unsupported git platform")
 	ErrInvalidGitURL      = errors.New("invalid git url")
 )
