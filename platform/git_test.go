@@ -6,6 +6,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNewGitClient(t *testing.T) {
+	_, err := NewGitClient("http://example.com")
+	assert.Equal(t, ErrNoInsecureServer, err)
+
+	_, err = NewGitClient("")
+	assert.Equal(t, ErrServerRequired, err)
+
+	_, err = NewGitClient("example.com")
+	assert.Equal(t, ErrInvalidServerURL, err)
+
+	_, err = NewGitClient("https://example.com")
+	assert.Nil(t, err)
+}
+
 func TestGitClient_ListTags(t *testing.T) {
 	githubClient, _ := NewGitClient("https://github.com")
 	tags, err := githubClient.ListTags(&ListTagsInput{

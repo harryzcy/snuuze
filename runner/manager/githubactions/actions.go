@@ -61,11 +61,11 @@ func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.Upgrad
 	var client platform.Client
 	if domain == GitHubDomain {
 		client, err = platform.NewGitHubClient()
-		if err != nil {
-			return nil, err
-		}
 	} else {
 		client, err = platform.NewGitClient(domain)
+	}
+	if err != nil {
+		return nil, err
 	}
 
 	tags, err := client.ListTags(&platform.ListTagsInput{

@@ -19,6 +19,18 @@ var _ Client = &GitClient{}
 
 // NewGitClient creates a new NewGitClient for a git server.
 func NewGitClient(server string) (Client, error) {
+	if server == "" {
+		return nil, ErrServerRequired
+	}
+
+	if strings.HasPrefix(server, "http://") {
+		return nil, ErrNoInsecureServer
+	}
+
+	if !strings.HasPrefix(server, "https://") {
+		return nil, ErrInvalidServerURL
+	}
+
 	client := &GitClient{
 		server: server,
 	}
