@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.8.0
 	github.com/go-co-op/gocron v1.36.1
+	github.com/go-git/go-git/v5 v5.11.0
 	github.com/hashicorp/go-version v1.6.0
 	github.com/labstack/echo/v4 v4.11.3
 	github.com/moby/buildkit v0.12.5
@@ -28,7 +29,6 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.5.0 // indirect
-	github.com/go-git/go-git/v5 v5.11.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
