@@ -1,4 +1,4 @@
-FROM golang:1.21.5-alpine3.19 as builder
+FROM golang:1.22.0-alpine3.19 as builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN set -ex && \
   -ldflags="-w -s" \
   -o /bin/snuuze
 
-FROM alpine:3.19.0
+FROM alpine:3.19.1
 
 COPY --from=builder /bin/snuuze /bin/snuuze
 

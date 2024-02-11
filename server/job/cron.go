@@ -3,7 +3,7 @@ package job
 import (
 	"time"
 
-	"github.com/go-co-op/gocron"
+	"github.com/go-co-op/gocron/v2"
 )
 
 func StartCron(state *State) (*gocron.Scheduler, error) {
