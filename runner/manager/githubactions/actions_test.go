@@ -4,8 +4,21 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/harryzcy/snuuze/types"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestIsUpgradable(t *testing.T) {
+	m := New()
+	dep := &types.Dependency{
+		Name:    "https://gitea.com/actions/checkout@v2",
+		Version: "v2",
+	}
+
+	info, err := m.IsUpgradable(*dep)
+	assert.NoError(t, err)
+	assert.True(t, info.Upgradable)
+}
 
 func TestMatch(t *testing.T) {
 	tests := []struct {
