@@ -1,11 +1,34 @@
 package githubactions
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 
+	"github.com/harryzcy/snuuze/config"
+	"github.com/harryzcy/snuuze/types"
+	"github.com/labstack/gommon/log"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestMain(t *testing.M) {
+	err := config.LoadHostingConfig()
+	if err != nil {
+		log.Error(fmt.Errorf("failed to load hosting config: %w", err))
+	}
+	t.Run()
+}
+
+func TestIsUpgradable(t *testing.T) {
+	m := New()
+
+	info, err := m.IsUpgradable(types.Dependency{
+		Name:    "https://gitea.com/actions/checkout@v2",
+		Version: "v2",
+	})
+	assert.NoError(t, err)
+	assert.True(t, info.Upgradable)
+}
 
 func TestMatch(t *testing.T) {
 	tests := []struct {
@@ -30,32 +53,46 @@ func TestMatch(t *testing.T) {
 
 func TestParseRepo(t *testing.T) {
 	tests := []struct {
-		uses  string
-		owner string
-		repo  string
-		err   bool
+		uses   string
+		domain string
+		owner  string
+		repo   string
+		err    bool
 	}{
 		{
-			uses:  "actions/checkout@v2",
-			owner: "actions",
-			repo:  "checkout",
+			uses:   "actions/checkout@v2",
+			domain: "https://github.com",
+			owner:  "actions",
+			repo:   "checkout",
 		},
 		{
-			uses:  "harryzcy/github-actions/.github/workflows/linter.yml@main",
-			owner: "harryzcy",
-			repo:  "github-actions",
+			uses:   "https://github.com/actions/checkout@v4",
+			domain: "https://github.com",
+			owner:  "actions",
+			repo:   "checkout",
 		},
 		{
-			uses:  "actions",
-			owner: "",
-			repo:  "",
-			err:   true,
+			uses:   "https://example.com/actions/checkout@v4",
+			domain: "https://example.com",
+			owner:  "actions",
+			repo:   "checkout",
+		},
+		{
+			uses:   "harryzcy/github-actions/.github/workflows/linter.yml@main",
+			domain: "https://github.com",
+			owner:  "harryzcy",
+			repo:   "github-actions",
+		},
+		{
+			uses: "actions",
+			err:  true,
 		},
 	}
 
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			owner, repo, err := parseRepo(test.uses)
+			domain, owner, repo, err := parseRepo(test.uses)
+			assert.Equal(t, test.domain, domain)
 			assert.Equal(t, test.owner, owner)
 			assert.Equal(t, test.repo, repo)
 			if test.err {

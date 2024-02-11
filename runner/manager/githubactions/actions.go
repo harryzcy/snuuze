@@ -9,6 +9,8 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
+const GitHubDomain = "https://github.com"
+
 type GitHubActionsManager struct{}
 
 func New() common.Manager {
@@ -20,7 +22,7 @@ func (m *GitHubActionsManager) Name() types.PackageManager {
 }
 
 func (m *GitHubActionsManager) Match(path string) bool {
-	if !strings.HasPrefix(path, ".github/workflows") {
+	if !strings.HasPrefix(path, ".github/workflows") && !strings.HasPrefix(path, ".gitea/workflows") {
 		return false
 	}
 	return strings.HasSuffix(path, ".yml") || strings.HasSuffix(path, ".yaml")
@@ -39,7 +41,7 @@ func (m *GitHubActionsManager) ListUpgrades(matches []types.Match) ([]*types.Upg
 }
 
 func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.UpgradeInfo, error) {
-	owner, repo, err := parseRepo(dep.Name)
+	domain, owner, repo, err := parseRepo(dep.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +58,12 @@ func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.Upgrad
 		return info, nil
 	}
 
-	client, err := platform.NewGitHubClient()
+	var client platform.Client
+	if domain == GitHubDomain {
+		client, err = platform.NewGitHubClient()
+	} else {
+		client, err = platform.NewGitClient(domain)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -86,15 +93,29 @@ func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.Upgrad
 	return info, nil
 }
 
-func parseRepo(uses string) (string, string, error) {
+func parseRepo(uses string) (domain, owner, repo string, err error) {
 	uses = strings.Split(uses, "@")[0]
-	parts := strings.Split(uses, "/")
-	if len(parts) < 2 {
-		return "", "", fmt.Errorf("invalid uses in github workflow file: %s", uses)
+
+	expectParts := 2
+	hasDomain := strings.HasPrefix(uses, "https://")
+	if hasDomain {
+		uses = strings.TrimPrefix(uses, "https://")
+		expectParts = 3
 	}
-	owner := parts[0]
-	repo := parts[1]
-	return owner, repo, nil
+
+	parts := strings.Split(uses, "/")
+	if len(parts) < expectParts {
+		return "", "", "", fmt.Errorf("invalid uses in github workflow file: %s", uses)
+	}
+
+	domain = GitHubDomain
+	if hasDomain {
+		domain = "https://" + parts[0]
+		parts = parts[1:]
+	}
+	owner = parts[0]
+	repo = parts[1]
+	return domain, owner, repo, nil
 }
 
 func isSha(version string) bool {

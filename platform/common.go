@@ -10,8 +10,12 @@ import (
 )
 
 var (
+	ErrUnimplemented      = errors.New("not implemented")
 	ErrInvalidGitPlatform = errors.New("unsupported git platform")
 	ErrInvalidGitURL      = errors.New("invalid git url")
+	ErrInvalidServerURL   = errors.New("invalid server URL")
+	ErrNoInsecureServer   = errors.New("insecure server is not supported")
+	ErrServerRequired     = errors.New("server is required")
 )
 
 type Client interface {
