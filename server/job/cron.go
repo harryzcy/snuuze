@@ -21,5 +21,5 @@ func StartCron(state *State) (gocron.Scheduler, error) {
 }
 
 func StopCron(s gocron.Scheduler) {
-	s.Shutdown()
+	_ = s.Shutdown()
 }
