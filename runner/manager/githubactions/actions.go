@@ -9,6 +9,8 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
+const GitHubDomain = "https://github.com"
+
 type GitHubActionsManager struct{}
 
 func New() common.Manager {
@@ -57,7 +59,7 @@ func (m *GitHubActionsManager) IsUpgradable(dep types.Dependency) (*types.Upgrad
 	}
 
 	var client platform.Client
-	if domain == "github.com" {
+	if domain == GitHubDomain {
 		client, err = platform.NewGitHubClient()
 		if err != nil {
 			return nil, err
@@ -106,9 +108,9 @@ func parseRepo(uses string) (domain, owner, repo string, err error) {
 		return "", "", "", fmt.Errorf("invalid uses in github workflow file: %s", uses)
 	}
 
-	domain = "github.com"
+	domain = GitHubDomain
 	if hasDomain {
-		domain = parts[0]
+		domain = "https://" + parts[0]
 		parts = parts[1:]
 	}
 	owner = parts[0]

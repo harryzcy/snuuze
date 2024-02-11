@@ -38,25 +38,25 @@ func TestParseRepo(t *testing.T) {
 	}{
 		{
 			uses:   "actions/checkout@v2",
-			domain: "github.com",
+			domain: "https://github.com",
 			owner:  "actions",
 			repo:   "checkout",
 		},
 		{
 			uses:   "https://github.com/actions/checkout@v4",
-			domain: "github.com",
+			domain: "https://github.com",
 			owner:  "actions",
 			repo:   "checkout",
 		},
 		{
 			uses:   "https://example.com/actions/checkout@v4",
-			domain: "example.com",
+			domain: "https://example.com",
 			owner:  "actions",
 			repo:   "checkout",
 		},
 		{
 			uses:   "harryzcy/github-actions/.github/workflows/linter.yml@main",
-			domain: "github.com",
+			domain: "https://github.com",
 			owner:  "harryzcy",
 			repo:   "github-actions",
 		},

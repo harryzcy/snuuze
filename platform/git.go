@@ -1,8 +1,17 @@
 package platform
 
-import "context"
+import (
+	"context"
+	"errors"
+	"io"
+	"strings"
+
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/storage/memory"
+)
 
 type GitClient struct {
+	// server is the git server URL (e.g. https://git.example.com)
 	server string
 }
 
@@ -26,7 +35,35 @@ func (c *GitClient) ListRepos() ([]Repo, error) {
 }
 
 func (c *GitClient) ListTags(params *ListTagsInput) ([]string, error) {
-	return nil, ErrUnimplemented
+	s := memory.NewStorage()
+	r, err := git.Clone(s, nil, &git.CloneOptions{
+		URL: strings.Join([]string{c.server, params.Owner, params.Repo}, "/"),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// tags := make(map[plumbing.Hash]string)
+	tags := make([]string, 0)
+
+	iter, err := r.Tags()
+	if err != nil {
+		return nil, err
+	}
+
+	for {
+		ref, err := iter.Next()
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		// tags[ref.Hash()] = ref.Name().Short()
+		tags = append(tags, ref.Name().Short())
+
+	}
+	return tags, nil
 }
 
 func (c *GitClient) CreatePullRequest(input *CreatePullRequestInput) error {
