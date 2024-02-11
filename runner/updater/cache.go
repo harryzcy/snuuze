@@ -15,7 +15,7 @@ type Cache struct {
 
 func NewCache() *Cache {
 	return &Cache{
-		Files: map[string][]byte{},
+		Files: make(map[string][]byte),
 	}
 }
 
@@ -46,7 +46,7 @@ func (c *Cache) Commit() error {
 			return err
 		}
 	}
-	c.Files = nil
+	c.Files = make(map[string][]byte)
 	return nil
 }
 
