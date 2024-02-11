@@ -36,6 +36,8 @@ func NewGitHubClient() (Client, error) {
 		}
 	} else if client.authType == types.AuthTypeToken {
 		client.client, client.token = auth.GitHubPATClient()
+	} else {
+		return nil, fmt.Errorf("unknown GitHub auth type: %s", client.authType)
 	}
 
 	return client, nil

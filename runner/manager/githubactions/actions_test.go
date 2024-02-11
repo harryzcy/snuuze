@@ -4,18 +4,26 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/types"
 	"github.com/stretchr/testify/assert"
 )
 
+func TestMain(t *testing.M) {
+	err := config.LoadHostingConfig()
+	if err != nil {
+		panic(err)
+	}
+	t.Run()
+}
+
 func TestIsUpgradable(t *testing.T) {
 	m := New()
-	dep := &types.Dependency{
+
+	info, err := m.IsUpgradable(types.Dependency{
 		Name:    "https://gitea.com/actions/checkout@v2",
 		Version: "v2",
-	}
-
-	info, err := m.IsUpgradable(*dep)
+	})
 	assert.NoError(t, err)
 	assert.True(t, info.Upgradable)
 }
