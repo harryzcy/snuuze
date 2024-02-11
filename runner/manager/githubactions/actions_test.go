@@ -1,18 +1,20 @@
 package githubactions
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 
 	"github.com/harryzcy/snuuze/config"
 	"github.com/harryzcy/snuuze/types"
+	"github.com/labstack/gommon/log"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(t *testing.M) {
 	err := config.LoadHostingConfig()
 	if err != nil {
-		panic(err)
+		log.Error(fmt.Errorf("failed to load hosting config: %w", err))
 	}
 	t.Run()
 }
