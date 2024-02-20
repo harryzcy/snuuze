@@ -1,8 +1,5 @@
 FROM golang:1.22.0-alpine3.19 as builder
 
-# checkov:skip=CKV_DOCKER_3:"Allow root user"
-# checkov:skip=CKV_DOCKER_2:"No healthcheck"
-
 WORKDIR /app
 
 COPY . ./
@@ -15,8 +12,13 @@ RUN set -ex && \
 
 FROM alpine:3.19.1
 
-COPY --from=builder /bin/snuuze /bin/snuuze
+RUN addgroup -S snuuze && adduser -S snuuze -G snuuze
+USER snuuze
+
+COPY --from=builder --chown=snuuze:snuuze /bin/snuuze /bin/snuuze
 
 EXPOSE 1323
+HEALTHCHECK --interval=60s --timeout=30s --start-period=5s --retries=3 \
+  CMD [ "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:1323/ping", "||", "exit", "1" ]
 
 CMD ["/bin/snuuze"]
