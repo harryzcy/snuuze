@@ -14,7 +14,7 @@ type TestClient struct {
 
 var _ platform.Client = &TestClient{}
 
-func (c *TestClient) Token(ctx context.Context) (string, error) {
+func (c *TestClient) Token(_ context.Context) (string, error) {
 	return c.token, nil
 }
 
@@ -22,11 +22,11 @@ func (c *TestClient) ListRepos() ([]platform.Repo, error) {
 	return nil, nil
 }
 
-func (c *TestClient) ListTags(params *platform.ListTagsInput) ([]string, error) {
+func (c *TestClient) ListTags(_ *platform.ListTagsInput) ([]string, error) {
 	return nil, nil
 }
 
-func (c *TestClient) CreatePullRequest(input *platform.CreatePullRequestInput) error {
+func (c *TestClient) CreatePullRequest(_ *platform.CreatePullRequestInput) error {
 	return nil
 }
 

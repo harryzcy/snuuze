@@ -32,7 +32,7 @@ func NewGiteaClient(host string) Client {
 	}
 }
 
-func (c *GiteaClient) Token(ctx context.Context) (string, error) {
+func (c *GiteaClient) Token(_ context.Context) (string, error) {
 	return c.token, nil
 }
 

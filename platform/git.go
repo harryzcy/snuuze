@@ -38,7 +38,7 @@ func NewGitClient(server string) (Client, error) {
 	return client, nil
 }
 
-func (c *GitClient) Token(ctx context.Context) (string, error) {
+func (c *GitClient) Token(_ context.Context) (string, error) {
 	return "", ErrUnimplemented
 }
 
@@ -78,6 +78,6 @@ func (c *GitClient) ListTags(params *ListTagsInput) ([]string, error) {
 	return tags, nil
 }
 
-func (c *GitClient) CreatePullRequest(input *CreatePullRequestInput) error {
+func (c *GitClient) CreatePullRequest(_ *CreatePullRequestInput) error {
 	return ErrUnimplemented
 }

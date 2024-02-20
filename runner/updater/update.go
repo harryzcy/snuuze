@@ -68,7 +68,7 @@ func updateDependencies(gitURL, repoDir string, infos []*types.UpgradeInfo, info
 		return fmt.Errorf("failed to update dependencies: %s", err)
 	}
 
-	err = git.CommitChanges(repoDir, info.branchName, info.message)
+	err = git.CommitChanges(repoDir, info.message)
 	if err != nil {
 		return fmt.Errorf("failed to commit changes to branch [%s]: %s", info.branchName, err)
 	}

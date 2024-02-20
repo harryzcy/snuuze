@@ -6,7 +6,7 @@ import (
 	"github.com/harryzcy/snuuze/runner/command"
 )
 
-func CommitChanges(repoDir, branchName, message string) error {
+func CommitChanges(repoDir, message string) error {
 	_, err := command.RunCommand(command.CommandInputs{
 		Command: []string{"git", "-C", repoDir, "add", "."},
 	})
