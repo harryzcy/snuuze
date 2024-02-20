@@ -47,7 +47,8 @@ func Run() {
 	err = e.Shutdown(ctx)
 	exitOnError(err)
 
-	job.StopCron(scheduler)
+	err = job.StopCron(scheduler)
+	exitOnError(err)
 
 	fmt.Println("Server gracefully stopped")
 }

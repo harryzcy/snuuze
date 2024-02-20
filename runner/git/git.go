@@ -82,7 +82,7 @@ func UpdateCommitter(gitURL, dirPath string) error {
 		appName = "snuuze"
 	}
 	if !strings.HasSuffix(appName, "[bot]") {
-		appName = appName + "[bot]"
+		appName += "[bot]"
 	}
 
 	appUserID := config.GetHostingConfig().GitHub.AppUserID

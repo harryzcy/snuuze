@@ -10,14 +10,18 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	wd, _ := os.Getwd()
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
 	for !strings.HasSuffix(wd, "snuuze") {
 		wd = filepath.Dir(wd)
 	}
 
 	testdataDir := filepath.Join(wd, "testdata")
 
-	err := os.Chdir(testdataDir)
+	err = os.Chdir(testdataDir)
 	if err != nil {
 		panic(err)
 	}

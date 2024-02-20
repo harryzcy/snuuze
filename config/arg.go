@@ -13,8 +13,13 @@ type CLIConfig struct {
 	InPlace bool
 }
 
+const (
+	ModeServer = "server"
+	ModeCLI    = "cli"
+)
+
 func (c CLIConfig) AsServer() bool {
-	return c.Mode == "server"
+	return c.Mode == ModeServer
 }
 
 var (
@@ -23,15 +28,16 @@ var (
 
 func ParseArgs() {
 	args := os.Args[1:]
-	if len(args) == 0 {
-		cliConfig.Mode = "server"
-	} else if args[0] == "server" {
-		cliConfig.Mode = "server"
+	switch {
+	case len(args) == 0:
+		cliConfig.Mode = ModeServer
+	case args[0] == "server":
+		cliConfig.Mode = ModeServer
 		args = args[1:]
-	} else if args[0] == "cli" {
-		cliConfig.Mode = "cli"
+	case args[0] == "cli":
+		cliConfig.Mode = ModeCLI
 		args = args[1:]
-	} else {
+	default:
 		fmt.Fprintln(os.Stderr, "error: invalid mode")
 		os.Exit(1)
 	}
@@ -42,11 +48,12 @@ func ParseArgs() {
 			cliConfig.Args = append(cliConfig.Args, arg)
 		}
 
-		if arg == "--in-place" {
+		switch arg {
+		case "--in-place":
 			cliConfig.InPlace = true
-		} else if arg == "--dry-run" {
+		case "--dry-run":
 			cliConfig.DryRun = true
-		} else {
+		default:
 			fmt.Fprintln(os.Stderr, "error: invalid flag: "+arg)
 			os.Exit(1)
 		}

@@ -14,6 +14,10 @@ import (
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 )
 
+const (
+	DockerIndexURL = "index.docker.io"
+)
+
 type DockerManager struct{}
 
 func New() common.Manager {
@@ -81,15 +85,16 @@ func parseDockerfileFromDirective(value string) (image, version, versionType str
 			break
 		}
 
-		if strings.Contains(part, "@") {
+		switch {
+		case strings.Contains(part, "@"):
 			image = strings.Split(part, "@")[0]
 			version = strings.Split(part, "@")[1]
 			versionType = "digest"
-		} else if strings.Contains(part, ":") {
+		case strings.Contains(part, ":"):
 			image = strings.Split(part, ":")[0]
 			version = strings.Split(part, ":")[1]
 			versionType = "tag"
-		} else {
+		default:
 			image = part
 		}
 	}
@@ -154,7 +159,7 @@ func getDockerImageTags(name string) ([]string, error) {
 		return nil, err
 	}
 
-	if endpoints == "index.docker.io" {
+	if endpoints == DockerIndexURL {
 		token, err := getDockerHubToken(client, image)
 		if err != nil {
 			return nil, err
@@ -216,7 +221,7 @@ func getDockerHubToken(client *http.Client, image string) (token string, err err
 func parseImageName(name string) (endpoint, image string) {
 	imageParts := strings.Split(name, "/")
 	if len(imageParts) == 1 {
-		endpoint = "index.docker.io"
+		endpoint = DockerIndexURL
 		image = "library/" + imageParts[0]
 	} else {
 		if strings.Contains(imageParts[0], ".") {
@@ -225,7 +230,7 @@ func parseImageName(name string) (endpoint, image string) {
 			image = strings.Join(imageParts[1:], "/")
 		} else {
 			// first part is a user
-			endpoint = "index.docker.io"
+			endpoint = DockerIndexURL
 			image = strings.Join(imageParts, "/")
 		}
 	}

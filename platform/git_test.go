@@ -21,7 +21,9 @@ func TestNewGitClient(t *testing.T) {
 }
 
 func TestGitClient_ListTags(t *testing.T) {
-	githubClient, _ := NewGitClient("https://github.com")
+	githubClient, err := NewGitClient("https://github.com")
+	assert.NoError(t, err)
+
 	tags, err := githubClient.ListTags(&ListTagsInput{
 		Owner: "harryzcy",
 		Repo:  "mailbox",
@@ -29,7 +31,9 @@ func TestGitClient_ListTags(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Contains(t, tags, "v1.0.0")
 
-	giteaClient, _ := NewGitClient("https://gitea.com")
+	giteaClient, err := NewGitClient("https://gitea.com")
+	assert.NoError(t, err)
+
 	tags, err = giteaClient.ListTags(&ListTagsInput{
 		Owner: "harryzcy",
 		Repo:  "act_runner",
