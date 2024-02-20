@@ -18,7 +18,10 @@ const (
 	DockerIndexURL = "index.docker.io"
 )
 
+//revive:disable:exported
 type DockerManager struct{}
+
+// revive:enable:exported
 
 func New() common.Manager {
 	return &DockerManager{}

@@ -11,7 +11,10 @@ import (
 
 const GitHubDomain = "https://github.com"
 
+//revive:disable:exported
 type GitHubActionsManager struct{}
+
+// revive:enable:exported
 
 func New() common.Manager {
 	return &GitHubActionsManager{}

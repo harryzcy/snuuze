@@ -12,7 +12,10 @@ import (
 	"github.com/harryzcy/snuuze/util/requestutil"
 )
 
+//revive:disable:exported
 type PipManager struct{}
+
+// revive:enable:exported
 
 func New() common.Manager {
 	return &PipManager{}
