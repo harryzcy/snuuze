@@ -41,7 +41,7 @@ func (c *Cache) Read(path string) ([]byte, error) {
 
 func (c *Cache) Commit() error {
 	for path := range c.Files {
-		err := os.WriteFile(path, c.Files[path], 0644)
+		err := os.WriteFile(path, c.Files[path], 0644) // #nosec: G306
 		if err != nil {
 			return err
 		}

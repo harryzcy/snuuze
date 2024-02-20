@@ -130,7 +130,7 @@ func postGoMod(cache *Cache, goModFiles []string, goReplaceItems []*ReplaceItem)
 			return fmt.Errorf("postGoMod: failed to commit cache: %s", err)
 		}
 
-		output, err := command.RunCommand(command.CommandInputs{
+		output, err := command.RunCommand(command.Inputs{
 			Command: []string{"go", "mod", "tidy"},
 			Dir:     dir,
 			Env: map[string]string{

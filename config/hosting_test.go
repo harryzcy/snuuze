@@ -11,9 +11,9 @@ import (
 
 func TestHostingConfig(t *testing.T) {
 	if strings.HasSuffix(basepath, "snuuze/config") {
-		CONFIG_FILE = filepath.Join(basepath, "..", "testdata", "config.yaml")
+		ConfigFile = filepath.Join(basepath, "..", "testdata", "config.yaml")
 	} else {
-		CONFIG_FILE = filepath.Join(basepath, "testdata", "config.yaml")
+		ConfigFile = filepath.Join(basepath, "testdata", "config.yaml")
 	}
 
 	err := LoadHostingConfig()

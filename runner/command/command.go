@@ -13,26 +13,26 @@ var (
 	ErrorTimeout = errors.New("timeout")
 )
 
-type CommandInputs struct {
+type Inputs struct {
 	Command []string
 	Dir     string
 	Env     map[string]string
 	Timeout time.Duration
 }
 
-func (input *CommandInputs) GetTimeout() time.Duration {
+func (input *Inputs) GetTimeout() time.Duration {
 	if input.Timeout <= 0 {
 		return config.GetHostingConfig().Data.GetTimeout()
 	}
 	return input.Timeout
 }
 
-type CommandOutput struct {
+type Output struct {
 	Stdout bytes.Buffer
 	Stderr bytes.Buffer
 }
 
-func RunCommand(inputs CommandInputs) (*CommandOutput, error) {
+func RunCommand(inputs Inputs) (*Output, error) {
 	cmd := exec.Command(inputs.Command[0], inputs.Command[1:]...) // #nosec G204
 	cmd.Dir = inputs.Dir
 	cmd.Env = []string{}
@@ -57,7 +57,7 @@ func RunCommand(inputs CommandInputs) (*CommandOutput, error) {
 		}
 		return nil, ErrorTimeout
 	case err := <-done:
-		return &CommandOutput{
+		return &Output{
 			Stdout: out,
 			Stderr: stderr,
 		}, err

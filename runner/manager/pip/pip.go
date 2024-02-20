@@ -53,7 +53,7 @@ func (m *PipManager) ListUpgrades(matches []types.Match) ([]*types.UpgradeInfo, 
 	return common.ListUpgrades(m, matches)
 }
 
-type pipJson struct {
+type pipJSON struct {
 	Releases map[string]interface{} `json:"releases"`
 }
 
@@ -116,7 +116,7 @@ func getPipPackageVersions(name string) ([]string, error) {
 		}
 	}
 
-	var data pipJson
+	var data pipJSON
 	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		return nil, err

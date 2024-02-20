@@ -27,11 +27,10 @@ func LoadConfig() error {
 			return nil
 		}
 		return fmt.Errorf("fatal error config file: %w", err)
-	} else {
-		err = c.Unmarshal(&config)
-		if err != nil {
-			return fmt.Errorf("unable to decode into struct, %w", err)
-		}
+	}
+	err = c.Unmarshal(&config)
+	if err != nil {
+		return fmt.Errorf("unable to decode into struct, %w", err)
 	}
 	return nil
 }

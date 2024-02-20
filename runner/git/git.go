@@ -18,7 +18,7 @@ var (
 
 // GetGitOriginURL returns url of `origin` remote of the current git repo
 func GetOriginURL() (string, error) {
-	output, err := command.RunCommand(command.CommandInputs{
+	output, err := command.RunCommand(command.Inputs{
 		Command: []string{"git", "remote", "get-url", "origin"},
 	})
 	if err != nil {
@@ -50,7 +50,7 @@ func CloneRepo(gitURL string) (string, error) {
 		return "", err
 	}
 
-	_, err = command.RunCommand(command.CommandInputs{
+	_, err = command.RunCommand(command.Inputs{
 		Command: []string{"git", "clone", authGitURL, dirPath},
 	})
 	if err != nil {
@@ -90,7 +90,7 @@ func UpdateCommitter(gitURL, dirPath string) error {
 		return ErrNoUserID
 	}
 
-	_, err := command.RunCommand(command.CommandInputs{
+	_, err := command.RunCommand(command.Inputs{
 		Dir:     dirPath,
 		Command: []string{"git", "config", "user.name", appName},
 	})
@@ -98,7 +98,7 @@ func UpdateCommitter(gitURL, dirPath string) error {
 		return err
 	}
 
-	_, err = command.RunCommand(command.CommandInputs{
+	_, err = command.RunCommand(command.Inputs{
 		Dir:     dirPath,
 		Command: []string{"git", "config", "user.email", fmt.Sprintf("%d+%s@users.noreply.github.com", appUserID, appName)},
 	})
@@ -106,7 +106,7 @@ func UpdateCommitter(gitURL, dirPath string) error {
 		return err
 	}
 
-	_, err = command.RunCommand(command.CommandInputs{
+	_, err = command.RunCommand(command.Inputs{
 		Dir:     dirPath,
 		Command: []string{"git", "config", "commit.gpgsign", "false"},
 	})
