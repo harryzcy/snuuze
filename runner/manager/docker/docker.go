@@ -160,7 +160,8 @@ func getDockerImageTags(name string) ([]string, error) {
 	}
 
 	if endpoints == DockerIndexURL {
-		token, err := getDockerHubToken(client, image)
+		var token string
+		token, err = getDockerHubToken(client, image)
 		if err != nil {
 			return nil, err
 		}

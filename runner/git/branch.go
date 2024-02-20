@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	DEFAULT_DEFAULT_BRANCH = "main"
+	DefaultDefaultBranch = "main"
 )
 
 func GetDefaultBranch(repoDir string) string {
@@ -15,12 +15,12 @@ func GetDefaultBranch(repoDir string) string {
 		Command: []string{"git", "-C", repoDir, "rev-parse", "--abbrev-ref", "origin/HEAD"},
 	})
 	if err != nil {
-		return DEFAULT_DEFAULT_BRANCH
+		return DefaultDefaultBranch
 	}
 
 	branch := output.Stdout.String()
 	if branch == "" {
-		return DEFAULT_DEFAULT_BRANCH
+		return DefaultDefaultBranch
 	}
 
 	branch = strings.TrimSpace(branch)

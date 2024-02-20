@@ -105,6 +105,7 @@ func postGoMod(cache *Cache, goModFiles []string, goReplaceItems []*ReplaceItem)
 				if err != nil {
 					return err
 				}
+
 				if d.IsDir() {
 					return nil
 				}

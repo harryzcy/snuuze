@@ -6,7 +6,7 @@ import (
 	"github.com/harryzcy/snuuze/types"
 )
 
-func Run(gitURL, repoPath string) ([]*types.UpgradeInfo, error) {
+func Run(repoPath string) ([]*types.UpgradeInfo, error) {
 	allMatches, err := Scan(repoPath)
 	if err != nil {
 		return nil, err

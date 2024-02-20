@@ -33,7 +33,7 @@ type CommandOutput struct {
 }
 
 func RunCommand(inputs CommandInputs) (*CommandOutput, error) {
-	cmd := exec.Command(inputs.Command[0], inputs.Command[1:]...) //nolint:gosec
+	cmd := exec.Command(inputs.Command[0], inputs.Command[1:]...) // #nosec G204
 	cmd.Dir = inputs.Dir
 	cmd.Env = []string{}
 	for key, value := range inputs.Env {

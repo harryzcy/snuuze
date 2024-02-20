@@ -20,7 +20,7 @@ func RunForRepo(gitURL string) error {
 	}
 	defer cleanupRepo(repoPath)
 
-	infos, err := manager.Run(gitURL, repoPath)
+	infos, err := manager.Run(repoPath)
 	if err != nil {
 		return err
 	}
