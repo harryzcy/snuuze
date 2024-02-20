@@ -15,6 +15,10 @@ func Scan(dir string) (map[types.PackageManager][]types.Match, error) {
 	matches := make(map[types.PackageManager][]types.Match)
 
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if d.IsDir() {
 			if shouldIgnore(path) {
 				return filepath.SkipDir

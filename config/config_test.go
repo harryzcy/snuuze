@@ -17,10 +17,16 @@ var (
 
 func TestMain(m *testing.M) {
 	if strings.HasSuffix(basepath, "snuuze/config") {
-		_ = os.Chdir("../")
+		err := os.Chdir("../")
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	_ = os.Chdir("./testdata")
+	err := os.Chdir("./testdata")
+	if err != nil {
+		panic(err)
+	}
 	os.Exit(m.Run())
 }
 

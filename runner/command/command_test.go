@@ -27,7 +27,7 @@ func TestRunCommand(t *testing.T) {
 
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			output, err := RunCommand(CommandInputs{
+			output, err := RunCommand(Inputs{
 				Command: test.command,
 				Env:     test.env,
 			})

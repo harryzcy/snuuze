@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	CONFIG_FILE = defaultValue(os.Getenv("SNUUZE_CONFIG_FILE"), "config.yaml")
+	ConfigFile = defaultValue(os.Getenv("SNUUZE_CONFIG_FILE"), "config.yaml")
 
 	hostingConfig types.HostingConfig
 )
@@ -21,7 +21,7 @@ var (
 // LoadConfig loads the configuration for the application
 func LoadHostingConfig() error {
 	c := viper.New()
-	c.SetConfigFile(CONFIG_FILE)
+	c.SetConfigFile(ConfigFile)
 	c.SetEnvPrefix("SNUUZE")
 	c.AddConfigPath(".")
 	c.AddConfigPath(".github")

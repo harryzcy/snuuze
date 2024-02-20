@@ -28,15 +28,16 @@ func NewGitHubClient() (Client, error) {
 		authType: config.GetHostingConfig().GitHub.AuthType,
 	}
 
-	if client.authType == types.AuthTypeGithubApp {
+	switch client.authType {
+	case types.AuthTypeGithubApp:
 		var err error
 		client.client, client.transport, err = auth.GithubAppInstallationClient()
 		if err != nil {
 			return nil, fmt.Errorf("failed to create GitHub client: %v", err)
 		}
-	} else if client.authType == types.AuthTypeToken {
+	case types.AuthTypeToken:
 		client.client, client.token = auth.GitHubPATClient()
-	} else {
+	default:
 		return nil, fmt.Errorf("unknown GitHub auth type: %s", client.authType)
 	}
 

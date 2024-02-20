@@ -56,7 +56,7 @@ func updateDependencies(gitURL, repoDir string, infos []*types.UpgradeInfo, info
 	base := git.GetDefaultBranch(repoDir)
 	fmt.Println("Creating branch", info.branchName, "from", base)
 
-	output, err := command.RunCommand(command.CommandInputs{
+	output, err := command.RunCommand(command.Inputs{
 		Command: []string{"git", "-C", repoDir, "checkout", "-b", info.branchName, base},
 	})
 	if err != nil {
@@ -68,7 +68,7 @@ func updateDependencies(gitURL, repoDir string, infos []*types.UpgradeInfo, info
 		return fmt.Errorf("failed to update dependencies: %s", err)
 	}
 
-	err = git.CommitChanges(repoDir, info.branchName, info.message)
+	err = git.CommitChanges(repoDir, info.message)
 	if err != nil {
 		return fmt.Errorf("failed to commit changes to branch [%s]: %s", info.branchName, err)
 	}

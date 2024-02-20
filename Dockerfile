@@ -1,5 +1,8 @@
 FROM golang:1.22.0-alpine3.19 as builder
 
+# checkov:skip=CKV_DOCKER_3:"Allow root user"
+# checkov:skip=CKV_DOCKER_2:"No healthcheck"
+
 WORKDIR /app
 
 COPY . ./
