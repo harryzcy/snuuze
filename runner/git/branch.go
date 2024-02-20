@@ -11,7 +11,7 @@ const (
 )
 
 func GetDefaultBranch(repoDir string) string {
-	output, err := command.RunCommand(command.CommandInputs{
+	output, err := command.RunCommand(command.Inputs{
 		Command: []string{"git", "-C", repoDir, "rev-parse", "--abbrev-ref", "origin/HEAD"},
 	})
 	if err != nil {

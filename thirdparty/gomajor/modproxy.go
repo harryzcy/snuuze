@@ -128,7 +128,11 @@ func QueryCurrent(modpath string, cached bool) (*Module, bool, error) {
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(res.Body)
+		var body []byte
+		body, err = io.ReadAll(res.Body)
+		if err != nil {
+			return nil, false, err
+		}
 		if res.StatusCode == http.StatusNotFound && bytes.HasPrefix(body, []byte("not found:")) {
 			return nil, false, nil
 		}

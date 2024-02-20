@@ -56,7 +56,7 @@ func updateDependencies(gitURL, repoDir string, infos []*types.UpgradeInfo, info
 	base := git.GetDefaultBranch(repoDir)
 	fmt.Println("Creating branch", info.branchName, "from", base)
 
-	output, err := command.RunCommand(command.CommandInputs{
+	output, err := command.RunCommand(command.Inputs{
 		Command: []string{"git", "-C", repoDir, "checkout", "-b", info.branchName, base},
 	})
 	if err != nil {
