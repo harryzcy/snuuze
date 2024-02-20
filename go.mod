@@ -9,6 +9,7 @@ require (
 	github.com/hashicorp/go-version v1.6.0
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/moby/buildkit v0.12.5
+	github.com/pkg/errors v0.9.1
 	github.com/shurcooL/githubv4 v0.0.0-20230704064427-599ae7bbf278
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.8.4
@@ -48,7 +49,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
@@ -71,7 +71,7 @@ require (
 	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.17.0 // indirect
+	golang.org/x/tools v0.18.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
