@@ -3,8 +3,8 @@ package githubactions
 import (
 	"strings"
 
+	"github.com/goccy/go-yaml"
 	"github.com/harryzcy/snuuze/types"
-	"gopkg.in/yaml.v3"
 )
 
 type minimalGitHubActions struct {
