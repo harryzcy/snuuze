@@ -2,6 +2,7 @@ package gomajor
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -325,7 +326,24 @@ func (rr Retractions) Includes(v string) bool {
 // Update reports a newer version of a module.
 // The Err field will be set if an error occurred.
 type Update struct {
-	Module  module.Version
-	Version string
-	Err     error
+	Module module.Version
+	Latest module.Version
+	Err    error
+}
+
+// MarshalJSON implements json.Marshaler
+func (u Update) MarshalJSON() ([]byte, error) {
+	var err string
+	if u.Err != nil {
+		err = u.Err.Error()
+	}
+	return json.Marshal(struct {
+		Module module.Version
+		Latest module.Version
+		Err    string `json:",omitempty"`
+	}{
+		Module: u.Module,
+		Latest: u.Latest,
+		Err:    err,
+	})
 }
