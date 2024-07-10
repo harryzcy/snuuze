@@ -2,6 +2,43 @@ package gomajor
 
 import "testing"
 
+func TestIsNewerVersion(t *testing.T) {
+	tests := []struct {
+		old, new     string
+		major, newer bool
+	}{
+		{
+			old:   "v1.0.0",
+			new:   "v1.0.1",
+			newer: true,
+		},
+		{
+			old:   "v1.0.1",
+			new:   "v1.0.0",
+			newer: false,
+		},
+		{
+			old:   "v1.0.0",
+			new:   "v2.0.0",
+			major: true,
+			newer: true,
+		},
+		{
+			old:   "v1.0.9",
+			new:   "v1.4.0",
+			major: true,
+			newer: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run("", func(t *testing.T) {
+			if ok := IsNewerVersion(tt.old, tt.new, tt.major); tt.newer != ok {
+				t.Fatalf("IsNewerVersion(%q, %q, %v) = %v", tt.old, tt.new, tt.major, ok)
+			}
+		})
+	}
+}
+
 func TestCompareVersion(t *testing.T) {
 	tests := []struct {
 		v, w string
