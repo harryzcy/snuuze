@@ -2,10 +2,12 @@ package gomajor
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"net/http"
+	neturl "net/url"
+	"os"
+	"path"
 	"slices"
 	"strconv"
 	"strings"
@@ -14,6 +16,52 @@ import (
 	"golang.org/x/mod/module"
 	"golang.org/x/mod/semver"
 )
+
+// Proxies returns the module proxies.
+func Proxies() []string {
+	var proxies []string
+	if s := os.Getenv("GOPROXY"); s != "" {
+		for _, proxy := range strings.Split(s, ",") {
+			proxy = strings.TrimSpace(proxy)
+			if proxy != "" && proxy != "direct" {
+				proxies = append(proxies, proxy)
+			}
+		}
+	}
+	if len(proxies) == 0 {
+		proxies = append(proxies, "https://proxy.golang.org")
+	}
+	return proxies
+}
+
+// Request sends requests to the module proxies in order and returns
+// the first 200 response.
+func Request(path string, cached bool) (*http.Response, error) {
+	var last *http.Response
+	for _, proxy := range Proxies() {
+		url, err := neturl.JoinPath(proxy, path)
+		if err != nil {
+			return nil, err
+		}
+		req, err := http.NewRequest(http.MethodGet, url, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("User-Agent", "GoMajor/1.0")
+		if cached {
+			req.Header.Set("Disable-Module-Fetch", "true")
+		}
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		if res.StatusCode == http.StatusOK {
+			return res, nil
+		}
+		last = res
+	}
+	return last, nil
+}
 
 // MaxVersionModule returns the latest version of the module in the list.
 // If pre is false, pre-release versions will are excluded.
@@ -149,16 +197,7 @@ func QueryCurrent(modpath string, cached bool) (*Module, bool, error) {
 	if err != nil {
 		return nil, false, err
 	}
-	url := fmt.Sprintf("https://proxy.golang.org/%s/@v/list", escaped)
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, false, err
-	}
-	req.Header.Set("User-Agent", "snuuze/0.0")
-	if cached {
-		req.Header.Set("Disable-Module-Fetch", "true")
-	}
-	res, err := http.DefaultClient.Do(req)
+	res, err := Request(path.Join(escaped, "@v", "list"), cached)
 	if err != nil {
 		return nil, false, err
 	}
@@ -169,7 +208,7 @@ func QueryCurrent(modpath string, cached bool) (*Module, bool, error) {
 		if err != nil {
 			return nil, false, err
 		}
-		if res.StatusCode == http.StatusNotFound && bytes.HasPrefix(body, []byte("not found:")) {
+		if res.StatusCode == http.StatusNotFound {
 			return nil, false, nil
 		}
 		msg := string(body)
@@ -246,11 +285,7 @@ func FetchRetractions(mod *Module) (Retractions, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("GET", "https://proxy.golang.org/"+escaped+"/@v/"+max+".mod", nil)
-	if err != nil {
-		return nil, err
-	}
-	res, err := http.DefaultClient.Do(req)
+	res, err := Request(path.Join(escaped, "@v", max+".mod"), false)
 	if err != nil {
 		return nil, err
 	}
