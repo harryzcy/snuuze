@@ -63,10 +63,10 @@ func Request(path string, cached bool) (*http.Response, error) {
 	return last, nil
 }
 
-// MaxVersionModule returns the latest version of the module in the list.
+// MaxVersion returns the latest version of the module in the list.
 // If pre is false, pre-release versions will are excluded.
 // Retracted versions are excluded.
-func MaxVersionModule(mods []*Module, pre bool, r Retractions) (*Module, string) {
+func MaxVersion(mods []*Module, pre bool, r Retractions) (*Module, string) {
 	for i := len(mods); i > 0; i-- {
 		mod := mods[i-1].Retract(r)
 		if max := mod.MaxVersion("", pre); max != "" {
