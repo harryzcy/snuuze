@@ -64,10 +64,10 @@ func Request(path string, cached bool) (*http.Response, error) {
 	return last, nil
 }
 
-// MaxVersionModule returns the latest version of the module in the list.
+// MaxVersion returns the latest version of the module in the list.
 // If pre is false, pre-release versions will are excluded.
 // Retracted versions are excluded.
-func MaxVersionModule(mods []*Module, pre bool, r Retractions) (*Module, string) {
+func MaxVersion(mods []*Module, pre bool, r Retractions) (*Module, string) {
 	for i := len(mods); i > 0; i-- {
 		mod := mods[i-1].Retract(r)
 		if max := mod.MaxVersion("", pre); max != "" {
@@ -90,7 +90,9 @@ func (m *Module) MaxVersion(prefix string, pre bool) string {
 		if !pre && semver.Prerelease(v) != "" {
 			continue
 		}
-		max = MaxVersion(v, max)
+		if CompareVersion(max, v) < 0 {
+			max = v
+		}
 	}
 	return max
 }
@@ -111,21 +113,6 @@ func IsNewerVersion(oldversion, newversion string, major bool) bool {
 		return semver.Compare(semver.Major(oldversion), semver.Major(newversion)) < 0
 	}
 	return semver.Compare(oldversion, newversion) < 0
-}
-
-// MaxVersion returns the larger of two versions according to semantic version precedence.
-// Incompatible versions are considered lower than non-incompatible ones.
-// Invalid versions are considered lower than valid ones.
-// If both versions are invalid, the empty string is returned.
-func MaxVersion(v, w string) string {
-	// sort by validity
-	if !semver.IsValid(v) && !semver.IsValid(w) {
-		return ""
-	}
-	if CompareVersion(v, w) == 1 {
-		return v
-	}
-	return w
 }
 
 // CompareVersion returns -1, 0, or 1 if v is less than, equal to, or greater than w.
@@ -295,7 +282,7 @@ func FetchRetractions(mod *Module) (Retractions, error) {
 	if err != nil {
 		return nil, err
 	}
-	if res.StatusCode != 200 {
+	if res.StatusCode != http.StatusOK {
 		msg := string(body)
 		if msg == "" {
 			msg = res.Status
