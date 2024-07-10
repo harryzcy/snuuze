@@ -89,7 +89,9 @@ func (m *Module) MaxVersion(prefix string, pre bool) string {
 		if !pre && semver.Prerelease(v) != "" {
 			continue
 		}
-		max = MaxVersion(v, max)
+		if CompareVersion(max, v) < 0 {
+			max = v
+		}
 	}
 	return max
 }
@@ -110,21 +112,6 @@ func IsNewerVersion(oldversion, newversion string, major bool) bool {
 		return semver.Compare(semver.Major(oldversion), semver.Major(newversion)) < 0
 	}
 	return semver.Compare(oldversion, newversion) < 0
-}
-
-// MaxVersion returns the larger of two versions according to semantic version precedence.
-// Incompatible versions are considered lower than non-incompatible ones.
-// Invalid versions are considered lower than valid ones.
-// If both versions are invalid, the empty string is returned.
-func MaxVersion(v, w string) string {
-	// sort by validity
-	if !semver.IsValid(v) && !semver.IsValid(w) {
-		return ""
-	}
-	if CompareVersion(v, w) == 1 {
-		return v
-	}
-	return w
 }
 
 // CompareVersion returns -1, 0, or 1 if v is less than, equal to, or greater than w.
