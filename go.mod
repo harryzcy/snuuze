@@ -1,8 +1,6 @@
 module github.com/harryzcy/snuuze
 
-go 1.22.0
-
-toolchain go1.23.2
+go 1.22
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
