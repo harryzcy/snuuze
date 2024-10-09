@@ -1,4 +1,4 @@
-FROM golang:1.22.5-alpine3.20 as builder
+FROM golang:1.23.2-alpine3.20 as builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN set -ex && \
   -ldflags="-w -s" \
   -o /bin/snuuze
 
-FROM alpine:3.20.1
+FROM alpine:3.20.3
 
 RUN addgroup -S snuuze && adduser -S snuuze -G snuuze
 USER snuuze
