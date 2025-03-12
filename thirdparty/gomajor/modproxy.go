@@ -265,15 +265,15 @@ func Query(modpath string, cached bool) (*MultiModule, error) {
 
 // FetchRetractions fetches the retractions for this module.
 func FetchRetractions(mod *Module) (Retractions, error) {
-	max := mod.MaxVersion("", false)
-	if max == "" {
+	maxV := mod.MaxVersion("", false)
+	if maxV == "" {
 		return nil, nil
 	}
 	escaped, err := module.EscapePath(mod.Path)
 	if err != nil {
 		return nil, err
 	}
-	res, err := Request(path.Join(escaped, "@v", max+".mod"), false)
+	res, err := Request(path.Join(escaped, "@v", maxV+".mod"), false)
 	if err != nil {
 		return nil, err
 	}
