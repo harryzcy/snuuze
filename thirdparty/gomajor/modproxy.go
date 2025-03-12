@@ -70,8 +70,8 @@ func Request(path string, cached bool) (*http.Response, error) {
 func MaxVersion(mods []*Module, pre bool, r Retractions) (*Module, string) {
 	for i := len(mods); i > 0; i-- {
 		mod := mods[i-1].Retract(r)
-		if max := mod.MaxVersion("", pre); max != "" {
-			return mod, max
+		if maxV := mod.MaxVersion("", pre); maxV != "" {
+			return mod, maxV
 		}
 	}
 	return nil, ""
@@ -82,7 +82,7 @@ func MaxVersion(mods []*Module, pre bool, r Retractions) (*Module, string) {
 // Prefix can be used to filter the versions based on a prefix.
 // If pre is false, pre-release versions will are excluded.
 func (m *Module) MaxVersion(prefix string, pre bool) string {
-	var max string
+	var maxV string
 	for _, v := range m.Versions {
 		if !semver.IsValid(v) || !strings.HasPrefix(v, prefix) {
 			continue
@@ -90,11 +90,11 @@ func (m *Module) MaxVersion(prefix string, pre bool) string {
 		if !pre && semver.Prerelease(v) != "" {
 			continue
 		}
-		if CompareVersion(max, v) < 0 {
-			max = v
+		if CompareVersion(maxV, v) < 0 {
+			maxV = v
 		}
 	}
-	return max
+	return maxV
 }
 
 // Retract returns a copy of m with the retracted versions removed.
@@ -265,15 +265,15 @@ func Query(modpath string, cached bool) (*MultiModule, error) {
 
 // FetchRetractions fetches the retractions for this module.
 func FetchRetractions(mod *Module) (Retractions, error) {
-	max := mod.MaxVersion("", false)
-	if max == "" {
+	maxV := mod.MaxVersion("", false)
+	if maxV == "" {
 		return nil, nil
 	}
 	escaped, err := module.EscapePath(mod.Path)
 	if err != nil {
 		return nil, err
 	}
-	res, err := Request(path.Join(escaped, "@v", max+".mod"), false)
+	res, err := Request(path.Join(escaped, "@v", maxV+".mod"), false)
 	if err != nil {
 		return nil, err
 	}
