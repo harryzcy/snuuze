@@ -3,6 +3,7 @@ package gomajor
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -189,7 +190,12 @@ func QueryCurrent(modpath string, cached bool) (*Module, bool, error) {
 	if err != nil {
 		return nil, false, err
 	}
-	defer res.Body.Close()
+	defer func() {
+		closeErr := res.Body.Close()
+		if closeErr != nil {
+			err = errors.Join(err, closeErr)
+		}
+	}()
 	if res.StatusCode != http.StatusOK {
 		var body []byte
 		body, err = io.ReadAll(res.Body)
@@ -277,7 +283,12 @@ func FetchRetractions(mod *Module) (Retractions, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer func() {
+		closeErr := res.Body.Close()
+		if closeErr != nil {
+			err = errors.Join(err, closeErr)
+		}
+	}()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
