@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"time"
@@ -63,8 +64,12 @@ func (c *GiteaClient) sendRequest(method, path string, body []byte) ([]byte, err
 	if err != nil {
 		return nil, err
 	}
-
-	defer resp.Body.Close()
+	defer func() {
+		closeErr := resp.Body.Close()
+		if closeErr != nil {
+			err = errors.Join(err, closeErr)
+		}
+	}()
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {

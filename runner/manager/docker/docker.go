@@ -3,6 +3,7 @@ package docker
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -175,7 +176,12 @@ func getDockerImageTags(name string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		closeErr := resp.Body.Close()
+		if closeErr != nil {
+			err = errors.Join(err, closeErr)
+		}
+	}()
 	if resp.StatusCode != 200 {
 		return nil, &types.RequestFailedError{
 			For:        url,
@@ -204,7 +210,12 @@ func getDockerHubToken(client *http.Client, image string) (token string, err err
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		closeErr := resp.Body.Close()
+		if closeErr != nil {
+			err = errors.Join(err, closeErr)
+		}
+	}()
 	if resp.StatusCode != 200 {
 		return "", &types.RequestFailedError{
 			For:        url,

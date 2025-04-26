@@ -2,6 +2,7 @@ package pip
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -110,7 +111,12 @@ func getPipPackageVersions(name string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		closeErr := resp.Body.Close()
+		if closeErr != nil {
+			err = errors.Join(err, closeErr)
+		}
+	}()
 	if resp.StatusCode != 200 {
 		return nil, &types.RequestFailedError{
 			For:        jsonURL,
